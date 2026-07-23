@@ -12,6 +12,7 @@ The resources in this repository help you to:
 * **Integrate** EGA-compatible metadata into your own pipelines.
 * **Explore** the structure, relationships, and linked-data semantics of the EGA metadata model.
 
+> [!IMPORTANT]
 > **Work is in progress**
 
 > **Transparency disclaimer**: AI tools were used to assist in the writing and review of this repository. Ultimately, everything was reviewed by the (human) maintainer(s). Yes, everyone uses them. Yes, we do too. But at least we say so.
