@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+  "type": "object",
+  "title": "EGA Submission metadata schema",
+  "meta:version": "0.0.0",
+  "$async": true,
+  "description": "",
+  "@context": "./context.jsonld",
+  "required": [],
+  "meta:sssomMappings": [],
+  "allOf": [
+    {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    },
+    {
+      "title": "Entity type restriction",
+      "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionSubmission"
+    }
+  ],
+  "properties": {
+    "@id": {
+      "$ref": "../../common/schema.json#/$defs/@id",
+      "examples": []
+    },
+
+    "@type": {
+      "title": "Submission resource type",
+      "description": "JSON-LD types for an EGA Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@type"
+        }
+      ],
+      "examples": []
+    },
+
+    "title": {
+      "title": "Submission title",
+      "description": "A human-readable name for the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/label"
+        }
+      ],
+      "examples": []
+    },
+
+    "description": {
+      "title": "Submission description",
+      "description": "A brief description of the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/description"
+        }
+      ],
+      "examples": []
+    },
+
+    "status": {
+      "title": "Submission status",
+      "description": "The lifecycle status of the Submission record.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "adms:status",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "match_string": "status",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-07-21"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/statusSubmissionLifeCycle"
+        }
+      ]
+    },
+
+    "hasEntities": {
+      "$comment": "the EGA entities that belong to this submission."
+    },
+    "accessType": {},
+    "comments": {},
+
+    "sameAs": {
+      "title": "Same as",
+      "description": "External or equivalent identifiers for the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/sameAs"
+        }
+      ],
+      "examples": []
+    }
+  }
+}

@@ -3985,6 +3985,44 @@
             },
             "required": ["@type"]
         },
+
+        "relationshipItemRestrictionSubmission": {
+            "type": "object",
+            "title": "Relationship item restriction: Submission",
+            "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be an EGA Submission.",
+            "properties": {
+                "@id": {
+                    "$ref": "../common/schema.json#/$defs/egaStableIdentifierSubmission"
+                },
+                "@type": {
+                    "anyOf": [
+                        {
+                            "const": "ega:submission"
+                        },
+                        {
+                            "type": "array",
+                            "allOf": [
+                                {
+                                    "contains": {
+                                        "const": "ega:submission"
+                                    }
+                                },
+                                {
+                                    "title": "An EGA entity can only have one 'ega:...' type",
+                                    "contains": {
+                                        "$ref": "../common/schema.json#/$defs/egaType"
+                                    },
+                                    "maxContains": 1
+                                }
+                            ],
+                            "minItems": 2,
+                            "uniqueItems": true
+                        }
+                    ]
+                }
+            },
+            "required": ["@type"]
+        },
         
         "sameAs": {
             "$ref": "../common/schema.json#/$defs/relationshipArray",      
