@@ -12,6 +12,10 @@
         "id": "PATO:0000383",
         "label": "female"
       }
+    },
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
     }
   }
 }

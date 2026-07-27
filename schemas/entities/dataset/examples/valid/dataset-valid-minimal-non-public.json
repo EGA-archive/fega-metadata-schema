@@ -92,6 +92,10 @@
           "@language": "en"
         }
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

@@ -7,7 +7,7 @@
   "$async": true,
   "description": "Represents any biological material, from whole organisms (including humans) to subcellular components and macromolecules (e.g., DNA samples).",
   "@context": "./context.jsonld",
-  "required": ["@id", "@type"],
+  "required": ["@id", "@type", "inSubmission"],
   "meta:sssomMappings": [
     {
             "predicate_id": "skos:broadMatch",
@@ -34,6 +34,11 @@
         "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"
     }
   ],
+  "properties": {
+    "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
+    }
+  },
   "$defs": {
     "biomaterialCategory": {
       "type": "string",

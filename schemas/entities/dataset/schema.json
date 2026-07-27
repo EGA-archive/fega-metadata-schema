@@ -63,7 +63,8 @@
         "description",
         "datasetType",
         "hasPart",
-        "hasPolicy"
+        "hasPolicy",
+        "inSubmission"
      ],
     "properties": {
         "@id": {
@@ -847,6 +848,10 @@
             "allOf": [
                 { "$ref": "../../common/schema.json#/$defs/sameAs" }
             ]
+        },
+
+        "inSubmission": {
+          "$ref": "../../common/schema.json#/$defs/inSubmission"
         }
     },
     "$defs": {

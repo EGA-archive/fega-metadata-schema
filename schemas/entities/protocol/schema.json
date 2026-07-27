@@ -7,7 +7,7 @@
   "$async": true,
   "description": "Detailed plan of instructions on how a procedure is done. For example, sample preparation, sequencing or feature extraction techniques.",
   "@context": "./context.jsonld",
-  "required": ["@id"],
+  "required": ["@id", "inSubmission"],
   "$comment": "Protocol parameter specifications are addressable embedded objects, not top-level EGA entities. JSON Schema cannot verify cross-document membership between Process parameter references and Protocols in a referenced Protocol Collection; FEGA currently assumes that integrity and may add downstream graph validation in the future.",
   "meta:sssomMappings": [
     {
@@ -211,6 +211,10 @@
 
     "version": {
       "$ref": "../../../standards/json-schema/bioschemas/ComputationalWorkflow_v1.1-DRAFT.json#/properties/version"
+    },
+
+    "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
   }
 }

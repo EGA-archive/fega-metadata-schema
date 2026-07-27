@@ -14,6 +14,10 @@
         "@type": "ega:protocol",
         "label": "Blood DNA extraction"
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

@@ -2382,6 +2382,67 @@
             ]
         },
 
+        "agentRoleAssignment": {
+            "type": "object",
+            "title": "Agent role assignment",
+            "description": "A reusable structural definition assigning one or more context-specific roles to an agent.",
+            "required": ["agent", "roles"],
+            "properties": {
+                "@id": {
+                    "$ref": "../common/schema.json#/$defs/@id",
+                    "examples": [
+                        "urn:uuid:bd08aa08-47ac-412d-b978-68660c23928e",
+                        "ega:EGAB00000000001#component-1"
+                    ]
+                },
+                "agent": {
+                    "$ref": "../common/schema.json#/$defs/agent",
+                    "examples": [
+                        {
+                            "@id": "ega:EGAW00000000001",
+                            "@type": "prov:Agent"
+                        },
+                        {
+                            "@type": ["prov:Agent", "prov:Person"],
+                            "name": "Jane Doe"
+                        }
+                    ]
+                },
+                "roles": {
+                    "type": "array",
+                    "title": "Assigned roles",
+                    "description": "Roles performed by the agent in the context defined by the entity schema.",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "examples": ["owner", "administrator"]
+                    },
+                    "examples": [
+                        ["creator", "owner"],
+                        ["main_contact", "administrator"]
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "agent": {
+                        "@id": "ega:EGAW00000000001",
+                        "@type": "prov:Agent"
+                    },
+                    "roles": ["creator", "owner"]
+                },
+                {
+                    "agent": {
+                        "@type": ["prov:Agent", "prov:Person"],
+                        "name": "Jane Doe"
+                    },
+                    "roles": ["main_contact", "administrator"]
+                }
+            ]
+        },
+
         "person": {
             "type": "object",
             "title": "Person",
@@ -4023,6 +4084,40 @@
             },
             "required": ["@type"]
         },
+
+        "relationshipItemRestrictionNonSubmissionEntity": {
+            "title": "Relationship item restriction: non-Submission EGA entity",
+            "description": "A relationship reference to any supported EGA entity type except Submission.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipItem"
+                },
+                {
+                    "oneOf": [
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy"}
+                    ]
+                }
+            ],
+            "examples": [
+                {
+                    "@id": "ega:EGAS00000000001",
+                    "@type": "ega:study"
+                },
+                {
+                    "@id": "ega:EGAF00000000001",
+                    "@type": "ega:datafile"
+                }
+            ]
+        },
         
         "sameAs": {
             "$ref": "../common/schema.json#/$defs/relationshipArray",      
@@ -4266,6 +4361,45 @@
                     "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2025-05-22"
+                }
+            ]
+        },
+
+        "inSubmission": {
+            "type": "object",
+            "title": "In Submission",
+            "description": "The single authoritative EGA Submission that administratively owns the entity and governs who may view or edit it.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipItem"
+                },
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission"
+                }
+            ],
+            "meta:sssomMappings": [
+                {
+                    "predicate_id": "skos:broadMatch",
+                    "object_id": "dct:isPartOf",
+                    "mapping_justification": "semapv:ManualMappingCuration",
+                    "object_match_field": "rdfs:comment",
+                    "subject_match_field": "rdfs:comment",
+                    "match_string": "inSubmission",
+                    "author_id": ["orcid:0000-0002-7747-6256"],
+                    "creator_id": ["orcid:0000-0002-7747-6256"],
+                    "reviewer_id": [""],
+                    "confidence": 1.0,
+                    "mapping_date": "2026-07-27"
+                }
+            ],
+            "examples": [
+                {
+                    "@id": "ega:EGAB00000000001",
+                    "@type": "ega:submission"
+                },
+                {
+                    "@id": "ega:EGAB00001000002",
+                    "@type": ["ega:submission", "prov:Collection"]
                 }
             ]
         },
@@ -4542,6 +4676,21 @@
             "examples": [
                 "ega:EGAB00000000001",
                 "ega:EGAB00001000002"
+            ]
+        },
+
+        "egaStableIdentifierUserAccount": {
+            "title": "Stable identifier for an EGA user account",
+            "description": "A stable EGAW identifier for an authenticated EGA user account.",
+            "allOf": [
+                { "$ref": "../common/schema.json#/$defs/egaStableIdentifierCurie" },
+                {
+                    "pattern": "^ega:EGAW"
+                }
+            ],
+            "examples": [
+                "ega:EGAW00000000001",
+                "ega:EGAW00001000002"
             ]
         },
 

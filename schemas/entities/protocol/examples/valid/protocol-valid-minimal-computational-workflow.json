@@ -25,6 +25,10 @@
     "license": "https://spdx.org/licenses/Apache-2.0",
     "sdPublisher": {
       "name": "European Genome-phenome Archive"
+    },
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
     }
   }
 }

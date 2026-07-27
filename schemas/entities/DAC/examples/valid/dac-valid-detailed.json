@@ -103,6 +103,10 @@
       {
         "@id": "https://registry.example.org/dacs/northern-health-research"
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

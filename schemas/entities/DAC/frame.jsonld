@@ -55,5 +55,8 @@
     {
       "@embed": "@always"
     }
-  ]
+  ],
+  "inSubmission": {
+    "@embed": "@always"
+  }
 }

@@ -28,7 +28,10 @@
   "samplingAge": {},
   "samplingDate": {},
   "samplingProcedure": {},
-
+  
+  "inSubmission": {
+    "@embed": "@always"
+  },
   "sameAs": [
     {
       "@embed": "@always"

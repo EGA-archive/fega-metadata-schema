@@ -3,7 +3,7 @@
   "@type": "ega:cohort",
   "@embed": "@always",
   "@explicit": false,
-
+  
   "name": {},
   "description": {},
   "cohortDataTypes": {},
@@ -13,7 +13,7 @@
   "inclusionCriteria": {},
   "exclusionCriteria": {},
   "collectionEvents": {},
-
+  
   "sameAs": [
     {
       "@embed": "@always"
@@ -28,5 +28,8 @@
     {
       "@embed": "@always"
     }
-  ]
+  ],
+  "inSubmission": {
+    "@embed": "@always"
+  }
 }

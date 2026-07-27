@@ -78,6 +78,7 @@
         "cohort": "entities:cohort/schema.json",
         "project": "entities:project/schema.json",
         "protocolCollection": "entities:protocolCollection/schema.json",
+        "submission": "entities:submission/schema.json",
 
         "identifiers": "https://identifiers.org/",
         "ega": "identifiers:ega:",
@@ -116,7 +117,7 @@
             "@prefix": true
         },
 
-        "egav1crg": "https://submission.ega-archive.org/api/spec/#/schemas/",
+        "egav1crg": "https://submission.ega-archive.org/api/spec/#/paths/submissions",
         "egav1ebi": "https://github.com/enasequence/webin-xml/master/src/main/resources/uk/ac/ebi/ena/sra/schema/",
 
         "sameAs": {
@@ -154,6 +155,9 @@
         "isPartOf": {
             "@id": "dct:isPartOf",
             "@container": "@set"
+        },
+        "inSubmission": {
+            "@id": "commonDefinitionsDoc:/$defs/inSubmission"
         },
         "hasPart": {
             "@id": "dct:hasPart",

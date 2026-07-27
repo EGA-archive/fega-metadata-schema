@@ -3,7 +3,7 @@
   "@type": "ega:protocol",
   "@embed": "@always",
   "@explicit": false,
-
+  
   "name": {},
   "description": {},
   "version": {},
@@ -43,5 +43,8 @@
   "totalTime": {},
   "step": {},
   "protocolOutcome": {},
+  "inSubmission": {
+    "@embed": "@always"
+  },
   "keywords": {}
 }

@@ -33,6 +33,10 @@
         "@id": "https://example.org/protocol-collections/wgs-plan-2.1.0"
       }
     ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "isBasedOn": [
       {
         "@id": "https://example.org/protocol-collections/wgs-plan-2.0.0"

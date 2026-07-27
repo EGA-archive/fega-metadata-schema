@@ -57,6 +57,10 @@
         "@type": ["ega:dataset", "dcat:Dataset"]
       }
     ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "sameAs": [
       {
         "@id": "https://registry.example.org/policies/northern-health-research-v2"

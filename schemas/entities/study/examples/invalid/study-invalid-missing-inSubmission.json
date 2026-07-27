@@ -1,0 +1,18 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/study/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/study/schema.json",
+    "@id": "ega:EGAS00001000002",
+    "@type": "ega:study",
+    "title": "Minimal case-control genomics study",
+    "description": "Minimal study metadata record for a case-control genomics investigation.",
+    "studyDesign": [
+      {
+        "id": "EFO:0001427",
+        "label": "case control design"
+      }
+    ]
+  }
+}

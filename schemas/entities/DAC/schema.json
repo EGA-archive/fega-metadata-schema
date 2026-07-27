@@ -15,7 +15,8 @@
     "description",
     "status",
     "contactPoint",
-    "components"
+    "components",
+    "inSubmission"
   ],
   "meta:sssomMappings": [
     {
@@ -112,6 +113,10 @@
         "Committee responsible for reviewing and deciding controlled-access requests for the MyStartUp Genomics programme.",
         "Institutional committee overseeing data-access decisions for approved secondary-use studies."
       ]
+    },
+
+    "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
     },
 
     "status": {
@@ -530,15 +535,13 @@
       "type": "object",
       "title": "DAC component membership",
       "description": "A membership that relates an agent to the DAC and states the roles that agent performs.",
-      "required": ["@type", "agent", "roles"],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/agentRoleAssignment"
+        }
+      ],
+      "required": ["@type"],
       "properties": {
-        "@id": {
-          "$ref": "../../common/schema.json#/$defs/@id",
-          "examples": [
-            "ega:EGAC00000000001#membership-1",
-            "urn:uuid:bd08aa08-47ac-412d-b978-68660c23928e"
-          ]
-        },
         "@type": {
           "anyOf": [
             {

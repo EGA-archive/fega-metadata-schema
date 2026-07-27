@@ -25,6 +25,10 @@
         "@id": "ega:EGAN00000000002",
         "@type": "ega:biomaterial"
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

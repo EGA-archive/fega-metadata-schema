@@ -14,7 +14,8 @@
     "fileFormat",
     "dataContent",
     "checksums",
-    "isPartOf"
+    "isPartOf",
+    "inSubmission"
   ],
   "meta:sssomMappings": [
     {
@@ -346,6 +347,10 @@
           }
         }
       ]
+    },
+
+    "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
   }
 }

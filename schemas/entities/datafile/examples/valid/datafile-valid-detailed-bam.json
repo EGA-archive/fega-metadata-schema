@@ -29,6 +29,10 @@
         "appliesTo": "unencrypted"
       }
     ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "isPartOf": [
       {
         "@id": "ega:EGAD00000000002",

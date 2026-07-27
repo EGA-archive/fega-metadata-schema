@@ -80,6 +80,10 @@
         "@id": "ega:EGAA00000000001",
         "@type": "ega:process"
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

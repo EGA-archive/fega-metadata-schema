@@ -12,7 +12,8 @@
         "@type",
         "title",
         "description",
-        "studyDesign"
+        "studyDesign",
+        "inSubmission"
     ],
     "allOf": [
         {
@@ -725,6 +726,9 @@
                     "label": "time series design"
                 }
             ]
+        },
+        "inSubmission": {
+          "$ref": "../../common/schema.json#/$defs/inSubmission"
         }
     },
     "$comment": "#! Since study is a high level entity, we may want to expose READ-only fields derived from other entities, such as 'dataTypes', 'diagnoses', 'measurementTechniques', etc. For now, in this iteration, we'll leave them as a reminder."

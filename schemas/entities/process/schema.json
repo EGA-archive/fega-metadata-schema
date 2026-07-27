@@ -111,7 +111,7 @@
         { "required": ["used", "informs"] },
         { "required": ["wasInformedBy", "generated"] }
     ],
-    "required": [ "@id", "title", "hadProtocolCollection" ],
+    "required": [ "@id", "title", "hadProtocolCollection", "inSubmission" ],
     "properties": {
         "@id": {
           "$ref": "../../common/schema.json#/$defs/@id",
@@ -365,6 +365,9 @@
             "items": {
                 "$ref": "../../common/schema.json#/$defs/processParameterValue"
             }
+        },
+        "inSubmission": {
+          "$ref": "../../common/schema.json#/$defs/inSubmission"
         }
     }
 }

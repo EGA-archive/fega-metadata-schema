@@ -17,6 +17,10 @@
       "R",
       "nextflow"
     ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "version": "1.2.0",
     "url": "https://github.com/myGithub/rna-seq-pipeline",
     "license": "https://spdx.org/licenses/Apache-2.0",

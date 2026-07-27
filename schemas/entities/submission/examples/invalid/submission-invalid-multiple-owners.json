@@ -1,0 +1,24 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@id": "ega:EGAB00000000102",
+    "@type": "ega:submission",
+    "title": "Submission with multiple owners",
+    "status": "draft",
+    "components": [
+      {
+        "@type": "entityDoc:/$defs/component",
+        "agent": {"@id": "ega:EGAW00000000102", "@type": "prov:Agent"},
+        "roles": ["creator", "owner"],
+        "accessLevel": "write"
+      },
+      {
+        "@type": "entityDoc:/$defs/component",
+        "agent": {"@id": "ega:EGAW00000000103", "@type": "prov:Agent"},
+        "roles": ["owner"],
+        "accessLevel": "write"
+      }
+    ]
+  }
+}

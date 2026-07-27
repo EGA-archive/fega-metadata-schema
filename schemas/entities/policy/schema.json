@@ -56,7 +56,7 @@
       "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionPolicy"
     }
   ],
-  "required": [ "@id", "@type", "title", "description", "status", "governedBy" ],
+  "required": [ "@id", "@type", "title", "description", "status", "governedBy", "inSubmission" ],
   "anyOf": [
     { "required": ["policyText"] },
     { "required": ["policyDocument"] }
@@ -421,6 +421,10 @@
       "allOf": [
         { "$ref": "../../common/schema.json#/$defs/sameAs" }
       ]
+    },
+    
+    "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
   }
 }

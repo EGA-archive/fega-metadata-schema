@@ -30,6 +30,10 @@
           "main_contact", "administrator"
         ]
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

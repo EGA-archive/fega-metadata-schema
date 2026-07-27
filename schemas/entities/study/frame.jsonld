@@ -3,7 +3,7 @@
   "@type": ["ega:study", "schema:ResearchProject"],
   "@embed": "@always",
   "@explicit": false,
-
+  
   "title": {},
   "alternativeTitle": {},
   "description": {},
@@ -24,6 +24,9 @@
       "@embed": "@always"
     }
   ],
+  "inSubmission": {
+    "@embed": "@always"
+  },
   "hasCohort": [
     {
       "@embed": "@always"

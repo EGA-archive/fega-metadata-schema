@@ -13,6 +13,10 @@
         "id": "EFO:0001427",
         "label": "case control design"
       }
-    ]
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

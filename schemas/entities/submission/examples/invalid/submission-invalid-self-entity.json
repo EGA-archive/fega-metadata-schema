@@ -1,0 +1,24 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@id": "ega:EGAB00000000114",
+    "@type": "ega:submission",
+    "title": "Submission containing a Submission",
+    "status": "draft",
+    "components": [
+      {
+        "@type": "entityDoc:/$defs/component",
+        "agent": {"@id": "ega:EGAW00000000119", "@type": "prov:Agent"},
+        "roles": ["creator", "owner"],
+        "accessLevel": "write"
+      }
+    ],
+    "hasEntities": [
+      {
+        "@id": "ega:EGAB00000000999",
+        "@type": "ega:submission"
+      }
+    ]
+  }
+}

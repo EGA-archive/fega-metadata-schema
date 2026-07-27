@@ -25,6 +25,10 @@
         }
       }
     ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "dateCreated": "2025-03-15",
     "sdPublisher": {
       "name": "European Genome-phenome Archive",

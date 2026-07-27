@@ -3,6 +3,10 @@
     "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/cohort/schema.json"
   },
   "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
     "@type": "ega:cohort",
     "id": "ega:cohort-invalid-ispartof-type",
     "name": "Catalonia adult genomics cohort",

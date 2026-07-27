@@ -3,7 +3,7 @@
   "@type": "ega:process",
   "@embed": "@always",
   "@explicit": false,
-
+  
   "title": {},
   "description": {},
   "hadProtocolCollection": {},
@@ -29,7 +29,7 @@
       "@embed": "@always"
     }
   ],
-
+  
   "used": [
     {
       "@embed": "@always"
@@ -40,6 +40,9 @@
       "@embed": "@always"
     }
   ],
+  "inSubmission": {
+    "@embed": "@always"
+  },
   "wasAssociatedWith": [
     {
       "@embed": "@always"
