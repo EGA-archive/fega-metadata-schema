@@ -56,13 +56,6 @@
         "@id": "http://publications.europa.eu/resource/authority/health-category/GEN"
       }
     ],
-    "healthdcatap:hdab": {
-      "@id": "https://example.org/agents/hdab-minimal-001",
-      "@type": "foaf:Organization",
-      "cv:contactPoint": {
-        "@id": "https://example.org/contact-points/hdab-minimal-001"
-      }
-    },
     "dcat:contactPoint": [
       {
         "@id": "https://example.org/contact-points/hdab-minimal-001",
