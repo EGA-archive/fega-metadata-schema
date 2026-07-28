@@ -117,7 +117,8 @@
             "@prefix": true
         },
 
-        "egav1crg": "https://submission.ega-archive.org/api/spec/#/paths/submissions",
+        "egav1crg.1": "https://submission.ega-archive.org/api/spec/#/paths/submissions",
+        "egav1crg.2": "https://dac.ega-archive.org/api/spec/#/operations",
         "egav1ebi": "https://github.com/enasequence/webin-xml/master/src/main/resources/uk/ac/ebi/ena/sra/schema/",
 
         "sameAs": {

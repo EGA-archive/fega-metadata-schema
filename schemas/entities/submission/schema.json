@@ -103,7 +103,7 @@
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:closeMatch",
-          "object_id": "egav1crg:post#collaborators",
+          "object_id": "egav1crg.1:post#collaborators",
           "mapping_justification": "semapv:ManualMappingCuration",
           "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
@@ -362,7 +362,7 @@
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
-              "object_id": "egav1crg:post#collaborators/access_type",
+              "object_id": "egav1crg.1:post#collaborators/access_type",
               "mapping_justification": "semapv:ManualMappingCuration",
               "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",

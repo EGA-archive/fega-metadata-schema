@@ -23,7 +23,7 @@
     },
     {
       "predicate_id": "skos:exactMatch",
-      "object_id": "egav1crg:Policy",
+      "object_id": "egav1crg.2:policy_create",
       "mapping_justification": "semapv:ManualMappingCuration",
       "object_match_field": "rdfs:label",
       "subject_match_field": "rdfs:label",

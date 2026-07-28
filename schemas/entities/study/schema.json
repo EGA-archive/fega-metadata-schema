@@ -45,7 +45,7 @@
                 },
                 {
                     "predicate_id": "skos:closeMatch",
-                    "object_id": "egav1crg:-accession_id--studies/post#accession_id",
+                    "object_id": "egav1crg.1:-accession_id--studies/post#accession_id",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
@@ -92,7 +92,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "egav1crg:-accession_id--studies/post#title",
+                    "object_id": "egav1crg.1:-accession_id--studies/post#title",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -131,7 +131,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "egav1crg:-accession_id--studies/post#description",
+                    "object_id": "egav1crg.1:-accession_id--studies/post#description",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",

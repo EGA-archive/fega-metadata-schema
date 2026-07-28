@@ -23,7 +23,7 @@
         },
         {
             "predicate_id": "skos:narrowMatch",
-            "object_id": "egav1crg:-accession_id--datasets/post",
+            "object_id": "egav1crg.1:-accession_id--datasets/post",
             "mapping_justification": "semapv:ManualMappingCuration",
             "object_match_field": "rdfs:label",
             "subject_match_field": "rdfs:label",
@@ -159,7 +159,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#title",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#title",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -234,7 +234,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#description",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#description",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -541,7 +541,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#dataset_types",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#dataset_types",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
@@ -695,7 +695,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#status",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#status",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -715,7 +715,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:broadMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#run_accession_ids",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#run_accession_ids",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
@@ -728,7 +728,7 @@
                 },
                 {
                     "predicate_id": "skos:broadMatch",
-                    "object_id": "egav1crg:DatasetRequest#analysis_accession_ids",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#analysis_accession_ids",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
@@ -813,7 +813,7 @@
                 },
                 {
                     "predicate_id": "skos:closeMatch",
-                    "object_id": "egav1crg:-accession_id--datasets/post#policy_accession_id",
+                    "object_id": "egav1crg.1:-accession_id--datasets/post#policy_accession_id",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
