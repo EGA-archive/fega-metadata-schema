@@ -43,7 +43,7 @@ body:
   attributes:
     label: Repository location
     description: Optional path or pull request containing the example.
-    placeholder: `schemas/graph/examples/valid/rare-disease-trio.json` or PR URL
+    placeholder: schemas/graph/examples/valid/rare-disease-trio.json or PR URL
 - type: textarea
   id: additional-context
   attributes:
@@ -78,7 +78,7 @@ body:
     multiple: true
   validations:
     required: true
-- type: input
+- type: textarea
   id: references
   attributes:
     label: References

@@ -26,7 +26,7 @@ body:
     - External schema or service dependencies
     - Error and quality reporting
     - Metadata quality assessment
-    - RDF Schemas (SHACL)
+    - RDF graph validation (SHACL)
     - Other
     multiple: true
   validations:
@@ -76,7 +76,7 @@ body:
     multiple: true
   validations:
     required: true
-- type: input
+- type: textarea
   id: references
   attributes:
     label: References

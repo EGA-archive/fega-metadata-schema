@@ -44,7 +44,7 @@ body:
   attributes:
     label: Expected public output and privacy considerations
     description: What should be exposed, aggregated, withheld, or reviewed?
-    placeholder: Dataset-level disease and assay terms are public, but adding granular biomaterial (individual) type of diseases
+    placeholder: Dataset-level disease and assay terms are public, while granular individual-level disease metadata needs to be encrypted as a datafile...
 - type: textarea
   id: additional-context
   attributes:
@@ -79,7 +79,7 @@ body:
     multiple: true
   validations:
     required: true
-- type: input
+- type: textarea
   id: references
   attributes:
     label: References

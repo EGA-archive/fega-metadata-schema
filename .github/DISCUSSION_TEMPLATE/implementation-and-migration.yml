@@ -80,7 +80,7 @@ body:
     multiple: true
   validations:
     required: true
-- type: input
+- type: textarea
   id: references
   attributes:
     label: References

@@ -22,7 +22,7 @@ body:
     - Entities and attributes
     - Relationships and cardinality
     - Experimental provenance (processes, protocols)
-    - Community re-use of EG model
+    - Community re-use of the EGA model
     - Consent, access, and ELSI
     - Controlled- and open-access metadata
     - Extensions and compatibility
@@ -80,7 +80,7 @@ body:
     multiple: true
   validations:
     required: true
-- type: input
+- type: textarea
   id: references
   attributes:
     label: References
