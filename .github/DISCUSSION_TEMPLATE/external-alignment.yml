@@ -1,0 +1,99 @@
+title: '[External alignment] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for FEGA coordination, mappings, dependencies, or compatibility with external standards, services, archives, and initiatives.
+
+      If the main request is a change to the EGA v2 model, use **Model design** and reference the external initiative as evidence.
+- type: textarea
+  id: topic
+  attributes:
+    label: Alignment question or opportunity
+    description: State what FEGA should align with, coordinate on, or deliberately keep separate.
+    placeholder: Which Beacon concepts should be direct EGA v2 dependencies for the next draft release?
+  validations:
+    required: true
+- type: input
+  id: initiative
+  attributes:
+    label: Initiative, standard, or service
+    placeholder: GA4GH Beacon v2, GDI, 1+MG, ELIXIR, BioSamples...
+  validations:
+    required: false
+- type: dropdown
+  id: alignment-type
+  attributes:
+    label: Type of alignment
+    options:
+    - Conceptual or semantic mapping
+    - Direct technical dependency
+    - Data exchange or API compatibility
+    - Identifier or ontology alignment
+    - Governance or coordination
+    - Joint use case or implementation
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: relevance
+  attributes:
+    label: Relevance to FEGA
+    description: Explain the overlap, gap, dependency, deadline, or duplication risk.
+    placeholder: Both models represent datasets and access conditions, but use different structures...
+  validations:
+    required: true
+- type: textarea
+  id: evidence
+  attributes:
+    label: Relevant specification or example
+    description: Optional. Summarise the relevant external requirement and add links below.
+    placeholder: The external profile requires...
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true
