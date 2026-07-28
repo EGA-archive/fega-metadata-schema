@@ -1,0 +1,94 @@
+title: '[Discovery and linked data] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for how FEGA metadata is identified, linked, exposed, searched, filtered, aggregated, and consumed through portals, APIs, catalogues, Beacon, DCAT, RDF, JSON-LD, or FAIR Data Points.
+
+      Include privacy or inference risks created specifically by discovery and linkage.
+- type: textarea
+  id: topic
+  attributes:
+    label: Discovery or linked-data question
+    description: State the user need, interoperability question, or decision required.
+    placeholder: Which public metadata fields should support dataset search and filtering?
+  validations:
+    required: true
+- type: dropdown
+  id: discovery-area
+  attributes:
+    label: Discovery area
+    options:
+    - Public metadata and disclosure
+    - Search, filtering, and summaries
+    - Persistent identifiers and namespaces
+    - JSON-LD, RDF, and graph processing
+    - Beacon
+    - DCAT, catalogues, or metadata dumps
+    - Linked-data privacy and inference risk
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: user-story
+  attributes:
+    label: User story or concrete example
+    description: Describe who needs to find or use what, and what metadata would support it.
+    placeholder: A researcher needs to find controlled-access single-cell datasets by disease and assay
+      type...
+  validations:
+    required: true
+- type: textarea
+  id: exposure
+  attributes:
+    label: Expected public output and privacy considerations
+    description: What should be exposed, aggregated, withheld, or reviewed?
+    placeholder: Dataset-level disease and assay terms are public, but adding granular biomaterial (individual) type of diseases
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: input
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true

@@ -1,0 +1,91 @@
+title: '[Validation and metadata quality] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for how FEGA metadata is checked: JSON Schema, semantic validation, Biovalidator, ontology and identifier resolution, external dependencies, validation reporting, and metadata quality.
+
+      For changes to the model's meaning, use **Model design**.
+- type: textarea
+  id: topic
+  attributes:
+    label: Validation question, requirement, or proposed improvement
+    description: State what should be validated or how validation should behave.
+    placeholder: How should validation behave when an ontology service is unavailable?
+  validations:
+    required: true
+- type: dropdown
+  id: validation-area
+  attributes:
+    label: Validation area
+    options:
+    - JSON Schema structure and constraints
+    - Cross-entity or graph validation
+    - Biovalidator
+    - Ontologies and identifiers
+    - External schema or service dependencies
+    - Error and quality reporting
+    - Metadata quality assessment
+    - RDF Schemas (SHACL)
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: example
+  attributes:
+    label: Example input and expected behaviour
+    description: Give a valid or invalid case, current result, and expected result where possible.
+    placeholder: |-
+      1. Input or scenario: ...
+      2. Current result: ...
+      3. Expected result: ...
+  validations:
+    required: true
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: input
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true
