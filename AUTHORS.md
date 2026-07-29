@@ -27,6 +27,7 @@
 | FEGA Poland ([University of Lodz](https://ror.org/05cq64r17)) | Member | Maciej Bisaga | [0000-0002-7040-8322](https://orcid.org/0000-0002-7040-8322) | | maciej.bisaga [at] biol.uni.lodz.pl |
 | FEGA Germany (GHGA) ([German Center for Neurodegenerative Diseases](https://ror.org/043j0f473)) | Member | Karoline Mauer | [0000-0002-9454-7941](https://orcid.org/0000-0002-9454-7941) | [mauerk](https://github.com/mauerk) | karoline.mauer [at] dzne.de |
 | FEGA Czech Republic  ([Masaryk University](https://ror.org/02j46qs45)) | Member | Helge Hecht | [0000-0001-6744-996X](https://orcid.org/0000-0001-6744-996X) | [hechth](https://github.com/hechth) | helge.hecht [at] recetox.muni.cz |
+| CEGA ([Centre for Genomic Regulation](https://ror.org/03wyzt892)) | Member | Aldar Cabrelles Muñoz | [0000-0002-1131-3139](https://orcid.org/0000-0002-1131-3139) | [acabrelles](https://github.com/acabrelles) | aldar.cabrelles [at] crg.eu |
 
 
 #### Former members
