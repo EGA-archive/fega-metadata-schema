@@ -5,20 +5,58 @@
   "title": "EGA Graph metadata schema",
   "meta:version": "0.0.0",
   "$async": true,
-  "description": "Metadata entity representing multiple entities in a @graph JSON-LD",
-  "@context": {
-  },
+  "description": "Metadata entity representing multiple entities in a @graph JSON-LD. This format is used both to validate flattened JSON-LD and profile constraints onto a combination of entities forming a valid set.",
+  "@context": "./context.jsonld",
+  "allOf": [
+    {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    }
+  ],
   "required": ["@graph"],
   "properties": {
+    "@id": {
+      "$ref": "../common/schema.json#/$defs/@id"
+    },
+
+    "@type": {
+      "allOf": [
+        {
+          "$ref": "../common/schema.json#/$defs/@type"
+        }
+      ],
+      "examples": [ "ega:graph" ]
+    },
+
     "@graph": {
       "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
+        "required": ["@id", "@type"],
         "properties": {
-          "@id": { "type": "string", "format": "uri" },
-          "@type": { "type": "string" }
+          "@id": { 
+            "$ref": "../common/schema.json#/$defs/@id"
+           },
+          "@type": { 
+            "$ref": "../common/schema.json#/$defs/@type"
+          }
         },
-        "required": ["@id", "@type"]
+        "allOf": [
+          { "$ref": "#/$defs/entitySchemaDatafile" }
+        ]
+      }
+    }
+  },
+
+  "$defs": {
+    "entitySchemaDatafile": {
+      "if": {
+        "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile"
+      },
+      "then": {
+        "ref": "../entities/datafile/schema.json"
       }
     }
   }
