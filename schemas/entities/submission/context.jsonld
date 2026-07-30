@@ -2,7 +2,10 @@
   "@context": [
     "../../common/context.jsonld",
     {
-      "entityDoc": "entities:submission/schema.json#",
+      "entityDoc": {
+        "@id": "entities:submission/schema.json#",
+        "@prefix": true
+      },
       "properties": "@nest",
       "title": {
         "@id": "dct:title"
@@ -15,7 +18,19 @@
       },
       "components": {
         "@id": "entityDoc:/properties/components",
-        "@container": "@set"
+        "@container": "@set",
+        "@context": {
+          "entityDoc": {
+            "@id": "entities:submission/schema.json#",
+            "@prefix": true
+          },
+          "agent": "entityDoc:/$defs/component/properties/agent",
+          "roles": {
+            "@id": "entityDoc:/$defs/component/properties/roles",
+            "@container": "@set"
+          },
+          "accessLevel": "entityDoc:/$defs/component/properties/accessLevel"
+        }
       },
       "agent": {
         "@id": "entityDoc:/$defs/component/properties/agent"

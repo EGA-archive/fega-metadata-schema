@@ -5,7 +5,7 @@
   "title": "EGA Graph metadata schema",
   "meta:version": "0.0.0",
   "$async": true,
-  "description": "Metadata entity representing multiple entities in a @graph JSON-LD. This format is used both to validate flattened JSON-LD and profile constraints onto a combination of entities forming a valid set.",
+  "description": "A typed named JSON-LD graph containing complete EGA entity instances. This schema validates each item against the schema selected by its EGA @type. It does not validate graph-wide relationship semantics.",
   "@context": "./context.jsonld",
   "allOf": [
     {
@@ -13,16 +13,24 @@
       "$ref": "../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
     }
   ],
-  "required": ["@graph"],
+  "required": ["@context", "@id", "@type", "@graph"],
   "properties": {
-    "@id": {
-      "$ref": "../common/schema.json#/$defs/@id"
+    "@context": {
+      "description": "The graph JSON-LD context.",
+      "type": ["object", "string", "array"]
     },
-
+    "@id": {
+      "$ref": "../common/schema.json#/$defs/@id",
+      "description": "The name of the graph. It is not an EGA entity accession."
+    },
     "@type": {
+      "description": "The graph container type.",
       "allOf": [
         {
           "$ref": "../common/schema.json#/$defs/@type"
+        },
+        {
+          "const": "ega:graph"
         }
       ],
       "examples": [ "ega:graph" ]
@@ -36,28 +44,92 @@
         "type": "object",
         "required": ["@id", "@type"],
         "properties": {
-          "@id": { 
+          "@id": {
             "$ref": "../common/schema.json#/$defs/@id"
-           },
-          "@type": { 
+          },
+          "@type": {
             "$ref": "../common/schema.json#/$defs/@type"
           }
         },
         "allOf": [
-          { "$ref": "#/$defs/entitySchemaDatafile" }
+          { "$ref": "#/$defs/supportedEntityType" },
+          { "$ref": "#/$defs/entitySchemaBiomaterial" },
+          { "$ref": "#/$defs/entitySchemaCohort" },
+          { "$ref": "#/$defs/entitySchemaDAC" },
+          { "$ref": "#/$defs/entitySchemaDatafile" },
+          { "$ref": "#/$defs/entitySchemaDataset" },
+          { "$ref": "#/$defs/entitySchemaPolicy" },
+          { "$ref": "#/$defs/entitySchemaProcess" },
+          { "$ref": "#/$defs/entitySchemaProtocol" },
+          { "$ref": "#/$defs/entitySchemaProtocolCollection" },
+          { "$ref": "#/$defs/entitySchemaStudy" },
+          { "$ref": "#/$defs/entitySchemaSubmission" }
         ]
       }
     }
   },
 
   "$defs": {
+    "supportedEntityType": {
+      "title": "Supported EGA graph entity",
+      "description": "Exactly one supported EGA entity restriction must match each graph item.",
+      "oneOf": [
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission" }
+      ]
+    },
+    "entitySchemaBiomaterial": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial" },
+      "then": { "$ref": "../entities/biomaterial/schema.json" }
+    },
+    "entitySchemaCohort": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort" },
+      "then": { "$ref": "../entities/cohort/schema.json" }
+    },
+    "entitySchemaDAC": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC" },
+      "then": { "$ref": "../entities/DAC/schema.json" }
+    },
     "entitySchemaDatafile": {
-      "if": {
-        "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile"
-      },
-      "then": {
-        "ref": "../entities/datafile/schema.json"
-      }
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile" },
+      "then": { "$ref": "../entities/datafile/schema.json" }
+    },
+    "entitySchemaDataset": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset" },
+      "then": { "$ref": "../entities/dataset/schema.json" }
+    },
+    "entitySchemaPolicy": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy" },
+      "then": { "$ref": "../entities/policy/schema.json" }
+    },
+    "entitySchemaProcess": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess" },
+      "then": { "$ref": "../entities/process/schema.json" }
+    },
+    "entitySchemaProtocol": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol" },
+      "then": { "$ref": "../entities/protocol/schema.json" }
+    },
+    "entitySchemaProtocolCollection": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection" },
+      "then": { "$ref": "../entities/protocolCollection/schema.json" }
+    },
+    "entitySchemaStudy": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy" },
+      "then": { "$ref": "../entities/study/schema.json" }
+    },
+    "entitySchemaSubmission": {
+      "if": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission" },
+      "then": { "$ref": "../entities/submission/schema.json" }
     }
   }
 }

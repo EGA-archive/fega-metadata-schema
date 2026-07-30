@@ -2,7 +2,10 @@
   "@context": [
     "../../common/context.jsonld",
     {
-      "entityDoc": "entities:DAC/schema.json#",
+      "entityDoc": {
+        "@id": "entities:DAC/schema.json#",
+        "@prefix": true
+      },
       "properties": "@nest",
       "org": "http://www.w3.org/ns/org#",
       "eli": "http://data.europa.eu/eli/ontology#",
@@ -31,7 +34,20 @@
       },
       "components": {
         "@reverse": "org:organization",
-        "@container": "@set"
+        "@container": "@set",
+        "@context": {
+          "agent": "org:member",
+          "name": "foaf:name",
+          "email": "cv:email",
+          "telephone": "cv:telephone",
+          "roles": {
+            "@id": "org:role",
+            "@container": "@set"
+          },
+          "atLocation": {
+            "@id": "prov:atLocation"
+          }
+        }
       },
       "agent": {
         "@id": "org:member"

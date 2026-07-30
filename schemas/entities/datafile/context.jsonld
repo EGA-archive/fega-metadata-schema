@@ -15,7 +15,12 @@
       },
       "checksums": {
         "@id": "spdx:checksum",
-        "@container": "@set"
+        "@container": "@set",
+        "@context": {
+          "algorithm": "spdx:algorithm",
+          "value": "spdx:checksumValue",
+          "appliesTo": "entityDoc:appliesTo"
+        }
       },
       "algorithm": "spdx:algorithm",
       "appliesTo": "entityDoc:appliesTo",
