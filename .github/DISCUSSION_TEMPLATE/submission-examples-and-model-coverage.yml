@@ -1,0 +1,93 @@
+title: '[Submission example] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for complete or partial submission examples that test whether the EGA v2 model and validation cover realistic cases.
+
+      Examples should preferably be connected to earlier MWG use-case sessions and represented through the repository's schemas, graph profiles, or examples. Valid and deliberately invalid examples are both useful.
+- type: textarea
+  id: scenario
+  attributes:
+    label: Submission scenario
+    description: Broadly describe the scientific use case and the submission, from start to finish what would be represented via the EGA model.
+    placeholder: A rare-disease trio WGS submission containing raw reads, alignments, variants, and phenotypic
+      metadata.
+  validations:
+    required: true
+- type: dropdown
+  id: example-type
+  attributes:
+    label: Example type
+    options:
+    - Complete valid submission
+    - Deliberately invalid submission
+    - Partial graph or entity example
+    - Existing use-case session converted to an example
+    - New omics or clinical use case
+    - Edge case
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: findings
+  attributes:
+    label: Expected result or suspected gap
+    description: What should validate, fail, appear in the submission graph, or reveal a model gap?
+    placeholder: The valid example should pass, while the invalid version should fail because...
+  validations:
+    required: true
+- type: input
+  id: repository-location
+  attributes:
+    label: Repository location
+    description: Optional path or pull request containing the example.
+    placeholder: schemas/graph/examples/valid/rare-disease-trio.json or PR URL
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true
