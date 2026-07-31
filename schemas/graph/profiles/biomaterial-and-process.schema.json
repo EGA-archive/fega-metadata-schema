@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/profiles/biomaterial-and-process.schema.json",
+  "title": "Biomaterial and Process",
+  "description": "Requires a graph to contain at least one Biomaterial and one Process.",
+  "meta:version": "0.0.0",
+  "@context": "../context.jsonld",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../schema.json" },
+    { "$ref": "../schema.json#/$defs/hasBiomaterial" },
+    { "$ref": "../schema.json#/$defs/hasProcess" }
+  ]
+}

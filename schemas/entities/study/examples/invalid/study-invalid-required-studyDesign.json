@@ -1,0 +1,15 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/study/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/study/schema.json",
+    "@type": "ega:study",
+    "title": "Study missing design",
+    "description": "Invalid study metadata record because the required studyDesign property is absent."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "@context": [
+    "../../common/context.jsonld",
+    {
+      "entityDoc": {
+        "@id": "entities:DAC/schema.json#",
+        "@prefix": true
+      },
+      "properties": "@nest",
+      "org": "http://www.w3.org/ns/org#",
+      "eli": "http://data.europa.eu/eli/ontology#",
+      "eu-ehds": "https://w3id.org/dpv/legal/eu/ehds#",
+      "title": {
+        "@id": "dct:title"
+      },
+      "description": {
+        "@id": "dct:description"
+      },
+      "contactPoint": {
+        "@id": "dcat:contactPoint",
+        "@container": "@set",
+        "@context": {
+          "email": "cv:email",
+          "telephone": "cv:telephone",
+          "contactPage": {
+            "@id": "cv:contactPage",
+            "@type": "@id"
+          }
+        }
+      },
+      "contactPage": {
+        "@id": "cv:contactPage",
+        "@type": "@id"
+      },
+      "components": {
+        "@reverse": "org:organization",
+        "@container": "@set",
+        "@context": {
+          "agent": "org:member",
+          "name": "foaf:name",
+          "email": "cv:email",
+          "telephone": "cv:telephone",
+          "roles": {
+            "@id": "org:role",
+            "@container": "@set"
+          },
+          "atLocation": {
+            "@id": "prov:atLocation"
+          }
+        }
+      },
+      "agent": {
+        "@id": "org:member"
+      },
+      "name": {
+        "@id": "foaf:name"
+      },
+      "atLocation": {
+        "@id": "prov:atLocation"
+      },
+      "affiliations": {
+        "@id": "schema:affiliation",
+        "@container": "@set"
+      },
+      "agentType": {
+        "@id": "dct:type",
+        "@type": "@id"
+      },
+      "roles": {
+        "@id": "org:role",
+        "@type": "@vocab",
+        "@container": "@set"
+      },
+      "administrator": "entityDoc:roles/administrator",
+      "member": "entityDoc:roles/member",
+      "reviewer": "entityDoc:roles/reviewer",
+      "approver": "entityDoc:roles/approver",
+      "main_contact": "entityDoc:roles/main-contact",
+      "governs": {
+        "@id": "entityDoc:governs",
+        "@container": "@set"
+      },
+      "jurisdiction": {
+        "@id": "dpv:hasJurisdiction",
+        "@container": "@set"
+      },
+      "applicableLegislation": {
+        "@id": "dcatap:applicableLegislation",
+        "@container": "@set"
+      }
+    }
+  ]
+}

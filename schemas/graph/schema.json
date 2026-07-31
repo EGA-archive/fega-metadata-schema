@@ -1,0 +1,557 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/schema.json",
+  "type": "object",
+  "title": "EGA Graph metadata schema",
+  "meta:version": "0.0.0",
+  "$async": true,
+  "description": "A typed named JSON-LD graph containing complete EGA entity instances. This schema validates each item against the schema selected by its EGA @type. It does not validate graph-wide relationship semantics.",
+  "@context": "./context.jsonld",
+  "allOf": [
+    {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    }
+  ],
+  "required": ["@context", "@id", "@type", "@graph"],
+  "properties": {
+    "@context": {
+      "description": "The graph JSON-LD context.",
+      "type": ["object", "string", "array"]
+    },
+
+    "@id": {
+      "$ref": "../common/schema.json#/$defs/@id",
+      "description": "The name of the graph. It is not an EGA entity accession."
+    },
+
+    "@type": {
+      "description": "The graph container type.",
+      "allOf": [
+        {
+          "$ref": "../common/schema.json#/$defs/@type"
+        },
+        {
+          "const": "ega:graph"
+        }
+      ],
+      "examples": [ "ega:graph" ]
+    },
+
+    "@graph": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["@id", "@type"],
+        "properties": {
+          "@id": {
+            "$ref": "../common/schema.json#/$defs/@id"
+          },
+          "@type": {
+            "$ref": "../common/schema.json#/$defs/@type"
+          }
+        },
+        "allOf": [
+          { "$ref": "#/$defs/supportedEntityType" },
+          { "$ref": "#/$defs/singleEgaEntityType" },
+          { "$ref": "#/$defs/entitySchemaBiomaterial" },
+          { "$ref": "#/$defs/entitySchemaCohort" },
+          { "$ref": "#/$defs/entitySchemaDAC" },
+          { "$ref": "#/$defs/entitySchemaDatafile" },
+          { "$ref": "#/$defs/entitySchemaDataset" },
+          { "$ref": "#/$defs/entitySchemaPolicy" },
+          { "$ref": "#/$defs/entitySchemaProcess" },
+          { "$ref": "#/$defs/entitySchemaProtocol" },
+          { "$ref": "#/$defs/entitySchemaProtocolCollection" },
+          { "$ref": "#/$defs/entitySchemaStudy" },
+          { "$ref": "#/$defs/entitySchemaSubmission" }
+        ]
+      }
+    }
+  },
+
+  "$defs": {
+    "singleEgaEntityType": {
+      "title": "Single EGA entity type",
+      "description": "A graph item may have only one EGA-specific entity type.",
+      "if": {
+        "required": ["@type"],
+        "properties": {
+          "@type": {
+            "type": "array",
+            "uniqueItems": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "@type": {
+            "type": "array",
+            "contains": {
+              "$ref": "../common/schema.json#/$defs/egaType"
+            },
+            "minContains": 1,
+            "maxContains": 1
+          }
+        }
+      }
+    },
+
+    "supportedEntityType": {
+      "title": "Supported EGA graph entity",
+      "description": "The graph item declares at least one supported EGA entity type. Full entity validation is applied separately.",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "if": {
+            "anyOf": [
+              { "$ref": "#/$defs/supportedEgaTypeValue" },
+              {
+                "type": "array",
+                "contains": { "$ref": "#/$defs/supportedEgaTypeValue" },
+                "minContains": 1
+              }
+            ]
+          },
+          "then": {},
+          "else": false
+        }
+      }
+    },
+
+    "supportedEgaTypeValue": {
+      "title": "Supported EGA entity type value",
+      "description": "The supported EGA type values inherited from the common relationship-item definitions.",
+      "anyOf": [
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }
+      ]
+    },
+
+    "routableEntityType": {
+      "title": "Routable EGA entity type",
+      "description": "A graph item can be dispatched to one entity schema only when its type declaration is unique and contains exactly one EGA entity type.",
+      "$comment": "#! We are adding this bit so that the error logs when there are validation errors are not incredibly convoluted. If we route all graph items as EGA entities without checking these, AJV/Biovalidator doesn't know if the errors come because of the type or the inside of the entity, and the error logs ends up being huge and cryptic.",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            {
+              "$ref": "../common/schema.json#/$defs/egaType"
+            },
+            {
+              "type": "array",
+              "uniqueItems": true,
+              "contains": {
+                "$ref": "../common/schema.json#/$defs/egaType"
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+
+    "declaresBiomaterial": {
+      "title": "Declares a Biomaterial",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresCohort": {
+      "title": "Declares a Cohort",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresDAC": {
+      "title": "Declares a DAC",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresDatafile": {
+      "title": "Declares a Datafile",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresDataset": {
+      "title": "Declares a Dataset",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresPolicy": {
+      "title": "Declares a Policy",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresProcess": {
+      "title": "Declares a Process",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresProtocol": {
+      "title": "Declares a Protocol",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresProtocolCollection": {
+      "title": "Declares a Protocol Collection",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresStudy": {
+      "title": "Declares a Study",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "declaresSubmission": {
+      "title": "Declares a Submission",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
+    "entitySchemaBiomaterial": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresBiomaterial" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/biomaterial/schema.json" }
+    },
+
+    "entitySchemaCohort": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresCohort" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/cohort/schema.json" }
+    },
+
+    "entitySchemaDAC": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresDAC" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/DAC/schema.json" }
+    },
+
+    "entitySchemaDatafile": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresDatafile" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/datafile/schema.json" }
+    },
+
+    "entitySchemaDataset": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresDataset" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/dataset/schema.json" }
+    },
+
+    "entitySchemaPolicy": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresPolicy" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/policy/schema.json" }
+    },
+
+    "entitySchemaProcess": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresProcess" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/process/schema.json" }
+    },
+
+    "entitySchemaProtocol": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresProtocol" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/protocol/schema.json" }
+    },
+
+    "entitySchemaProtocolCollection": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresProtocolCollection" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/protocolCollection/schema.json" }
+    },
+
+    "entitySchemaStudy": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresStudy" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/study/schema.json" }
+    },
+    
+    "entitySchemaSubmission": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresSubmission" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/submission/schema.json" }
+    },
+
+    "hasBiomaterial": {
+      "title": "At least one Biomaterial",
+      "description": "The graph contains at least one EGA Biomaterial.",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/declaresBiomaterial"
+          },
+          "minContains": 1
+        }
+      }
+    },
+
+    "hasProcess": {
+      "title": "At least one Process",
+      "description": "The graph contains at least one EGA Process.",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/declaresProcess"
+          },
+          "minContains": 1
+        }
+      }
+    },
+
+    "hasDataset": {
+      "title": "At least one Dataset",
+      "description": "The graph contains at least one EGA Dataset.",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/declaresDataset"
+          },
+          "minContains": 1
+        }
+      }
+    },
+
+    "hasDatafile": {
+      "title": "At least one Datafile",
+      "description": "The graph contains at least one EGA Datafile.",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/declaresDatafile"
+          },
+          "minContains": 1
+        }
+      }
+    },
+
+    "hasOrganismBiomaterial": {
+      "title": "At least one organism Biomaterial",
+      "description": "The graph contains at least one Biomaterial whose ontology category is organism (COB:0000022).",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/declaresBiomaterial"
+              },
+              {
+                "required": ["@type"],
+                "properties": {
+                  "@type": {
+                    "type": "array",
+                    "contains": { "const": "COB:0000022" },
+                    "minContains": 1
+                  }
+                }
+              }
+            ]
+          },
+          "minContains": 1
+        }
+      }
+    },
+
+    "hasLabProtocol": {
+      "title": "At least one Lab Protocol",
+      "description": "The graph contains at least one EGA Protocol typed as a BioSchemas LabProtocol.",
+      "type": "object",
+      "required": ["@graph"],
+      "properties": {
+        "@graph": {
+          "type": "array",
+          "contains": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/declaresProtocol"
+              },
+              {
+                "required": ["@type"],
+                "properties": {
+                  "@type": {
+                    "type": "array",
+                    "contains": { "const": "bioschemastypes:LabProtocol" },
+                    "minContains": 1
+                  }
+                }
+              }
+            ]
+          },
+          "minContains": 1
+        }
+      }
+    }
+  }
+}

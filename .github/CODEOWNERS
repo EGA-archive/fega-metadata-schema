@@ -1,0 +1,6 @@
+# CODEOWNERS
+
+# Anything inside the "schemas/" and "standards/" directories must be reviewed
+# (and preferably approved) by @m-casado
+/schemas/     @m-casado
+/standards/   @m-casado

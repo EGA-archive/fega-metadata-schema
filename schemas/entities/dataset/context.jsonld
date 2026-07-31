@@ -1,0 +1,86 @@
+{
+    "@context": [
+        "../../common/context.jsonld",
+        {
+            "entityDoc": "entities:dataset/schema.json#",
+            "properties": "@nest"
+        },
+        {
+            "id": {
+              "@id": "dct:identifier"
+            },
+            "title": {
+                "@id": "dct:title"
+            },
+            "alternativeTitle": {
+                "@id": "dct:alternative",
+                "@container": "@set"
+            },
+            "description": {
+                "@id": "dct:description"
+            },
+            "documentation": {
+                "@id": "foaf:page",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "landingPage": {
+                "@id": "dcat:landingPage",
+                "@type": "@id"
+            },
+            "isReferencedBy": {
+                "@id": "dct:isReferencedBy",
+                "@container": "@set"
+            },
+            "modificationDate": {
+                "@id": "dct:modified",
+                "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+            },
+            "datasetType": {
+                "@id": "entityDoc:datasetType",
+                "@container": "@set"
+            },
+            "hasPolicy": {
+                "@id": "dct:rights",
+                "@type": "@id"
+            },
+            "releaseDate": {
+                "@id": "dct:issued",
+                "@type": "http://www.w3.org/2001/XMLSchema#date"
+            },
+            "otherIdentifier": {
+                "@id": "adms:identifier",
+                "@container": "@set"
+            },
+            "populationCoverage": {
+                "@id": "healthdcatap:populationCoverage"
+            },
+            "relatedResource": {
+                "@id": "healthdcatap:relatedResource",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "version": {
+                "@id": "dcat:version"
+            },
+            "status": {
+                "@id": "adms:status"
+            },
+            "measurementTechnique": {
+                "@id": "schema:measurementTechnique",
+                "@container": "@set"
+            },
+            "variableMeasured": {
+                "@id": "schema:variableMeasured",
+                "@container": "@set"
+            },
+            "value": {
+                "@id": "schema:value"
+            },
+            "hasCodingSystem": {
+                "@id": "entityDoc:hasCodingSystem",
+                "@container": "@set"
+            }
+        }
+    ]
+}

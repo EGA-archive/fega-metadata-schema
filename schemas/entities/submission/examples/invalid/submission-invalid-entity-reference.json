@@ -1,0 +1,23 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@id": "ega:EGAB00000000115",
+    "@type": "ega:submission",
+    "title": "Submission with malformed entity reference",
+    "status": "draft",
+    "components": [
+      {
+        "@type": "entityDoc:/$defs/component",
+        "agent": {"@id": "ega:EGAW00000000120", "@type": "prov:Agent"},
+        "roles": ["creator", "owner"],
+        "accessLevel": "write"
+      }
+    ],
+    "hasEntities": [
+      {
+        "@type": "ega:study"
+      }
+    ]
+  }
+}

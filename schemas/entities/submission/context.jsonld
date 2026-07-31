@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "../../common/context.jsonld",
+    {
+      "entityDoc": {
+        "@id": "entities:submission/schema.json#",
+        "@prefix": true
+      },
+      "properties": "@nest",
+      "title": {
+        "@id": "dct:title"
+      },
+      "description": {
+        "@id": "dct:description"
+      },
+      "status": {
+        "@id": "adms:status"
+      },
+      "components": {
+        "@id": "entityDoc:/properties/components",
+        "@container": "@set",
+        "@context": {
+          "entityDoc": {
+            "@id": "entities:submission/schema.json#",
+            "@prefix": true
+          },
+          "agent": "entityDoc:/$defs/component/properties/agent",
+          "roles": {
+            "@id": "entityDoc:/$defs/component/properties/roles",
+            "@container": "@set"
+          },
+          "accessLevel": "entityDoc:/$defs/component/properties/accessLevel"
+        }
+      },
+      "agent": {
+        "@id": "entityDoc:/$defs/component/properties/agent"
+      },
+      "atLocation": {
+        "@id": "prov:atLocation"
+      },
+      "roles": {
+        "@id": "entityDoc:/$defs/component/properties/roles",
+        "@container": "@set"
+      },
+      "accessLevel": {
+        "@id": "entityDoc:/$defs/component/properties/accessLevel"
+      },
+      "hasEntities": {
+        "@id": "entityDoc:/properties/hasEntities",
+        "@container": "@set"
+      }
+    }
+  ]
+}

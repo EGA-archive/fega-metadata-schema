@@ -1,0 +1,12 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@type": ["ega:biomaterial", "ega:dataset", "prov:Entity", "BTO:0002690"]
+  }
+}

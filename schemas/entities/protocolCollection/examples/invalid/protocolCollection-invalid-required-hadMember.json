@@ -1,0 +1,16 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
+    "@id": "ega:EGAL00000000011",
+    "@type": ["ega:protocolCollection", "prov:Collection", "prov:Plan"],
+    "title": "Protocol collection without members",
+    "version": "1.0.0"
+  }
+}

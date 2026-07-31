@@ -1,0 +1,10 @@
+{
+  "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+  "@type": "ega:graph",
+  "@embed": "@always",
+  "@explicit": false,
+  "@graph": {
+    "@embed": "@always",
+    "@explicit": false
+  }
+}

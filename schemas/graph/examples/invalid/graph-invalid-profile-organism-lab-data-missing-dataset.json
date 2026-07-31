@@ -1,0 +1,38 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-organism-lab-data-missing-dataset",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAN-invalid-organism",
+        "@type": ["ega:biomaterial", "prov:Entity", "COB:0000022"],
+        "label": "SUBJECT-invalid",
+        "sex": {"phenotypicSex": {"id": "PATO:0000383", "label": "female"}},
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      },
+      {
+        "@id": "ega:EGAT-invalid-lab",
+        "@type": ["ega:protocol", "prov:Plan", "bioschemastypes:LabProtocol"],
+        "name": "Minimal lab protocol",
+        "intendedUse": "Extract DNA.",
+        "bioSample": {"name": "Human blood", "identifier": "UBERON:0000178"},
+        "labEquipment": [{"name": "Microcentrifuge"}],
+        "reagent": [{"name": "Buffer"}],
+        "keywords": ["DNA extraction"],
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      },
+      {
+        "@id": "ega:EGAF-invalid",
+        "@type": "ega:datafile",
+        "fileName": "invalid.fastq.gz",
+        "fileFormat": {"id": "EDAM:format_1930", "label": "FASTQ"},
+        "dataContent": {"id": "EDAM:data_2977", "label": "Nucleic acid sequence"},
+        "checksums": [{"algorithm": "MD5", "value": "d41d8cd98f00b204e9800998ecf8427e", "appliesTo": "unencrypted"}],
+        "isPartOf": [{"@id": "ega:EGAD-missing", "@type": ["ega:dataset", "dcat:Dataset"]}],
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      }
+    ]
+  }
+}

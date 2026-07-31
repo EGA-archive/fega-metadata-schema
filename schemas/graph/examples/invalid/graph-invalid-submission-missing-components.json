@@ -1,0 +1,18 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-submission",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAB00000000001",
+        "@type": "ega:submission",
+        "title": "Example Genomics submission",
+        "status": "draft"
+      }
+    ]
+  }
+}
