@@ -25,6 +25,7 @@ try:
         find_repo_root,
         build_id_to_path_map,
         materialize_context,
+        resolve_ref,
     )
     from fega_tools.validation_common import (
         BIVALIDATOR_COUNT_KEYS as COUNT_KEYS,
@@ -68,17 +69,32 @@ SUMMARY_FILENAME = "jsonld_summary.json"
 # Per-file validation
 # ---------------------------------------------------------------------------
 
-def _context_url_is_acceptable(context: Any, schema_ref: str) -> bool:
-    """Return True if *context* is the schema $ref URL or the matching context.jsonld URL."""
+def _context_url_is_acceptable(
+    context: Any,
+    schema_ref: str,
+    example_path: Path,
+    id_to_path_map: Dict[str, Path],
+) -> bool:
+    """Return whether a context resolves to the schema's effective context file."""
     if not isinstance(context, str):
         return False
     if context == schema_ref:
         return True
-    # Accept the corresponding context.jsonld URL derived from schema.$ref.
-    if schema_ref.endswith("schema.json"):
-        context_jsonld_url = schema_ref[: -len("schema.json")] + "context.jsonld"
-        return context == context_jsonld_url
-    return False
+    schema_path = id_to_path_map.get(schema_ref)
+    if schema_path is None:
+        return False
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        schema_context = schema.get("@context")
+        expected_path = (
+            resolve_ref(schema_context, schema_path, id_to_path_map)
+            if isinstance(schema_context, str)
+            else schema_path.with_name("context.jsonld")
+        )
+        actual_path = resolve_ref(context, example_path, id_to_path_map)
+    except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError):
+        return False
+    return actual_path.resolve() == expected_path.resolve()
 
 
 def validate_file_jsonld(
@@ -114,7 +130,9 @@ def validate_file_jsonld(
         errors.append("Missing data.@context")
 
     # Step 4: data.@context value check
-    if context is not None and schema_ref and not _context_url_is_acceptable(context, schema_ref):
+    if context is not None and schema_ref and not _context_url_is_acceptable(
+        context, schema_ref, path, id_to_path_map
+    ):
         errors.append(
             f"data.@context '{context}' does not match schema.$ref '{schema_ref}' "
             f"nor the expected context.jsonld URL"
@@ -142,17 +160,18 @@ def validate_file_jsonld(
     data_copy["@context"] = materialized_ctx
 
     try:
-        graph = rdflib.Graph()
+        graph = rdflib.Dataset()
         graph.parse(data=json.dumps(data_copy), format="json-ld", base=schema_ref)
     except Exception as exc:  # noqa: BLE001 – rdflib raises diverse exceptions
         result.update({"status": INVALID_STATUS, "errors": [f"RDF parse failed: {exc}"]})
         return result
 
-    if len(graph) == 0:
+    triples = list(graph.quads((None, None, None, None)))
+    if not triples:
         result.update({"status": INVALID_STATUS, "errors": ["RDF graph contains no triples"]})
         return result
 
-    rdf_type_triples = list(graph.triples((None, RDF.type, None)))
+    rdf_type_triples = [quad for quad in triples if quad[1] == RDF.type]
     if not rdf_type_triples:
         result.update(
             {"status": INVALID_STATUS, "errors": ["RDF graph contains no rdf:type triples"]}
@@ -162,7 +181,7 @@ def validate_file_jsonld(
     result.update(
         {
             "status": VALID_STATUS,
-            "n_triples": len(graph),
+            "n_triples": len(triples),
             "n_type_triples": len(rdf_type_triples),
         }
     )

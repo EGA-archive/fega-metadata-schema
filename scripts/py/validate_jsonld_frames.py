@@ -33,7 +33,7 @@ import logging
 import sys
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 import requests
 
@@ -104,6 +104,13 @@ ROUTES = (ROUTE_FLATTENED, ROUTE_RDF_GRAPH)
 
 _NOISE_TYPE = "https://example.org/FEGATestNoiseEntity"
 _DROP = object()
+_DAC_ROLE_NAMES = {
+    "administrator",
+    "approver",
+    "main_contact",
+    "member",
+    "reviewer",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -129,6 +136,65 @@ def _load_json(path: Path) -> Any:
 def _clone_json(value: Any) -> Any:
     """Make a JSON-safe deep copy."""
     return json.loads(json.dumps(value))
+
+
+def _resolve_schema_ref(
+    ref: str,
+    current_schema: Path,
+    id_to_path_map: Dict[str, Path],
+) -> Path:
+    """Resolve a local or registered schema reference without its fragment."""
+    ref_path = ref.split("#", 1)[0]
+    if not ref_path:
+        return current_schema
+    if ref_path in id_to_path_map:
+        return id_to_path_map[ref_path]
+    if not ref_path.startswith(("http://", "https://")):
+        candidate = (current_schema.parent / ref_path).resolve()
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError(
+        f"Cannot resolve schema reference '{ref}' from '{current_schema}'"
+    )
+
+
+def _resolve_frame_path(
+    schema_path: Path,
+    id_to_path_map: Dict[str, Path],
+    seen: frozenset[Path] = frozenset(),
+) -> Path:
+    """Find the unique frame owned by a schema or one of its local allOf bases."""
+    resolved_schema = schema_path.resolve()
+    if resolved_schema in seen:
+        raise ValueError(f"Circular schema reference while resolving frame: '{schema_path}'")
+    direct_frame = resolved_schema.parent / "frame.jsonld"
+    if direct_frame.is_file():
+        return direct_frame
+    schema = _load_json(resolved_schema)
+    if not isinstance(schema, dict):
+        raise ValueError(f"Schema must be an object: '{resolved_schema}'")
+    candidates: List[Path] = []
+    for branch in schema.get("allOf", []):
+        if not isinstance(branch, dict) or not isinstance(branch.get("$ref"), str):
+            continue
+        referenced_schema = _resolve_schema_ref(
+            branch["$ref"], resolved_schema, id_to_path_map
+        )
+        try:
+            candidate = _resolve_frame_path(
+                referenced_schema, id_to_path_map, seen | {resolved_schema}
+            )
+        except FileNotFoundError:
+            continue
+        if candidate not in candidates:
+            candidates.append(candidate)
+    if len(candidates) == 1:
+        return candidates[0]
+    if len(candidates) > 1:
+        raise ValueError(
+            f"Multiple frames found for schema '{resolved_schema}': {candidates}"
+        )
+    raise FileNotFoundError(f"Frame file not found for schema: '{resolved_schema}'")
 
 
 def resolve_file_entity(
@@ -167,9 +233,7 @@ def resolve_file_entity(
             f"Input schema '{schema_path}' is not under entity root '{root}'"
         ) from exc
 
-    frame_path = entity_dir / "frame.jsonld"
-    if not frame_path.is_file():
-        raise FileNotFoundError(f"Frame file not found: {frame_path}")
+    frame_path = _resolve_frame_path(schema_path, id_to_path_map)
     return entity_dir, frame_path
 
 
@@ -341,6 +405,177 @@ def _select_primary_entity(
     if not matches:
         return None, f"No framed entity matched expected @type values {sorted(expected_types)}"
     return None, f"Multiple framed entities matched expected @type values {sorted(expected_types)}"
+
+
+def _select_graph_document(
+    framed: Any,
+    original_graph_ids: Set[str],
+) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    """Project graph entities from framed RDF without reading source fields.
+
+    A graph-wide frame may place inverse relationships (for example DAC
+    memberships and policy governance) beside, rather than inside, the entity
+    they describe.  Rebuild those schema-facing inverse properties from the
+    framed nodes only.  The original input contributes identifiers solely to
+    restrict the projection and exclude injected noise.
+    """
+    if not isinstance(framed, dict):
+        return None, "Framed graph output was not an object"
+    graph = framed.get("@graph")
+    if not isinstance(graph, list):
+        return None, "Framed graph output did not contain an @graph array"
+
+    graph_items_by_id: Dict[str, Dict[str, Any]] = {}
+    graph_item_scores: Dict[str, int] = {}
+    all_nodes: List[Dict[str, Any]] = []
+
+    def collect_entity_nodes(value: Any) -> None:
+        if isinstance(value, list):
+            for child in value:
+                collect_entity_nodes(child)
+            return
+        if not isinstance(value, dict):
+            return
+        all_nodes.append(value)
+        node_id = value.get("@id")
+        if (
+            isinstance(node_id, str)
+            and node_id in original_graph_ids
+            and any(
+                isinstance(type_value, str) and type_value.startswith("ega:")
+                for type_value in _value_as_strings(value.get("@type"))
+            )
+        ):
+            score = len(
+                [
+                    key
+                    for key in value
+                    if key not in {"@id", "@type", "@context"}
+                ]
+            )
+            if score > graph_item_scores.get(node_id, -1):
+                # The semantic equivalence check consumes the untouched raw
+                # frame later in the pipeline, so project into an independent
+                # copy before adding schema-facing inverse properties.
+                graph_items_by_id[node_id] = _clone_json(value)
+                graph_item_scores[node_id] = score
+        for child in value.values():
+            collect_entity_nodes(child)
+
+    collect_entity_nodes(graph)
+    if set(graph_items_by_id) != original_graph_ids:
+        missing = sorted(original_graph_ids - set(graph_items_by_id))
+        return None, f"Framed graph output omitted entity ids: {missing}"
+
+    def as_node_list(value: Any) -> List[Dict[str, Any]]:
+        if isinstance(value, dict):
+            return [value]
+        if isinstance(value, list):
+            return [item for item in value if isinstance(item, dict)]
+        return []
+
+    def first_types(node_id: str) -> List[str]:
+        for node in all_nodes:
+            if node.get("@id") == node_id:
+                types = _value_as_strings(node.get("@type"))
+                if types:
+                    return types
+        return []
+
+    def append_unique(target: Dict[str, Any], key: str, value: Dict[str, Any]) -> None:
+        values = target.setdefault(key, [])
+        if not isinstance(values, list):
+            values = [values]
+            target[key] = values
+        signature = json.dumps(value, sort_keys=True)
+        if all(json.dumps(item, sort_keys=True) != signature for item in values):
+            values.append(value)
+
+    def compact_dac_membership(membership: Dict[str, Any]) -> Dict[str, Any]:
+        """Use the DAC context's schema field names for an RDF membership."""
+        if "org:member" in membership:
+            membership["agent"] = membership.pop("org:member")
+        agent = membership.get("agent")
+        if isinstance(agent, dict):
+            for compact_name, rdf_name in (
+                ("name", "foaf:name"),
+                ("email", "cv:email"),
+                ("telephone", "cv:telephone"),
+            ):
+                if compact_name not in agent and rdf_name in agent:
+                    agent[compact_name] = agent.pop(rdf_name)
+        if "org:role" in membership:
+            roles = membership.pop("org:role")
+            role_values = as_node_list(roles)
+            if role_values:
+                compact_roles: List[Any] = []
+                for role in role_values:
+                    role_id = role.get("@id")
+                    candidate = (
+                        role_id.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
+                        if isinstance(role_id, str)
+                        else None
+                    )
+                    compact_roles.append(
+                        candidate if candidate in _DAC_ROLE_NAMES else role
+                    )
+                membership["roles"] = compact_roles
+            else:
+                membership["roles"] = roles
+        return membership
+
+    # Restore inverse properties from the framed graph itself.  These are not
+    # copied from the source JSON; they are derived from the corresponding RDF
+    # predicates emitted by the contexts.
+    for node in all_nodes:
+        for organization in as_node_list(node.get("org:organization")):
+            dac_id = organization.get("@id")
+            if dac_id not in graph_items_by_id:
+                continue
+            membership = _clone_json(node)
+            membership.pop("org:organization", None)
+            membership = compact_dac_membership(membership)
+            append_unique(graph_items_by_id[dac_id], "components", membership)
+
+        node_id = node.get("@id")
+        if not isinstance(node_id, str):
+            continue
+        for policy in as_node_list(node.get("governs")):
+            policy_id = policy.get("@id")
+            if policy_id not in graph_items_by_id:
+                continue
+            governed_by: Dict[str, Any] = {"@id": node_id}
+            types = _value_as_strings(node.get("@type"))
+            if types:
+                governed_by["@type"] = types[0] if len(types) == 1 else types
+            append_unique(graph_items_by_id[policy_id], "governedBy", governed_by)
+
+    def enrich_references(value: Any) -> None:
+        if isinstance(value, list):
+            for item in value:
+                enrich_references(item)
+            return
+        if not isinstance(value, dict):
+            return
+        node_id = value.get("@id")
+        if isinstance(node_id, str) and "@type" not in value:
+            types = first_types(node_id)
+            if types:
+                value["@type"] = types[0] if len(types) == 1 else types
+        for child in value.values():
+            enrich_references(child)
+
+    for item in graph_items_by_id.values():
+        enrich_references(item)
+        has_policy = item.get("hasPolicy")
+        if isinstance(has_policy, dict) and isinstance(has_policy.get("@id"), str):
+            # Dataset schemas deliberately model this JSON-LD @id value as an
+            # external identifier string rather than an embedded Policy object.
+            item["hasPolicy"] = has_policy["@id"]
+
+    selected = dict(framed)
+    selected["@graph"] = list(graph_items_by_id.values())
+    return selected, None
 
 
 def _canonicalize_jsonld(
@@ -640,6 +875,7 @@ def _prepare_input(
             "inline_context": inline_context,
             "frame_inline": frame_inline,
             "data_with_context": _data_with_context(data, inline_context),
+            "is_graph_document": isinstance(data.get("@graph"), list),
             "original_id": data.get("@id") if isinstance(data.get("@id"), str) else None,
             "original_types": _value_as_strings(data.get("@type")),
         }
@@ -684,12 +920,20 @@ def _frame_route(
         framed,
         route=route,
     )
-    primary, selection_error = _select_primary_entity(
-        framed,
-        state["original_id"],
-        state["original_types"],
-        state["inline_context"],
-    )
+    if state.get("is_graph_document"):
+        original_graph_ids = {
+            item.get("@id")
+            for item in state["data"].get("@graph", [])
+            if isinstance(item, dict) and isinstance(item.get("@id"), str)
+        }
+        primary, selection_error = _select_graph_document(framed, original_graph_ids)
+    else:
+        primary, selection_error = _select_primary_entity(
+            framed,
+            state["original_id"],
+            state["original_types"],
+            state["inline_context"],
+        )
     if primary is None:
         _set_route_failure(
             state,
@@ -731,7 +975,10 @@ def _validate_route_output(
         return
 
     route_state = state["routes"][route]
-    semantic_data = dict(route_state["primary"])
+    semantic_source = (
+        route_state["framed"] if state.get("is_graph_document") else route_state["primary"]
+    )
+    semantic_data = dict(semantic_source)
     semantic_data["@context"] = state["schema_ref"]
     route_state["semantic_data"] = semantic_data
     _debug_snapshot(

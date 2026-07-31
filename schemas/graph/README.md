@@ -6,9 +6,9 @@ Graph validation currently covers JSON Schema shape only. It does not validate g
 
 There are three main threads of constraints within the `graph` directory:
 
-- Every item in `@graph` is identified by its EGA `@type` and, based on it, validated against the corresponding entity schema.
-- Smaller modular requirements validate parts of the `@graph` and can be reused by profiles.
-- Reusable `profiles` compose the base graph schema with presence requirements. For example, [`profiles/dataset-and-datafile/schema.json`](./profiles/dataset-and-datafile/schema.json) requires that there is a dataset and a datafile in the `@graph`.
+- Every item in `@graph` is first identified by a lightweight `@type` declaration predicate and, when that declaration is structurally usable, validated against the corresponding entity schema. Keeping type detection separate from entity validation prevents one malformed item from being tested against every entity branch.
+- Small reusable graph requirements are named definitions under [`schema.json`](./schema.json)'s `$defs`.
+- Reusable profiles are individual files under `profiles/` and compose the base graph schema with those requirements. Requirements test whether a node declares the required type, but the base graph schema remains responsible for validating that node completely. For example, [`profiles/dataset-and-datafile.schema.json`](./profiles/dataset-and-datafile.schema.json) requires at least one Dataset and one Datafile in the `@graph`.
 
 To validate all the examples (valid and invalid appropriately), start Biovalidator with the repository schemas preloaded, then run:
 

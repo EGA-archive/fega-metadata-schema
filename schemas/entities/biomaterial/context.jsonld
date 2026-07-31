@@ -4,7 +4,14 @@
     {
       "entityDoc": "entities:biomaterial/schema.json#",
       "properties": "@nest",
-      "sex": "entityDoc:sex",
+      "sex": {
+        "@id": "entityDoc:sex",
+        "@context": {
+          "phenotypicSex": "entityDoc:phenotypicSex",
+          "id": "schema:identifier",
+          "label": "rdfs:label"
+        }
+      },
       "gender": "entityDoc:gender",
       "phenotypicSex": "entityDoc:phenotypicSex",
       "karyotypicSex": "entityDoc:karyotypicSex",

@@ -59,6 +59,7 @@ npm install -g "github:M-casado/biovalidator#main"
 node "$(npm root -g)/biovalidator/src/biovalidator.js" \
   --port 3020 \
   --ref "./schemas/**/schema.json" \
+  --ref "./schemas/**/*.schema.json" \
   --ref "./standards/json-schema/**/*.json"
 ```
 

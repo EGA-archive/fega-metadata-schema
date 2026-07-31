@@ -1,0 +1,27 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-biomaterial",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAN00000000001",
+        "@type": [
+          "ega:biomaterial",
+          "prov:Entity",
+          "COB:0000022"
+        ],
+        "label": "SUBJECT-0001",
+        "sex": {
+          "phenotypicSex": {
+            "id": "PATO:0000383",
+            "label": "female"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-process",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAA00000000002",
+        "@type": [
+          "ega:process",
+          "prov:Activity"
+        ],
+        "title": "DNA extraction run",
+        "used": [
+          {
+            "@id": "ega:EGAN00000000001",
+            "@type": "ega:biomaterial"
+          }
+        ],
+        "generated": [
+          {
+            "@id": "ega:EGAN00000000002",
+            "@type": "ega:biomaterial"
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      }
+    ]
+  }
+}

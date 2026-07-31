@@ -61,12 +61,15 @@ def find_repo_root(start: Path) -> Path:
 def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
     """Return a dict mapping GitHub raw URLs (and schema $ids) to local Paths.
 
-    Covers every ``schema.json`` and every ``context.jsonld`` found under
-    *repo_root*.
+    Covers every conventional ``schema.json`` and flat ``*.schema.json``
+    schema, plus every ``context.jsonld``, found under *repo_root*.
     """
     id_map: Dict[str, Path] = {}
 
-    for schema_file in sorted(repo_root.rglob("schema.json")):
+    schema_files = sorted(
+        {*repo_root.rglob("schema.json"), *repo_root.rglob("*.schema.json")}
+    )
+    for schema_file in schema_files:
         try:
             with schema_file.open("r", encoding="utf-8") as fh:
                 schema = json.load(fh)
@@ -160,7 +163,30 @@ def materialize_context(
                 result.append(materialized)
         return result
 
-    # dict or scalar – return as-is
+    if isinstance(ctx_value, dict):
+        # Type-scoped JSON-LD contexts are nested under a term definition.
+        # We materialize those references too so preflight checks and frame
+        # operations see the same local context graph as PyLD's document
+        # loader, without requiring network access.
+        result = dict(ctx_value)
+        for key, child in list(result.items()):
+            if key == "@context":
+                result[key] = materialize_context(
+                    child,
+                    current_file,
+                    id_to_path_map,
+                    seen,
+                )
+            elif isinstance(child, dict) and "@context" in child:
+                result[key] = materialize_context(
+                    child,
+                    current_file,
+                    id_to_path_map,
+                    seen,
+                )
+        return result
+
+    # scalar – return as-is
     return ctx_value
 
 
@@ -183,6 +209,11 @@ def context_terms_and_prefixes(context: Any) -> Tuple[Set[str], Set[str]]:
 
         for key, definition in value.items():
             if key.startswith("@"):
+                # Type-scoped contexts are nested under an @context key.
+                # Visit them before skipping JSON-LD keywords so scoped terms
+                # are included in preflight coverage checks.
+                if key == "@context" and isinstance(definition, (dict, list)):
+                    visit(definition)
                 continue
             terms.add(key)
             iri = None
@@ -192,6 +223,8 @@ def context_terms_and_prefixes(context: Any) -> Tuple[Set[str], Set[str]]:
                 iri = definition["@id"]
             if iri and (iri.endswith("/") or iri.endswith("#") or iri.endswith(":")):
                 prefixes.add(key)
+            if isinstance(definition, (dict, list)):
+                visit(definition)
 
     visit(context)
     return terms, prefixes

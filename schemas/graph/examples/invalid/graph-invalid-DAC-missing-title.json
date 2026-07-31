@@ -4,13 +4,12 @@
   },
   "data": {
     "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
-    "@id": "ega:EGAG00000000001",
+    "@id": "ega:EGAG-invalid-DAC",
     "@type": "ega:graph",
     "@graph": [
       {
         "@id": "ega:EGAC00000000001",
         "@type": "ega:DAC",
-        "title": "Example Genomics Data Access Committee",
         "description": "Committee responsible for reviewing controlled-access requests for the Example Genomics programme.",
         "status": "released",
         "contactPoint": [

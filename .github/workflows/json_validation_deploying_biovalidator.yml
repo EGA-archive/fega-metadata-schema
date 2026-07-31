@@ -98,6 +98,7 @@ jobs:
           node "$(npm root -g)/biovalidator/src/biovalidator.js" \
             --port 3020 \
             --ref "./schemas/**/schema.json" \
+            --ref "./schemas/**/*.schema.json" \
             --ref "./standards/json-schema/**/*.json" \
             > biovalidator.log 2>&1 &
           echo $! > biovalidator.pid
@@ -144,37 +145,76 @@ jobs:
       # Validation
       # --------------------------------------------------------------
       - name: Validate examples
+        id: validate_entity_examples
+        continue-on-error: true
         run: |
           python scripts/py/validate_examples.py \
             --root schemas/entities \
             --url "http://localhost:3020/validate" \
-            --summary-dir . \
+            --summary-dir validation-summaries/entity-examples \
+            -v
+
+      - name: Validate graph examples
+        id: validate_graph_examples
+        continue-on-error: true
+        run: |
+          python scripts/py/validate_examples.py \
+            --root schemas \
+            --entity graph \
+            --url "http://localhost:3020/validate" \
+            --summary-dir validation-summaries/graph-examples \
             -v
 
       - name: Validate JSON-LD frame round-trips
         id: validate_jsonld_frame_round_trips
+        continue-on-error: true
         run: |
           python scripts/py/validate_jsonld_frames.py \
             --root schemas/entities \
             --url "http://localhost:3020/validate" \
-            --summary-dir . \
+            --summary-dir validation-summaries/entity-frames \
+            -v
+
+      - name: Validate graph JSON-LD frame round-trips
+        id: validate_graph_jsonld_frame_round_trips
+        continue-on-error: true
+        run: |
+          python scripts/py/validate_jsonld_frames.py \
+            --root schemas \
+            --entity graph \
+            --url "http://localhost:3020/validate" \
+            --summary-dir validation-summaries/graph-frames \
             -v
 
       - name: Show summary in log
         if: always()
         run: |
-          echo "=== JSON Schema Example Validation ==="
-          if [ -f summary.json ]; then
-            jq '.' summary.json
+          echo "=== Entity JSON Schema Example Validation ==="
+          if [ -f validation-summaries/entity-examples/summary.json ]; then
+            jq '.' validation-summaries/entity-examples/summary.json
           else
-            echo "'summary.json' not found"
+            echo "'entity_summary.json' not found"
           fi
           echo ""
-          echo "=== JSON-LD Frame Round-Trip Validation ==="
-          if [ -f frame_summary.json ]; then
-            jq '.' frame_summary.json
+          echo "=== Graph JSON Schema Example Validation ==="
+          if [ -f validation-summaries/graph-examples/summary.json ]; then
+            jq '.' validation-summaries/graph-examples/summary.json
           else
-            echo "'frame_summary.json' not found"
+            echo "'graph_summary.json' not found"
+          fi
+          echo ""
+          echo "=== Entity JSON-LD Frame Round-Trip Validation ==="
+          if [ -f validation-summaries/entity-frames/frame_summary.json ]; then
+            jq '.' validation-summaries/entity-frames/frame_summary.json
+          else
+            echo "'entity_frame_summary.json' not found"
+          fi
+          echo ""
+          echo "=== Graph JSON-LD Frame Round-Trip Validation ==="
+          if [ -f validation-summaries/graph-frames/frame_summary.json ]; then
+            jq '.' validation-summaries/graph-frames/frame_summary.json
+          else
+            echo "'graph_frame_summary.json' not found"
           fi
 
       # --------------------------------------------------------------
@@ -188,15 +228,19 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: json-validation-summary
-          path: summary.json
+          path: |
+            validation-summaries/entity-examples/summary.json
+            validation-summaries/graph-examples/summary.json
           if-no-files-found: warn
 
       - name: Upload frame validation summary
-        if: ${{ always() && steps.validate_jsonld_frame_round_trips.outcome != 'skipped' }}
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: frame-validation-summary
-          path: frame_summary.json
+          path: |
+            validation-summaries/entity-frames/frame_summary.json
+            validation-summaries/graph-frames/frame_summary.json
           if-no-files-found: warn
 
       - name: Stop Biovalidator
@@ -206,3 +250,11 @@ jobs:
             # If it was already killed, exit with true
             kill "$(cat biovalidator.pid)" || true
           fi
+
+      - name: Fail if a validation suite failed
+        if: always()
+        run: |
+          test "${{ steps.validate_entity_examples.outcome }}" = success
+          test "${{ steps.validate_graph_examples.outcome }}" = success
+          test "${{ steps.validate_jsonld_frame_round_trips.outcome }}" = success
+          test "${{ steps.validate_graph_jsonld_frame_round_trips.outcome }}" = success
