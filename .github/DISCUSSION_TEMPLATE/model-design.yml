@@ -1,0 +1,95 @@
+title: '[Model design] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for the meaning and structure of the EGA v2 metadata model: entities, attributes, relationships, cardinality, provenance, ownership, ELSI/access metadata, and extension points.
+
+      For deployment, storage, or migration questions, use **Implementation and migration**.
+- type: textarea
+  id: topic
+  attributes:
+    label: Question, requirement, or proposed improvement
+    description: State clearly what the MWG should discuss or decide.
+    placeholder: Should a Dataset directly contain Datafiles or Distributions, and what cardinality should apply?
+  validations:
+    required: true
+- type: dropdown
+  id: model-area
+  attributes:
+    label: Model area
+    options:
+    - Entities and attributes
+    - Relationships and cardinality
+    - Experimental provenance (processes, protocols)
+    - Community re-use of the EGA model
+    - Consent, access, and ELSI
+    - Controlled- and open-access metadata
+    - Extensions and compatibility
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: example
+  attributes:
+    label: Concrete example or use case
+    description: Describe a user need that exposes the question.
+    placeholder: In an analysis-only genomic submission, existing FASTQ files are inputs and VCF files are outputs...
+  validations:
+    required: true
+- type: textarea
+  id: options
+  attributes:
+    label: Possible approaches
+    description: Optional. List one or more options, including trade-offs if known.
+    placeholder: |-
+      Option A: ...
+      Option B: ...
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true

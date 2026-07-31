@@ -1,0 +1,95 @@
+title: '[Implementation and migration] '
+body:
+- type: markdown
+  attributes:
+    value: |-
+      Use this category for implementing EGA v2 in services and infrastructure: persistence, APIs, versioning, deployment, operational ownership, and migration from EGA v1 or node-specific metadata.
+
+      For conceptual entities and relationships, use **Model design**.
+- type: textarea
+  id: topic
+  attributes:
+    label: Implementation question, requirement, or proposed improvement
+    description: State the technical or operational decision required.
+    placeholder: How should graph-oriented Process relationships be represented in MetaDB?
+  validations:
+    required: true
+- type: dropdown
+  id: implementation-area
+  attributes:
+    label: Implementation area
+    options:
+    - Storage and persistence
+    - APIs and exchange
+    - Versioning and releases
+    - Deployment and operations
+    - EGA v1 to v2 migration
+    - Auditability and provenance
+    - Node adoption and interoperability
+    - Other
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: scenario
+  attributes:
+    label: Concrete scenario or constraint
+    description: Describe the system, migration case, scale, or operational constraint involved.
+    placeholder: Historical v1 records require harmonisation and migration to be valid against v2...
+  validations:
+    required: true
+- type: textarea
+  id: options
+  attributes:
+    label: Possible implementation approaches
+    description: Optional. Include relevant trade-offs, risks, or dependencies.
+    placeholder: |-
+      Option A: ...
+      Option B: ...
+- type: textarea
+  id: additional-context
+  attributes:
+    label: Additional context
+    description: Optional. Add any other context or details that would help the discussion.
+    placeholder: Add more context or elaborate on the discussion...
+- type: dropdown
+  id: desired-outcome
+  attributes:
+    label: Desired outcome
+    options:
+    - Agree on an approach
+    - Identify gaps or requirements
+    - Produce or review an example
+    - Change schemas, validation, or documentation
+    - Create an implementation task
+    - Investigate further
+    description: What should come out of the MWG discussion?
+    multiple: true
+  validations:
+    required: true
+- type: dropdown
+  id: contribution
+  attributes:
+    label: How can you contribute?
+    options:
+    - Lead or co-lead this topic
+    - Provide examples or requirements
+    - Review or test proposed changes
+    - Connect the group with relevant external work
+    - I am not sure yet
+    multiple: true
+  validations:
+    required: true
+- type: textarea
+  id: references
+  attributes:
+    label: References
+    description: Optional links to schemas, examples, use-case notes, standards, issues, or related discussions.
+    placeholder: https://...
+- type: checkboxes
+  id: duplicate-check
+  attributes:
+    label: Existing discussions
+    options:
+    - label: I searched for an existing discussion on this topic.
+      required: true
