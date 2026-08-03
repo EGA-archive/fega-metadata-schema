@@ -300,7 +300,7 @@
                 },
                 {
                     "predicate_id": "skos:relatedMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#externalUrl",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#externalUrl",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",

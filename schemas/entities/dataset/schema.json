@@ -102,7 +102,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#id",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#id",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -147,7 +147,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#name",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#name",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -222,7 +222,7 @@
                 },
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#description",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#description",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -278,7 +278,7 @@
                 },
                 {
                     "predicate_id": "skos:broadMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#externalUrl",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#externalUrl",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -326,7 +326,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#updateDateTime",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#updateDateTime",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
@@ -521,7 +521,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#createDateTime",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#createDateTime",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
@@ -597,7 +597,7 @@
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
-                    "object_id": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/datasets/defaultSchema.json#version",
+                    "object_id": "beaconRepo:datasets/defaultSchema.json#version",
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
