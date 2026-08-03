@@ -24,14 +24,17 @@ from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
 try:
-    from fega_tools.io import collect_candidate_json
-    from fega_tools.json_pointer import patch_json_tree, _validate_replacements, _ALLOWED_SEGMENTS
+    from fega_tools.json_pointer import (
+        _ALLOWED_SEGMENTS,
+        _validate_replacements,
+        patch_json_tree,
+        rewrite_raw_github_uris,
+    )
     from fega_tools.logging_utils import configure_logging
-
 except ModuleNotFoundError as exc:
     msg = (
-        "ERROR:  The helper package 'fega_tools' is not importable.\n"
-        "Make sure you have installed the repo in *editable* mode first. Run the following command from the repository root:\n"
+        "ERROR: The helper package 'fega_tools' is not importable.\n"
+        "Install the repository in editable mode first:\n"
         "    pip install -e ."
     )
     raise ModuleNotFoundError(msg) from exc
@@ -53,15 +56,15 @@ def _add_segment_arg(parser: argparse.ArgumentParser, segment: str) -> None:
 
 
 def _parse_replacements(args: argparse.Namespace) -> Dict[str, Tuple[str, str]]:
-    repl: Dict[str, Tuple[str, str]] = {}
+    replacements: Dict[str, Tuple[str, str]] = {}
     for segment in _ALLOWED_SEGMENTS: # repo, owner, branch
         value = getattr(args, segment)
         if value is not None:
-            repl[segment] = tuple(value)
-    if not repl:
+            replacements[segment] = tuple(value)
+    if not replacements:
         raise SystemExit("ERROR: No replacements requested. Use --owner/--repo/--branch.")
-    _validate_replacements(repl)
-    return repl
+    _validate_replacements(replacements)
+    return replacements
 
 # -------
 # CLI parser
@@ -70,16 +73,23 @@ def _parse_replacements(args: argparse.Namespace) -> Dict[str, Tuple[str, str]]:
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modify_ids",
-        description="Rewrite owner/repo/branch segments of raw GitHub URIs in JSON files. Without -w/-o, prints the modified JSONs to stdout.",
+        description=(
+            "Rewrite owner/repo/branch segments of raw GitHub URIs in JSON "
+            "and JSON-LD documents. The default is a non-writing dry run."
+        ),
         epilog=(
             "Examples:\n"
-            "  modify_ids entities --branch dev v2.3.0 --in-place -v         # Swap 'dev' with 'v2.3.0' in-place\n"
-            "  modify_ids entities --owner old-owner new-owner --repo old-repo new-repo --independent -o converted/ -vv\n"
+            "  modify_ids schemas --branch dev v2.3.0 --in-place -v         # Swap 'dev' with 'v2.3.0' in-place\n"
+            "  modify_ids schemas --owner old-owner new-owner --repo old-repo new-repo "
+            "--independent -o converted/ -vv\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "inputs", type=Path, nargs="+", help="JSON file(s) or directory(ies) to rewrite",
+        "inputs",
+        type=Path,
+        nargs="+",
+        help="JSON/JSON-LD file(s) or directory(ies) to rewrite",
     )
 
     for segment in _ALLOWED_SEGMENTS: # repo, owner, branch
@@ -88,15 +98,25 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--independent",
         action="store_true",
-        help="Apply replacements independently (default is to require all specified"
-        " segments to match before any replacement occurs).",
+        help=(
+            "Apply replacements independently (default requires all specified "
+            "segments to match before any replacement occurs)."
+        ),
     )
-    out_group = parser.add_mutually_exclusive_group() # allow either output directory or in-place modification
-    out_group.add_argument("-o", "--output", dest="output_directory", type=Path,
-                           help="Directory to write modified copies (preserve originals)")
-    out_group.add_argument("-w", "--in-place", action="store_true",
-                           help="Rewrite files in place instead of copying")
-
+    output_group = parser.add_mutually_exclusive_group() # allow either output directory or in-place modification
+    output_group.add_argument(
+        "-o",
+        "--output",
+        dest="output_directory",
+        type=Path,
+        help="Directory for modified copies while preserving originals",
+    )
+    output_group.add_argument(
+        "-w",
+        "--in-place",
+        action="store_true",
+        help="Rewrite files in place instead of copying",
+    )
     parser.add_argument(
         "--verbosity",
         "-v",

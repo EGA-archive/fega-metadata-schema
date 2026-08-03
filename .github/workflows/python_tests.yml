@@ -24,7 +24,7 @@ on:
       - 'requirements.txt'
       - '.github/workflows/python_tests.yml'
   push:
-    branches: [ main ]
+    branches: [ dev, main ]
 
   workflow_dispatch:
 

@@ -8,11 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Draft EGA metadata schemas for the EGA entities.
-- Shared schema modules for common definitions validation.
-- JSON-LD contexts and frames for entity schemas, with local examples covering valid and invalid validation cases.
-- Validation tooling for JSON Schema/Biovalidator checks, JSON-LD context smoke tests, context/frame coverage, JSON-LD frame round-trip checks, and RDF/SHACL validation.
-- Reusable Python helper package for validation, JSON-LD processing, RDF handling, logging, JSON Pointer access, and Biovalidator integration.
-- Pytest coverage.
-- Third-party standards material (e.g., ISA) used by the model.
-- Technical report, release process documentation, and repository-level usage instructions.
+- Added initial draft metadata schemas for EGA entities and shared common definitions in [schemas](schemas) and [schemas/common](schemas/common).
+- Added JSON-LD contexts, frames, and example payloads for schema validation across [schemas/entities](schemas/entities), [schemas/graph](schemas/graph), and related entity directories.
+- Added validation tooling and reusable Python helpers for schema, JSON-LD, RDF, and Biovalidator workflows in [scripts/py](scripts/py) and [src/fega_tools](src/fega_tools).
+- Added automated test coverage for repository validation and schema behaviour in [tests](tests).
+- Added supporting standards material and project documentation under [standards](standards), [docs](docs), [README.md](README.md), and [CONTRIBUTING.md](CONTRIBUTING.md).

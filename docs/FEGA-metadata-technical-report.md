@@ -244,13 +244,13 @@ Table of contents and contributions
 
 # 1. Executive summary
 
-The **Federated EGA** (FEGA) **Metadata Working Group** (MWG) has designed a new, **process-oriented metadata model** intended to replace the [EGA v1 model](https://ega-archive.org/submission/metadata/ega-schema), used by Central EGA (CEGA) and FEGA nodes using [Local EGA](https://github.com/EGA-archive/LocalEGA). It prepares the FEGA network for FAIR, linked-data interoperability across **human omics**. **The model is under active development, and [this report](https://doi.org/10.5281/zenodo.18802072)** **accompanies that work in progress.** What exists today is an abstract specification and a first set of [JSON Schema drafts](https://github.com/M-casado/fega-metadata-schema/tree/main/schemas) with embedded JSON-LD contexts; detailed serialisations, production deployments and full validator roll-out are future milestones, not completed deliverables.
+The **Federated EGA** (FEGA) **Metadata Working Group** (MWG) has designed a new, **process-oriented metadata model** intended to replace the [EGA v1 model](https://ega-archive.org/submission/metadata/ega-schema), used by Central EGA (CEGA) and FEGA nodes using [Local EGA](https://github.com/EGA-archive/LocalEGA). It prepares the FEGA network for FAIR, linked-data interoperability across **human omics**. **The model is under active development, and [this report](https://doi.org/10.5281/zenodo.18802072)** **accompanies that work in progress.** What exists today is an abstract specification and a first set of [JSON Schema drafts](../schemas) with embedded JSON-LD contexts; detailed serialisations, production deployments and full validator roll-out are future milestones, not completed deliverables.
 
-Core **entities** include Biomaterial, Protocol, Process, Datafile, Dataset, Distribution, Policy, Data Access Committee (DAC), Study, Cohort, Project, Protocol Collection and DCAT-style Catalog objects. **Validation** through the open-source **[ELIXIR Biovalidator](https://github.com/elixir-europe/biovalidator)** ensures both syntactic and selected semantic checks (e.g., ontology term validation). **Use-case workshops** in genomics, microarrays, proteomics, and microbiomes confirmed the model's flexibility without needing schema rewrites.
+Core **entities** include Biomaterial, Protocol, Process, Datafile, Dataset, Distribution, Policy, Data Access Committee (DAC), Study, Cohort, Project, Protocol Collection and DCAT-style Catalog objects. **Validation** through [EGA's fork](https://github.com/EbiEga/biovalidator) of the open-source **[ELIXIR Biovalidator](https://github.com/elixir-europe/biovalidator)** ensures both syntactic and selected semantic checks (e.g., ontology term validation). **Use-case workshops** in genomics, microarrays, proteomics, and microbiomes confirmed the model's flexibility without needing schema rewrites.
 
 A **[transparent GitHub repository](https://github.com/EGA-archive/fega-metadata-schema)** contains the schemas, documentation, versioning, automated workflows, and a change process aligned to FEGA's network governance. As the first stepping stones for **future migration** of the current EGA v1 model to the EGA v2 model, we propose completing the set of model schemas, an initial v1-to-v2 model mapper, and a test implementation at CEGA. Finally, we present a phased adoption by FEGA nodes and other stakeholders. This approach would culminate when the maturity and efficacy of the model have been proved end-to-end and the model shift can happen in the production environments.
 
-***Disclaimer(s)**: this document is a snapshot of the live documentation of the FEGA MWG as of February 2026\. New content and changes will be added to [`docs/technical-report.md`](https://github.com/EGA-archive/fega-metadata-schema/blob/main/docs/technical-report.md). Some materials referenced in this document are only accessible to members of their respective groups (ELIXIR, GDI and FEGA). To gain access to them, request membership through the official channels.
+***Disclaimer(s)**: Some materials referenced in this document are only accessible to members of their respective groups (ELIXIR, GDI and FEGA). To gain access to them, request membership through the official channels.
 
 # 2. Introduction
 
@@ -373,15 +373,15 @@ Key aspects of the modelling process include:
 
 3. **Validation Tools.**
 
-   1. [**ELIXIR Biovalidator**](https://github.com/elixir-europe/biovalidator). The primary tool for validating JSON documents against schemas, supporting API-based constraints, like ontology term checks through the [Ontology Lookup Service](https://doi.org/10.25504/FAIRsharing.Mkl9RR) (OLS).
+   1. [**ELIXIR Biovalidator**](https://github.com/EbiEga/biovalidator). The primary tool for validating JSON documents against schemas, supporting API-based constraints, like ontology term checks through the [Ontology Lookup Service](https://doi.org/10.25504/FAIRsharing.Mkl9RR) (OLS).
 
    2. [**JSON-LD Playground**](https://json-ld.org/playground/). Used for testing JSON-LD expansions and linked data principles.
 
    3. [**JSON Schema Validator**](https://www.jsonschemavalidator.net/). For general schema validation during schema development.
 
-4. **JSON Schemas.** Albeit in progress, the EGA v2 model represents each entity (e.g., biomaterial) as a JSON file (e.g., [biomaterial/schema.json](https://github.com/M-casado/fega-metadata-schema/blob/main/schemas/entities/biomaterial/schema.json)) following the [JSON Schema Specification](https://json-schema.org/specification) plus additional custom keywords defined by Biovalidator. These schemas include mappings, detailed property definitions, types, and constraints, ensuring robust validation and extensibility. JSON-LD Contexts (@context) are embedded directly within schemas to enable seamless JSON-to-JSON-LD transformations.
+4. **JSON Schemas.** Albeit in progress, the EGA v2 model represents each entity (e.g., biomaterial) as a JSON file (e.g., [biomaterial/schema.json](../schemas/entities/biomaterial/schema.json)) following the [JSON Schema Specification](https://json-schema.org/specification) plus additional custom keywords defined by Biovalidator. These schemas include mappings, detailed property definitions, types, and constraints, ensuring robust validation and extensibility. JSON-LD Contexts (@context) are embedded directly within schemas to enable seamless JSON-to-JSON-LD transformations.
 
-5. **Automation**. To aid with the continuous development of the EGA v2 model, [scripts](https://github.com/M-casado/fega-metadata-schema/tree/main/scripts/py) and [utilities](https://github.com/M-casado/fega-metadata-schema/tree/main/src/fega_tools) and [workflows](https://github.com/M-casado/fega-metadata-schema/tree/main/.github/workflows) are set in place to automate recurrent tasks (e.g., validation, release preparation, document linting) through GitHub workflows.
+5. **Automation**. To aid with the continuous development of the EGA v2 model, [scripts](../scripts/py) and [utilities](../src/fega_tools) and [workflows](../.github/workflows) are set in place to automate recurrent tasks (e.g., validation, release preparation, document linting) through GitHub workflows.
 
 ## 6.3 Namespace strategy
 
@@ -397,17 +397,17 @@ Validation, in its simplest form, entails comparing some "content" against some 
 
 Our whole stack is **open-source, portable** and **scalable** (i.e., as many servers, wherever needed), making sure that the same validation outcome is reached regardless of the deployer (e.g., FEGA node, submitter).
 
-The set of JSON Schemas contains the "**rules**" and can be referenced within a metadata JSON document via its schema attribute. The "**content**" (i.e., metadata) is formatted as JSON as well and is contained within the data attribute of a JSON document. A JSON instance is declared *valid* when every assertion in the corresponding JSON Schema succeeds. For example, [the data](https://github.com/M-casado/fega-metadata-schema/blob/774392bbb4ad446f7d39226a6ce17111ac258557/data/jsonld/biomaterial-valid_1.json#L5-L66) in biomaterial-valid\_1.json is valid when it passes all constraints specified in [the same document's schema](https://github.com/M-casado/fega-metadata-schema/blob/774392bbb4ad446f7d39226a6ce17111ac258557/data/jsonld/biomaterial-valid_1.json#L2-L4).
+The set of JSON Schemas contains the "**rules**" and can be referenced within a metadata JSON document via its schema attribute. The "**content**" (i.e., metadata) is formatted as JSON as well and is contained within the data attribute of a JSON document. A JSON instance is declared *valid* when every assertion in the corresponding JSON Schema succeeds. For example, [the data](https://github.com/EGA-archive/fega-metadata-schema/blob/0cf2cab78fac8bc228519fe53bc6cc53ba851437/schemas/entities/biomaterial/examples/valid/biomaterial-valid-minimal-organism.json#L5-L20) in biomaterial-valid\_1.json is valid when it passes all constraints specified in [the same document's schema](https://github.com/EGA-archive/fega-metadata-schema/blob/0cf2cab78fac8bc228519fe53bc6cc53ba851437/schemas/entities/biomaterial/examples/valid/biomaterial-valid-minimal-organism.json#L2-L4).
 
-**JSON Schema specification** ([draft 2020-12](https://json-schema.org/draft/2020-12/schema)) and custom keywords from [ELIXIR Biovalidator](https://github.com/elixir-europe/biovalidator?tab=readme-ov-file#extended-keywords-for-ontology-and-taxonomy-validation) provide the groundwork for the EGA metadata schemas to encode domain-specific constraints (e.g., required fields, ontology checks). For further details, refer to the [schemas' documentation](https://github.com/M-casado/fega-metadata-schema/tree/main/schemas#overview) in the GitHub repository.
+**JSON Schema specification** ([draft 2020-12](https://json-schema.org/draft/2020-12/schema)) and custom keywords from [ELIXIR Biovalidator](https://github.com/EbiEga/biovalidator?tab=readme-ov-file#extended-keywords-for-ontology-and-taxonomy-validation) provide the groundwork for the EGA metadata schemas to encode domain-specific constraints (e.g., required fields, ontology checks). For further details, refer to the [schemas' documentation](../schemas#overview) in the GitHub repository.
 
 The EGA metadata schemas are built for **continuous development**. See more details at the [*Model versioning*](#79-model-versioning) section.
 
 ### 6.4.1 Running validation
 
-Validating data through the EGA v2 model is plain and simple: it requires access to a **Biovalidator endpoint and feeding it a JSON document**. To interact with the validator, Biovalidator can be deployed locally or you can use a provided API (e.g., [biovalidator.ega.ebi.ac.uk/validate](http://biovalidator.ega.ebi.ac.uk/validate)[^7]). When Biovalidator is deployed locally or elsewhere, a /validate endpoint is exposed and accepts JSON documents containing both the schema and data, or references to them. This same endpoint outputs the result of the validation when used. Further details about deploying Biovalidator can be found at its [GitHub repository](https://github.com/elixir-europe/biovalidator).
+Validating data through the EGA v2 model is plain and simple: it requires access to a **Biovalidator endpoint and feeding it a JSON document**. To interact with the validator, Biovalidator can be deployed locally or you can use a provided API (e.g., [biovalidator.ega.ebi.ac.uk/validate](http://biovalidator.ega.ebi.ac.uk/validate)[^7]). When Biovalidator is deployed locally or elsewhere, a /validate endpoint is exposed and accepts JSON documents containing both the schema and data, or references to them. This same endpoint outputs the result of the validation when used. Further details about deploying Biovalidator can be found at its [GitHub repository](https://github.com/EbiEga/biovalidator).
 
-The group has created onboarding materials on this matter, including a dedicated [FEGA Metadata Technical Deep Dive](https://doi.org/10.5281/zenodo.14968151) and succinct posters ([1](https://doi.org/10.7490/f1000research.1120212.1), [2](https://doi.org/10.7490/f1000research.1119732.1), [3](https://doi.org/10.7490/f1000research.1119417.1)). Furthermore, an example of the end-to-end validation workflow can be found in the automated [json\_validation\_deploying\_biovalidator.yml](https://github.com/M-casado/fega-metadata-schema/blob/main/.github/workflows/json_validation_deploying_biovalidator.yml). In fact, it can be manually triggered for maintainers who are not proficient at coding, easing the assertion of data validation even further.
+The group has created onboarding materials on this matter, including a dedicated [FEGA Metadata Technical Deep Dive](https://doi.org/10.5281/zenodo.14968151) and succinct posters ([1](https://doi.org/10.7490/f1000research.1120212.1), [2](https://doi.org/10.7490/f1000research.1119732.1), [3](https://doi.org/10.7490/f1000research.1119417.1)). Furthermore, an example of the end-to-end validation workflow can be found in the automated [json\_validation\_deploying\_biovalidator.yml](../.github/workflows/json_validation_deploying_biovalidator.yml). In fact, it can be manually triggered for maintainers who are not proficient at coding, easing the assertion of data validation even further.
 
 ## 6.5 RDF and linked data
 
@@ -419,7 +419,7 @@ When combining JSON Schemas and Linked data, we faced the issue of balancing bet
 
 Several solutions for this challenge were taken into consideration. For example, flattening and compacting all JSON-LDs before validation, or being stringent with the expected format of JSON-LD documents we validated.
 
-Lastly, the chosen path is to use [**framing**](https://w3c.github.io/json-ld-syntax/#framed-document-form), which allows us to map a specific structure for all incoming and flattened JSON-LD files. Through framing, we are able to **change JSON-LD files to a format that the EGA v2 model JSON Schemas** were created to validate. The EGA v2 frames, still in development (see [frames/](https://github.com/M-casado/fega-metadata-schema/tree/main/frames)), will define the structure FEGA expects for each of the main entities. When these frames are applied to a flattened JSON-LD document containing such entities, we can reformat them into a structured JSON-LD with that entity type as root, and thus make them suitable for validation through the EGA v2 model JSON Schemas. In summary, framing allows us to transform RDF-data into a format compatible with the EGA v2 model JSON Schemas.
+Lastly, the chosen path is to use [**framing**](https://w3c.github.io/json-ld-syntax/#framed-document-form), which allows us to map a specific structure for all incoming and flattened JSON-LD files. Through framing, we are able to **change JSON-LD files to a format that the EGA v2 model JSON Schemas** were created to validate. The EGA v2 frames, still in development (see ``frame.jsonld`` within each entity), define the structure FEGA expects for each of the main entities. When these frames are applied to a flattened JSON-LD document containing such entities, we can reformat them into a structured JSON-LD with that entity type as root, and thus make them suitable for validation through the EGA v2 model JSON Schemas. In summary, framing allows us to transform RDF-data into a format compatible with the EGA v2 model JSON Schemas.
 
 # 7. EGA v2 metadata model
 
@@ -433,7 +433,7 @@ Initial efforts in October 2023 involved **presenting existing metadata models a
 
 After collecting the feedback from the survey, we worked through **rounds of drafting** followed by feedback, culminating in a **first draft of the abstract model by July 2024**, presented to external stakeholders. See [*External Involvement*](#72-external-involvement) for further details.
 
-In the second half of 2024, we continued with further rounds of external reviews and outreach, engaging diverse participants in workshops and presentations. Taken together, all the feedback helped shape the EGA v2 model. At the beginning of 2025, we started putting all our efforts into this **technical report and the [fega-metadata-schema repository](https://github.com/M-casado/fega-metadata-schema)**.
+In the second half of 2024, we continued with further rounds of external reviews and outreach, engaging diverse participants in workshops and presentations. Taken together, all the feedback helped shape the EGA v2 model. At the beginning of 2025, we started putting all our efforts into this **technical report and the [fega-metadata-schema repository](https://github.com/EGA-archive/fega-metadata-schema)**.
 
 ##### ***Figure 3\.** Overview of the timeline from the MWG.*
 
@@ -1940,7 +1940,7 @@ The introduction of **linked data principles** represents a significant step for
 
 * JSON documents referencing (in their @context) these schema files can be automatically expanded into RDF-compliant JSON-LD (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)) by inheriting the schemas' @context.
 
-For instance, a cohort JSON document referencing cohort/schema.json through its [URI](https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/cohort/schema.json) will inherit the schema's context when expanded by a JSON-LD processor (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)). This enables terms used as keys (e.g., 'label') and CURIE values (e.g., 'ega:EGAD00000000001'), to be expanded, pointing to resolvable URIs (e.g., https://www.w3.org/2000/01/rdf-schema\#label and https://identifiers.org/ega:EGAD00000000001, respectively).
+For instance, a cohort JSON document referencing ``cohort/schema.json`` through its [URI](https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/schema.json) will inherit the schema's context when expanded by a JSON-LD processor (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)). This enables terms used as keys (e.g., 'label') and CURIE values (e.g., 'ega:EGAD00000000001'), to be expanded, pointing to resolvable URIs (e.g., https://www.w3.org/2000/01/rdf-schema\#label and https://identifiers.org/ega:EGAD00000000001, respectively).
 
 ##### ***Figure 17\.** Diagram depicting the expansion of a JSON document into JSON-LD with the addition of @context.*
 
@@ -1972,7 +1972,7 @@ flowchart TB
     n6 -. Which looks for the<br>referenced <code>@context</code> in .-> n3
     n6 L_n6_n7_0@== "With the schemas @context,<br>it expands the JSON-LD" ==> n7
     n1 -.-> n8
-    n4 -.-> n9["<code>@context: https\://raw.githubusercontent.com/ega-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json</code>"]
+    n4 -.-> n9["<code>@context: https\://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/schema.json</code>"]
     n7 -.-> n10
     n1@{ shape: doc}
     n4@{ shape: proc}
@@ -2104,9 +2104,9 @@ See further details in the [*Linked Data*](#76-linked-data) section.
 
 The schema requires CURIEs or HTTP URIs that resolve through identifiers.org or equivalent services, turning previously free-text fields into links that machines can dereference. For example, "biosample:SAMEA2397676" is resolved to "[https://www.ebi.ac.uk/biosamples/samples/SAMEA2397676](https://www.ebi.ac.uk/biosamples/samples/SAMEA2397676)" in an automatic way.
 
-Furthermore, we make use of **Biovalidator's custom keywords** that enable the JSON schema to connect to third party services (e.g., OLS, ENA, identifiers.org) during validation. For example, [isValidIdentifier](https://github.com/elixir-europe/biovalidator?tab=readme-ov-file#isvalididentifier) checks links across resources, catching typos before ingestion. Following the same example as above, if a user provided an ID "biosample:SA**R**EA2397676" (notice the typo, *R* instead of *M*), this error would be picked at validation and corrected by the submitter.
+Furthermore, we make use of **Biovalidator's custom keywords** that enable the JSON schema to connect to third party services (e.g., OLS, ENA, identifiers.org) during validation. For example, [isValidIdentifier](https://github.com/EbiEga/biovalidator?tab=readme-ov-file#isvalididentifier) checks links across resources, catching typos before ingestion. Following the same example as above, if a user provided an ID "biosample:SA**R**EA2397676" (notice the typo, *R* instead of *M*), this error would be picked at validation and corrected by the submitter.
 
-Likewise, ontology terms are validated with the OLS through Biovalidator's custom keyword [graphRestriction](https://github.com/elixir-europe/biovalidator?tab=readme-ov-file#graphrestriction), ensuring semantic consistency. For example, we can automatically check if "operon identification design" ([EFO:0001785](http://www.ebi.ac.uk/efo/EFO_0001785)) is a valid "study design" ([EFO:0001426](http://www.ebi.ac.uk/efo/EFO_0001426)) by relying on the JSON Schemas and Biovalidator to make the term comparison (i.e. *'is EFO:0001785 a child term of EFO:0001426?'*) through the OLS API.
+Likewise, ontology terms are validated with the OLS through Biovalidator's custom keyword [graphRestriction](https://github.com/EbiEga/biovalidator?tab=readme-ov-file#graphrestriction), ensuring semantic consistency. For example, we can automatically check if "operon identification design" ([EFO:0001785](http://www.ebi.ac.uk/efo/EFO_0001785)) is a valid "study design" ([EFO:0001426](http://www.ebi.ac.uk/efo/EFO_0001426)) by relying on the JSON Schemas and Biovalidator to make the term comparison (i.e. *'is EFO:0001785 a child term of EFO:0001426?'*) through the OLS API.
 
 In the current EGA v1 model, these constraints are non-existent, or depend on extensive Controlled Vocabularies (CV) that have to be individually maintained by the EGA. In contrast, relying on external resources simplifies the work of maintainers and keeps incoming submissions aligned with the latest field standards.
 
@@ -2188,15 +2188,15 @@ The EGA v2 model schemas follow a **branch → release-branch → tag** workflow
 
 * Each published version first gets a branch following [semantic version](https://semver.org) (vX.Y.Z), and later an immutable tag with the same name (vX.Y.Z). Validators and applications can fetch these static releases from GitHub through their version names.
 
-Full details of the release process can be found at the [releases/README.md](https://github.com/M-casado/fega-metadata-schema/blob/main/docs/releases/README.md). The workflow includes **manual and automated steps**, where artifacts (e.g., release\_manifest.json) are created, and semantic versions are checked, as well as the URIs used to identify each schema and its versions.
+Full details of the release process can be found at the [releases/README.md](./docs/releases/README.md). The workflow includes **manual and automated steps**, where artifacts (e.g., release\_manifest.json) are created, and semantic versions are checked, as well as the URIs used to identify each schema and its versions.
 
-The [release\_manifest.json](https://github.com/M-casado/fega-metadata-schema/blob/main/docs/releases/release_manifest.json) is a machine-readable summary of the schema version in each release. This document gets automatically generated prior to each release.
+The [release\_manifest.json](./docs/releases/release_manifest.json) is a machine-readable summary of the schema version in each release. This document gets automatically generated prior to each release.
 
 ### 7.9.2 Model extensions
 
 Extensions are copies of the main EGA v2 model schemas that are versioned independently yet maintain a hierarchical dependency with the original model. For example, in [Figure 20](#figure-20-made-up-example-of-the-core-ega-v2-model-and-a-fega-norway-extension-evolving-over-time), FEGA Norway extension v1.0.0 is expected to be compatible with EGA v2.1.0.
 
-These extensions have a different governance model (i.e., different ownership), and can be created by any institution or individual, as the project is open-source. They can also be merged with the core model at fega-metadata-schema following the [contributing documentation](https://github.com/M-casado/fega-metadata-schema/blob/main/CONTRIBUTING.md).
+These extensions have a different governance model (i.e., different ownership), and can be created by any institution or individual, as the project is open-source. They can also be merged with the core model at fega-metadata-schema following the [contributing documentation](./CONTRIBUTING.md).
 
 ## 7.10 Mapping archived data to the proposed model
 
@@ -2264,7 +2264,7 @@ The **implementation** of the EGA v2 model involves a key step in archiving by C
 
 # 8. Governance
 
-All schemas, examples and tests live in the **public fega-metadata-schema repository** under the [MIT licence](https://github.com/EGA-archive/fega-metadata-schema/blob/main/LICENSE), and every pull request triggers the same validation matrix the archive runs in production.
+All schemas, examples and tests live in the **public fega-metadata-schema repository** under the [MIT licence](../LICENSE), and every pull request triggers the same validation matrix the archive runs in production.
 
 Releases will be **documented** in GitHub and Zenodo, enabling history tracking of the model evolution at any time. 
 
@@ -2301,7 +2301,7 @@ This change release flow, like most of the work in this report, is but a **propo
 
 ## 8.2 Accountability and transparency
 
-* **Authorship**: A markdown file [AUTHORS.md](https://github.com/M-casado/fega-metadata-schema/blob/main/AUTHORS.md) at the root of fega-metadata-schema lists, for each contributor, their basic details and contributions. Furthermore, a [CODEOWNERS](https://github.com/M-casado/fega-metadata-schema/blob/main/.github/CODEOWNERS) file helps trace relevant people whose reviews gatekeep specific changes to the repository.
+* **Authorship**: A markdown file [AUTHORS.md](./AUTHORS.md) at the root of fega-metadata-schema lists, for each contributor, their basic details and contributions. Furthermore, a [CODEOWNERS](./.github/CODEOWNERS) file helps trace relevant people whose reviews gatekeep specific changes to the repository.
 
 * **Contacts**: each operational node designates at least one MWG contact. MWG members are listed along with their roles and contact details in the AUTHORS.md file.
 
@@ -2327,7 +2327,7 @@ For what mitigation measures are in place for each dependency, refer to the [*Ri
 
 ## 9.1 Validation services
 
-* [**ELIXIR Biovalidator**](https://github.com/elixir-europe/biovalidator). Core JSON Schema validator with ontology and taxonomy checks; runs as CLI or server. Our schemas and CI depend on it.
+* [**ELIXIR Biovalidator**](https://github.com/EbiEga/biovalidator). Core JSON Schema validator with ontology and taxonomy checks; runs as CLI or server. Our schemas and CI depend on it.
 
 * [**Ontology Lookup Service (OLS4) API**](https://www.ebi.ac.uk/ols4/help). Used by Biovalidator's custom keywords such as graphRestriction, isValidTerm, and isChildTermOf. If unavailable, semantic checks in validation cannot run.
 
@@ -2376,7 +2376,7 @@ Some of these are added to the FEGA repository as static files, while others are
 | [Validation services](#91-validation-services) | **Identifiers.org** | Registry updates change prefix targets (e.g., biosample:... -> biosample**s**:...). | Identifiers.org handles *deactivated* entries, and redirects properly to the new active ones. |
 | [Validation services](#91-validation-services) | **Identifiers.org** | Resolver downtime breaks CURIE/IRI validation and redirects. | Stop validation service to prevent misvalidated submissions. Alternatively, remove isValidIdentifier and isValidTaxonomy from the schemas. |
 | [Validation services](#91-validation-services) | **ENA Taxonomy** | API unavailable hampers isValidTaxonomy checks. | Stop validation service to prevent misvalidated submissions. Alternatively, remove isValidTaxonomy from the schemas. |
-| [Upstream schemas and profiles](#92-upstream-schemas-and-profiles) | **GA4GH Beacon v2** | Upstream schema changes or repo restructure break our references. | Beacon v2 references are not directly to the root Beacon v2 repository, but to a fork of it instead (for now at [M-casado](https://github.com/M-casado/beacon-v2)). Therefore, control over new changes is in FEGA's hands. If references are swapped to the root Beacon v2 repo, and this risk triggers, fallback is to have references to versioned Beacon v2 releases (e.g., [v2.2.0](https://github.com/ga4gh-beacon/beacon-v2/tree/v2.2.0)). |
+| [Upstream schemas and profiles](#92-upstream-schemas-and-profiles) | **GA4GH Beacon v2** | Spec evolution diverges from our reuse. | Adapt FEGA repo's local copy of spec (i.e., schemas) to new standards, and only release new changes when stable for FEGA. |
 | [Upstream schemas and profiles](#92-upstream-schemas-and-profiles) | **BioSchemas** | Spec evolution diverges from our reuse. | Adapt FEGA repo's local copy of spec (i.e., schemas) to new standards, and only release new changes when stable for FEGA. |
 | [Upstream schemas and profiles](#92-upstream-schemas-and-profiles) | **DCAT** | Spec evolution diverges from our reuse. | Adapt FEGA repo's local copy of spec (i.e., schemas) to new standards, and only release new changes when stable for FEGA. |
 | [Upstream schemas and profiles](#92-upstream-schemas-and-profiles) | **DCAT-AP** | Spec evolution diverges from our reuse. | Adapt FEGA repo's local copy of spec (i.e., schemas) to new standards, and only release new changes when stable for FEGA. |
@@ -2393,7 +2393,7 @@ The FEGA MWG has successfully developed an **abstract metadata model for the FEG
 
 * **First abstract metadata model version drafted:** a process-oriented and ontology-aligned metadata model was drafted, shifting from traditional biology-centric schemata to a flexible, procedural framework suitable for diverse life science domains.
 
-* **Ongoing model coverage:** the model consists of entities and their attributes. These are being standardised using JSON Schemas with JSON-LD contexts in the group's GitHub [repository](https://github.com/M-casado/fega-metadata-schema/tree/main/schemas).
+* **Ongoing model coverage:** the model consists of entities and their attributes. These are being standardised using JSON Schemas with JSON-LD contexts in the group's GitHub repository [schemas](../schemas).
 
 * **Ontology and linked data integration:** the model incorporates widely adopted ontologies and vocabularies (e.g., EFO, DCAT), ensuring interoperability through linked data standards.
 
@@ -2480,7 +2480,7 @@ See specific challenges in the [*Open questions*](#14-open-questions) section.
 | *Should we use SHACL shapes instead of JSON Schemas for semantic validation, like other profiles (e.g., [DCAT-US 3\.0](https://doi-do.github.io/dcat-us/#profile-validation))?* | Given that (1) Biovalidator accepts JSON Schema as input and (2) JSON-LD is an RDF-friendly format for semantic data, we advocate for keeping JSON Schema as the current validation constraint language. In the long-term, FEGA may release additional SHACL shapes for graph-level validation, or shift to SHACL validation altogether. Thanks to JSON-LD being an RDF format with @context, the transition, if it were to occur, to SHACL would be relatively straightforward. |
 | *Should we promote Beacon-v2 to create its own @context?* | As of now, their JSON Schemas lack @context, and instead we are the ones adding it in our entities that use Beacon-v2 schemas. |
 | *Should we add more entities (e.g., Genomic Variations) from other standards and models? Are they needed by FEGA?* | There is a sweet spot between trying to model *everything* in life, and modelling not enough. The usefulness towards the goals of the model (findability, analysis, reproducibility…) would be considered. |
-| *How should we handle dependencies on other standards?* | As of now, we are directly referencing, for example, Beacon-v2 JSON Schemas in their repositories (M-casado's [fork](https://github.com/M-casado/beacon-v2/tree/biovalidator-test) for compatibility). This opens the possibility of changes done in other repositories affecting integrity within the EGA metadata schemas. An alternative is to store these references as static files within the repo prior to each release. |
+| *How should we handle dependencies on other standards?* | As of now, we are directly encompassing third party [standards](../standards/) in our repository, where we can reuse them by referencing them in our [schemas](../schemas/). |
 | *How should we handle dependencies on ontologies?* | Controlled vocabulary terms within ontologies, like EFO, HPO or Mondo, are embedded in the JSON Schemas. This facilitates validation, but obfuscates traceability of validation when ontologies evolve over time. This could be alleviated, a priori, by freezing external resources and releasing them along the JSON Schemas. |
 | *What other standards should we reuse directly?* | This involves standards that are not simply taken for inspiration (e.g., DCAT-AP), but instead are directly embedded in the EGA v2 model (e.g., Beacon-v2). Possibilities include Beacon-v2, JSON-LD, BioSchemas, ISA-JSON, DCAT, and GDI HDM. |
 | *How to reconcile a FEGA node's relational storage database with a graph-based procedural model?* | Although the EGA v2 model is not tied to the possible implementations of it by the nodes, it would be naive to disjoin both. Thus, some trade-offs are already agreed within the model to limit the number of combinations and possible complexity of process trees that could be represented by it. For example, by using the *Protocol Collection* entity, or by creating additional "checklists" (e.g., 'if your protocol is X, I'm expecting Y and Z as an input') to impose limitations for submitters. |

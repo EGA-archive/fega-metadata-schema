@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/common/ontologyTerm.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/common/ontologyTerm.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Definition of an ontology term.",

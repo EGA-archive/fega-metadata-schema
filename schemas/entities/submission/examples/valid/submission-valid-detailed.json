@@ -1,9 +1,9 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/submission/schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/submission/schema.json",
     "@id": "ega:EGAB00000000002",
     "@type": ["ega:submission", "prov:Collection"],
     "title": "Northern Health longitudinal cohort submission",

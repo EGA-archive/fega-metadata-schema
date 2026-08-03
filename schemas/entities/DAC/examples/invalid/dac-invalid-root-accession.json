@@ -1,13 +1,13 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/DAC/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/DAC/schema.json"
   },
   "data": {
     "inSubmission": {
       "@id": "ega:EGAB00000000001",
       "@type": "ega:submission"
     },
-    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/DAC/schema.json",
     "@id": "ega:EGAD00000000001",
     "@type": [
       "ega:DAC",

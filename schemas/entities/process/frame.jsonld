@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/process/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/process/schema.json",
   "@type": "ega:process",
   "@embed": "@always",
   "@explicit": false,

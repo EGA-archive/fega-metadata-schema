@@ -1,9 +1,9 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/profiles/dataset-and-datafile.schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/profiles/dataset-and-datafile.schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/context.jsonld",
     "@id": "ega:EGAG-invalid-dataset-and-datafile-missing-dataset",
     "@type": "ega:graph",
     "@graph": [

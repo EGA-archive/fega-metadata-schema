@@ -41,7 +41,7 @@ on:
       - 'requirements.txt'
       - '.github/workflows/jsonld_context_check.yml'
   push:
-    branches: [ main ]
+    branches: [ dev, main ]
 
   workflow_dispatch:
 

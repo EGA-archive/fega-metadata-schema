@@ -1,7 +1,7 @@
 {
-  "schema": {"$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json"},
+  "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/profiles/organism-lab-data.schema.json"},
   "data": {
-    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/context.jsonld",
     "@id": "ega:EGAG-invalid-organism-lab-data-missing-organism",
     "@type": "ega:graph",
     "@graph": [

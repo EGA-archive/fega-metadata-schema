@@ -173,10 +173,10 @@ For one-off validation, wrap the JSON data and target schema in a document with 
 ```json
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/cohort/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/cohort/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/context.jsonld",
     "@type": "ega:cohort",
     "id": "ega:EGAC00001000001",
     "name": "Example rare disease cohort"
@@ -192,7 +192,7 @@ python scripts/py/validate_metadata.py <path/to/document.json>
 
 ## Contributing
 
-We welcome [issues](https://github.com/M-casado/fega-metadata-schema/issues/new/choose) and [pull requests](https://github.com/M-casado/fega-metadata-schema/pulls). Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before contributing.
+We welcome [issues](https://github.com/EGA-archive/fega-metadata-schema/issues/new/choose) and [pull requests](https://github.com/EGA-archive/fega-metadata-schema/pulls). Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before contributing.
 
 If you want to contribute in other ways to the group, please reach out to the FEGA Metadata Working Group leads listed in [`AUTHORS.md`](./AUTHORS.md).
 

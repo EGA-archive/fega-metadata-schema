@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/biomaterial/schema.json",
   "type": "object",
   "title": "EGA Biomaterial metadata schema",
   "meta:version": "0.0.0",
@@ -571,7 +571,7 @@
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:narrowMatch",
-              "object_id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/biosamples/defaultSchema.json#diagnosticMarkers",
+              "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/biosamples/defaultSchema.json#diagnosticMarkers",
               "mapping_justification": "semapv:ManualMappingCuration",
               "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
@@ -608,7 +608,7 @@
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
-              "object_id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/individuals/defaultSchema.json#/properties/pedigrees",
+              "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/individuals/defaultSchema.json#/properties/pedigrees",
               "mapping_justification": "semapv:LexicalMatching",
               "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
@@ -669,7 +669,7 @@
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
-              "object_id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/individuals/defaultSchema.json#/properties/treatments",
+              "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/individuals/defaultSchema.json#/properties/treatments",
               "mapping_justification": "semapv:ManualMappingCuration",
               "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",

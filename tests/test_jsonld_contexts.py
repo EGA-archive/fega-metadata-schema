@@ -18,11 +18,11 @@ def test_profile_context_resolves_to_the_base_graph_context() -> None:
     """Profiles may declare the base graph context instead of a sibling file."""
     id_map = build_id_to_path_map(REPO_ROOT)
     profile_ref = (
-        "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
         "schemas/graph/profiles/dataset-and-datafile.schema.json"
     )
     graph_context = (
-        "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
         "schemas/graph/context.jsonld"
     )
     example = REPO_ROOT / "schemas/graph/examples/valid/graph-valid-dataset-datafile.json"
@@ -34,11 +34,11 @@ def test_flat_profiles_and_graph_requirement_defs_are_addressable() -> None:
     """Flat profile files resolve, while requirements remain graph definitions."""
     id_map = build_id_to_path_map(REPO_ROOT)
     profile_ref = (
-        "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
         "schemas/graph/profiles/organism-lab-data.schema.json"
     )
     graph_ref = (
-        "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
         "schemas/graph/schema.json"
     )
 

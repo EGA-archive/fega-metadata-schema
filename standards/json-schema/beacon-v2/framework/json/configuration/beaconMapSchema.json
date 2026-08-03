@@ -54,7 +54,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/configuration/beaconMapSchema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/configuration/beaconMapSchema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Map of a Beacon, its entry types and endpoints. It isconceptually similar to a website sitemap.",

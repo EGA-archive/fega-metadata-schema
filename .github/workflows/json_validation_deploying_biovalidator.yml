@@ -37,7 +37,7 @@ on:
       - 'requirements.txt'
       - '.github/workflows/**'
   push:
-    branches: [ main ]
+    branches: [ dev, main ]
 
   workflow_dispatch:
     inputs:
@@ -46,7 +46,7 @@ on:
           Specify the branch (e.g., dev), tag (e.g., v1.3.11) or commit (e.g., 5fad895) to use as source (both JSON Schemas and JSON documents) for validation
         type: string
         required: true
-        default: main
+        default: dev
 
 jobs:
   validate-json-docs:
@@ -86,10 +86,10 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Biovalidator (M-casado main branch)
+      - name: Install Biovalidator (EbiEga main branch)
         run: |
-          # Use the EGA maintained 'main' branch of M-casado's fork.
-          npm install -g "github:M-casado/biovalidator#main"
+          # Use the EGA maintained 'main' branch of EbiEga's fork.
+          npm install -g "github:EbiEga/biovalidator#main"
           # Consider auditing the issues if there are lots:
           # npm audit fix
 

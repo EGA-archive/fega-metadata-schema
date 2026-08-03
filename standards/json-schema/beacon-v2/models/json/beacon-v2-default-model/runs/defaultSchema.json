@@ -1,6 +1,6 @@
 {
     "$comment": "version: ga4gh-beacon-run-v2.0.0",
-    "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/runs/defaultSchema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/runs/defaultSchema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Schema for the experimental run (e.g. sequencing run, array processing...) leading to the raw data for the (computational) analysis.",

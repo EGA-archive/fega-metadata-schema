@@ -22,7 +22,7 @@
 # Trigger
 # -------
 # - Any PR that touches JSON files, schemas, scripts/, or workflow files.
-# - Direct pushes to `main`
+# - Direct pushes to `dev` or `main`.
 #
 # Outcome
 # -------
@@ -46,7 +46,7 @@ on:
       - 'requirements.txt'
       - '.github/workflows/**'
   push:
-    branches: [ main ]
+    branches: [ dev, main ]
 
   workflow_dispatch:
     inputs:
@@ -55,7 +55,7 @@ on:
           Specify the branch (e.g., dev), tag (e.g., v1.3.11) or commit (e.g., 5fad895) to use as source for validation
         type: string
         required: true
-        default: main
+        default: dev
 
 jobs:
   validate-rdf-shacl:
