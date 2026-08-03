@@ -51,8 +51,14 @@ try:
         classify_response,
         post_to_validator,
     )
-    from fega_tools.io import collect_candidate_json
-    from fega_tools.logging_utils import configure_logging
+    from fega_tools.cli_utils import (
+        add_root_argument,
+        add_summary_arguments,
+        add_verbosity_argument,
+        emit_summary,
+    )
+    from fega_tools.io import clone_json, load_json
+    from fega_tools.logging_utils import configure_logging, log_suite_status
     from fega_tools.jsonld_utils import (
         build_id_to_path_map,
         find_invalid_context_type_mappings,
@@ -62,17 +68,16 @@ try:
         materialize_context,
     )
     from fega_tools.validation_common import (
-        BIVALIDATOR_COUNT_KEYS as COUNT_KEYS,
         DEFAULT_ROOT,
         INVALID_STATUS,
         REQUEST_ERROR_STATUS,
         SCRIPT_ERROR_STATUS,
         UNKNOWN_STATUS,
         VALID_STATUS,
-        add_counts as add_validation_counts,
-        empty_counts as make_empty_counts,
+        aggregate_validation_counts,
         find_entity_dirs,
-        write_json_summary,
+        find_example_files,
+        summarize_validation_results,
     )
 except ModuleNotFoundError as exc:
     msg = (
@@ -84,15 +89,6 @@ except ModuleNotFoundError as exc:
 
 
 LOGGER = logging.getLogger(Path(__file__).stem)
-
-try:
-    from colorama import Fore as _Fore, Style as _Style
-
-    _BOLD_GREEN = _Style.BRIGHT + _Fore.GREEN
-    _BOLD_RED = _Style.BRIGHT + _Fore.RED
-    _ANSI_RESET = _Style.RESET_ALL
-except ModuleNotFoundError:
-    _BOLD_GREEN = _BOLD_RED = _ANSI_RESET = ""
 
 
 SUMMARY_FILENAME = "frame_summary.json"
@@ -127,17 +123,6 @@ def find_frame_gaps(entity_dirs: Sequence[Path]) -> List[str]:
     ]
 
 
-def _load_json(path: Path) -> Any:
-    """Load a JSON file and return the parsed value."""
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
-
-
-def _clone_json(value: Any) -> Any:
-    """Make a JSON-safe deep copy."""
-    return json.loads(json.dumps(value))
-
-
 def _resolve_schema_ref(
     ref: str,
     current_schema: Path,
@@ -170,7 +155,7 @@ def _resolve_frame_path(
     direct_frame = resolved_schema.parent / "frame.jsonld"
     if direct_frame.is_file():
         return direct_frame
-    schema = _load_json(resolved_schema)
+    schema = load_json(resolved_schema)
     if not isinstance(schema, dict):
         raise ValueError(f"Schema must be an object: '{resolved_schema}'")
     candidates: List[Path] = []
@@ -210,7 +195,7 @@ def resolve_file_entity(
         raise ValueError(f"Input file must be JSON: {path}")
 
     try:
-        document = _load_json(resolved_path)
+        document = load_json(resolved_path)
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"Cannot load input file '{path}': {exc}") from exc
 
@@ -268,8 +253,7 @@ def _discover_inputs(
         frame_path = entity_dir / "frame.jsonld"
         if not frame_path.is_file():
             continue
-        valid_dir = entity_dir / "examples" / "valid"
-        files = collect_candidate_json([valid_dir]) if valid_dir.is_dir() else []
+        files = find_example_files(entity_dir, "valid")
         specs.extend(
             {
                 "path": path,
@@ -283,7 +267,7 @@ def _discover_inputs(
 
 def _data_with_context(data: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """Copy data and replace its context with a materialized context."""
-    data_copy = _clone_json(data)
+    data_copy = clone_json(data)
     data_copy["@context"] = context
     return data_copy
 
@@ -457,7 +441,7 @@ def _select_graph_document(
                 # The semantic equivalence check consumes the untouched raw
                 # frame later in the pipeline, so project into an independent
                 # copy before adding schema-facing inverse properties.
-                graph_items_by_id[node_id] = _clone_json(value)
+                graph_items_by_id[node_id] = clone_json(value)
                 graph_item_scores[node_id] = score
         for child in value.values():
             collect_entity_nodes(child)
@@ -532,7 +516,7 @@ def _select_graph_document(
             dac_id = organization.get("@id")
             if dac_id not in graph_items_by_id:
                 continue
-            membership = _clone_json(node)
+            membership = clone_json(node)
             membership.pop("org:organization", None)
             membership = compact_dac_membership(membership)
             append_unique(graph_items_by_id[dac_id], "components", membership)
@@ -776,7 +760,7 @@ def _prepare_input(
     }
 
     try:
-        document = _load_json(path)
+        document = load_json(path)
     except (OSError, json.JSONDecodeError) as exc:
         _set_file_failure(state, SCRIPT_ERROR_STATUS, "load_file", [str(exc)])
         return state
@@ -847,7 +831,7 @@ def _prepare_input(
         return state
 
     try:
-        frame_doc = _load_json(frame_path)
+        frame_doc = load_json(frame_path)
         if not isinstance(frame_doc, dict):
             raise ValueError("Frame must be a JSON object")
         frame_context = frame_doc.get("@context")
@@ -1387,19 +1371,6 @@ def _run_pipeline(
 # ---------------------------------------------------------------------------
 
 
-def entity_passed(summary: Dict[str, Any]) -> bool:
-    """Return whether one entity has a fully passing frame suite."""
-    return (
-        summary["total_files"] > 0
-        and summary["completed_runs"] == summary["total_files"]
-        and summary["validation_passed"] == summary["total_files"]
-        and summary["validation_failed"] == 0
-        and summary["request_errors"] == 0
-        and summary["unknown_responses"] == 0
-        and summary["script_errors"] == 0
-    )
-
-
 def _summarize_entity_results(
     entity_dir: Path,
     frame_path: Path,
@@ -1407,45 +1378,15 @@ def _summarize_entity_results(
     input_path: Path,
 ) -> Dict[str, Any]:
     """Build one entity summary from completed file result records."""
-    status_counts = {
-        VALID_STATUS: 0,
-        INVALID_STATUS: 0,
-        REQUEST_ERROR_STATUS: 0,
-        UNKNOWN_STATUS: 0,
-        SCRIPT_ERROR_STATUS: 0,
-    }
-    for result in results:
-        status_counts[result["status"]] += 1
-
-    expectation_failed_files = [
-        result["file"] for result in results if result["status"] != VALID_STATUS
-    ]
-    summary: Dict[str, Any] = {
-        "entity": entity_dir.name,
-        "frame": str(frame_path),
-        "input_path": str(input_path),
-        "total_files": len(results),
-        "completed_runs": status_counts[VALID_STATUS] + status_counts[INVALID_STATUS],
-        "validation_passed": status_counts[VALID_STATUS],
-        "validation_failed": status_counts[INVALID_STATUS],
-        "request_errors": status_counts[REQUEST_ERROR_STATUS],
-        "unknown_responses": status_counts[UNKNOWN_STATUS],
-        "script_errors": status_counts[SCRIPT_ERROR_STATUS],
-        "files": list(results),
-        "expectation_failed_files": expectation_failed_files,
-        "n_total_files": len(results),
-        "n_failed_files": len(expectation_failed_files),
-    }
-    summary["passed"] = entity_passed(summary)
+    summary = summarize_validation_results(results, VALID_STATUS)
+    summary.update(
+        {
+            "entity": entity_dir.name,
+            "frame": str(frame_path),
+            "input_path": str(input_path),
+        }
+    )
     return summary
-
-
-def summarize_totals(entity_summaries: Sequence[Dict[str, Any]]) -> Dict[str, int]:
-    """Add all entity counters into one total counter block."""
-    totals = make_empty_counts(COUNT_KEYS)
-    for entity_summary in entity_summaries:
-        add_validation_counts(totals, entity_summary, COUNT_KEYS)
-    return totals
 
 
 # ---------------------------------------------------------------------------
@@ -1514,7 +1455,7 @@ def validate_jsonld_frames(
             )
         )
 
-    totals = summarize_totals(entity_summaries)
+    totals = aggregate_validation_counts(entity_summaries)
     overall_passed = (
         bool(entity_summaries)
         and all(summary["passed"] for summary in entity_summaries)
@@ -1567,10 +1508,7 @@ def _log_results(summary: Dict[str, Any]) -> None:
         summary.get("validation_passed", 0),
         summary.get("total_files", 0),
     )
-    if summary["passed"]:
-        LOGGER.info("Tests %spassed%s", _BOLD_GREEN, _ANSI_RESET)
-    else:
-        LOGGER.info("Tests %sfailed%s", _BOLD_RED, _ANSI_RESET)
+    log_suite_status(LOGGER, summary["passed"])
 
 
 # ---------------------------------------------------------------------------
@@ -1595,12 +1533,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--root",
-        type=Path,
-        default=DEFAULT_ROOT,
-        help=f"Entity schema root (default: {DEFAULT_ROOT})",
-    )
+    add_root_argument(parser, default=DEFAULT_ROOT)
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument(
         "--entity",
@@ -1617,24 +1550,8 @@ def make_arg_parser() -> argparse.ArgumentParser:
         default=DEFAULT_VALIDATOR_URL,
         help=f"Biovalidator endpoint URL (default: {DEFAULT_VALIDATOR_URL})",
     )
-    parser.add_argument(
-        "--summary-dir",
-        type=Path,
-        help=f"Optional directory where {SUMMARY_FILENAME} is written.",
-    )
-    parser.add_argument(
-        "--print-summary",
-        action="store_true",
-        default=False,
-        help="Print the full JSON summary to stdout (default: off).",
-    )
-    parser.add_argument(
-        "--verbosity",
-        "-v",
-        action="count",
-        default=0,
-        help="Increase log verbosity: -v for INFO, -vv for DEBUG.",
-    )
+    add_summary_arguments(parser, SUMMARY_FILENAME)
+    add_verbosity_argument(parser)
     return parser
 
 
@@ -1662,11 +1579,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         sys.exit(2)
 
     _log_results(summary)
-    if args.summary_dir:
-        write_json_summary(summary, args.summary_dir, SUMMARY_FILENAME)
-    if args.print_summary:
-        json.dump(summary, sys.stdout, indent=2)
-        sys.stdout.write("\n")
+    emit_summary(
+        summary,
+        summary_dir=args.summary_dir,
+        summary_filename=SUMMARY_FILENAME,
+        print_summary=args.print_summary,
+    )
 
     sys.exit(0 if summary["passed"] else 1)
 

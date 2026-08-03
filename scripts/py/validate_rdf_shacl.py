@@ -11,13 +11,19 @@ from pathlib import Path
 from typing import Any, Dict, List, Sequence, Set, Tuple
 
 try:
-    from fega_tools.io import collect_candidate_json
+    from fega_tools.cli_utils import (
+        add_root_argument,
+        add_summary_arguments,
+        add_verbosity_argument,
+        emit_summary,
+    )
+    from fega_tools.io import clone_json
     from fega_tools.jsonld_utils import (
         build_id_to_path_map,
         find_repo_root,
         materialize_context,
     )
-    from fega_tools.logging_utils import configure_logging
+    from fega_tools.logging_utils import configure_logging, log_suite_status
     from fega_tools.rdf_utils import (
         collect_candidate_rdf,
         extract_types_from_graph,
@@ -26,19 +32,20 @@ try:
         validate_against_shacl,
     )
     from fega_tools.validation_common import (
-        BASIC_COUNT_KEYS as COUNT_KEYS,
         CATEGORIES,
         DEFAULT_ROOT,
         INVALID_STATUS,
         SCRIPT_ERROR_STATUS,
         VALID_STATUS,
-        add_counts as add_validation_counts,
+        aggregate_category_summaries,
         coverage_gaps_for_entity_category,
-        empty_counts as make_empty_counts,
+        expected_status_for,
         find_entity_dirs,
+        find_example_files,
         find_example_coverage_gaps,
+        format_coverage_gap,
         load_wrapped_example,
-        write_json_summary,
+        summarize_validation_results,
     )
 except ModuleNotFoundError as exc:
     msg = (
@@ -52,15 +59,6 @@ except ModuleNotFoundError as exc:
 
 
 LOGGER = logging.getLogger(Path(__file__).stem)
-
-try:
-    from colorama import Fore as _Fore, Style as _Style
-
-    _BOLD_GREEN = _Style.BRIGHT + _Fore.GREEN
-    _BOLD_RED = _Style.BRIGHT + _Fore.RED
-    _ANSI_RESET = _Style.RESET_ALL
-except ModuleNotFoundError:
-    _BOLD_GREEN = _BOLD_RED = _ANSI_RESET = ""
 
 
 SUMMARY_FILENAME = "shacl_summary.json"
@@ -76,7 +74,7 @@ def materialize_data_context(
     if context is None:
         return jsonld_data
 
-    data_copy = json.loads(json.dumps(jsonld_data))
+    data_copy = clone_json(jsonld_data)
     data_copy["@context"] = materialize_context(context, input_path, id_to_path_map)
     return data_copy
 
@@ -275,34 +273,6 @@ def validate_file_shacl(
     return result
 
 
-def expected_status_for(expectation: str) -> str:
-    """Return the file status that satisfies one suite category."""
-    return VALID_STATUS if expectation == "valid" else INVALID_STATUS
-
-
-def category_passed(summary: Dict[str, Any], expectation: str) -> bool:
-    """Apply strict pass/fail rules for valid and invalid SHACL examples."""
-    total_files = summary["total_files"]
-    common_ok = (
-        summary["completed_runs"] == total_files
-        and summary["script_errors"] == 0
-        and not summary.get("coverage_gaps")
-    )
-
-    if expectation == "valid":
-        return (
-            common_ok
-            and summary["validation_passed"] == total_files
-            and summary["validation_failed"] == 0
-        )
-
-    return (
-        common_ok
-        and summary["validation_failed"] == total_files
-        and summary["validation_passed"] == 0
-    )
-
-
 def summarize_category(
     entity_dir: Path,
     category: str,
@@ -314,7 +284,7 @@ def summarize_category(
 ) -> Dict[str, Any]:
     """Validate one entity's examples for one category and summarize results."""
     category_dir = entity_dir / "examples" / category
-    files = collect_candidate_json([category_dir]) if category_dir.is_dir() else []
+    files = find_example_files(entity_dir, category)
     expected_status = expected_status_for(category)
     results = []
 
@@ -326,36 +296,20 @@ def summarize_category(
         outcome = "passed" if result["status"] == expected_status else "failed"
         LOGGER.debug("Validated '%s' [expected: %s] -> %s", path.name, category, outcome)
 
-    status_counts = {
-        VALID_STATUS: 0,
-        INVALID_STATUS: 0,
-        SCRIPT_ERROR_STATUS: 0,
-    }
-    for result in results:
-        status_counts[result["status"]] += 1
-
-    expectation_failed_files = [
-        result["file"] for result in results if result["status"] != expected_status
-    ]
-
-    summary: Dict[str, Any] = {
-        "expectation": category,
-        "input_path": str(category_dir),
-        "coverage_gaps": coverage_gaps_for_entity_category(
+    summary = summarize_validation_results(
+        results,
+        expected_status,
+        coverage_gaps=coverage_gaps_for_entity_category(
             coverage_gaps, entity_dir.name, category
         ),
-        "total_files": len(files),
-        "completed_runs": status_counts[VALID_STATUS] + status_counts[INVALID_STATUS],
-        "validation_passed": status_counts[VALID_STATUS],
-        "validation_failed": status_counts[INVALID_STATUS],
-        "script_errors": status_counts[SCRIPT_ERROR_STATUS],
-        "files": results,
-        "expectation_failed_files": expectation_failed_files,
-        "n_total_files": len(files),
-        "n_failed_files": status_counts[INVALID_STATUS],
-        "type_metrics": build_type_metrics(results, expected_types),
-    }
-    summary["passed"] = category_passed(summary, category)
+    )
+    summary.update(
+        {
+            "expectation": category,
+            "input_path": str(category_dir),
+            "type_metrics": build_type_metrics(results, expected_types),
+        }
+    )
     return summary
 
 
@@ -385,32 +339,6 @@ def summarize_entity(
     }
 
 
-def summarize_totals(entity_summaries: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
-    """Aggregate validation counters across all entities and categories."""
-    category_totals: Dict[str, Dict[str, Any]] = {
-        category: {"expectation": category, "coverage_gaps": [], **make_empty_counts(COUNT_KEYS)}
-        for category in CATEGORIES
-    }
-    totals = make_empty_counts(COUNT_KEYS)
-
-    for entity_summary in entity_summaries:
-        for category in CATEGORIES:
-            category_summary = entity_summary["categories"][category]
-            add_validation_counts(category_totals[category], category_summary, COUNT_KEYS)
-            add_validation_counts(totals, category_summary, COUNT_KEYS)
-            category_totals[category]["coverage_gaps"].extend(
-                category_summary.get("coverage_gaps", [])
-            )
-
-    for category in CATEGORIES:
-        category_totals[category]["passed"] = category_passed(
-            category_totals[category], category
-        )
-
-    totals["category_totals"] = category_totals
-    return totals
-
-
 def validate_rdf_shacl(
     root: Path,
     entity: str | None,
@@ -436,12 +364,9 @@ def validate_rdf_shacl(
 
     coverage_gaps = find_example_coverage_gaps(entity_dirs, CATEGORIES)
     for gap in coverage_gaps:
-        details = []
-        if gap.get("missing"):
-            details.append(f"missing {', '.join(gap['missing'])} examples")
-        if gap.get("empty"):
-            details.append(f"empty {', '.join(gap['empty'])} examples")
-        LOGGER.warning("Coverage gap for %s: %s", gap["entity"], "; ".join(details))
+        LOGGER.warning(
+            "Coverage gap for %s: %s", gap["entity"], format_coverage_gap(gap)
+        )
 
     file_summaries = [
         summarize_entity(
@@ -454,7 +379,7 @@ def validate_rdf_shacl(
         )
         for entity_dir in entity_dirs
     ]
-    totals = summarize_totals(file_summaries)
+    totals = aggregate_category_summaries(file_summaries)
     category_totals = totals.pop("category_totals")
     valid_examples_passed = category_totals["valid"]["passed"]
     invalid_examples_passed = category_totals["invalid"]["passed"]
@@ -503,10 +428,7 @@ def _log_results(summary: Dict[str, Any]) -> None:
     LOGGER.info("%d / %d valid files passed SHACL validation", valid_passed, valid_total)
     LOGGER.info("%d / %d invalid files failed SHACL validation", invalid_passed, invalid_total)
 
-    if summary["passed"]:
-        LOGGER.info("Tests %spassed%s", _BOLD_GREEN, _ANSI_RESET)
-    else:
-        LOGGER.info("Tests %sfailed%s", _BOLD_RED, _ANSI_RESET)
+    log_suite_status(LOGGER, summary["passed"])
 
 
 def make_arg_parser() -> argparse.ArgumentParser:
@@ -523,12 +445,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--root",
-        type=Path,
-        default=DEFAULT_ROOT,
-        help=f"Entity schema root (default: {DEFAULT_ROOT})",
-    )
+    add_root_argument(parser, default=DEFAULT_ROOT)
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument(
         "--entity",
@@ -548,17 +465,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
         required=True,
         help="SHACL shape files or directories (TTL, RDF/XML, JSON-LD, etc.).",
     )
-    parser.add_argument(
-        "--summary-dir",
-        type=Path,
-        help=f"Optional directory where {SUMMARY_FILENAME} is written.",
-    )
-    parser.add_argument(
-        "--print-summary",
-        action="store_true",
-        default=False,
-        help="Print the full JSON summary to stdout (default: off).",
-    )
+    add_summary_arguments(parser, SUMMARY_FILENAME)
     parser.add_argument(
         "--shacl-report",
         action="store_true",
@@ -568,13 +475,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
         "--required-root-type",
         help="Require a root RDF node with this type IRI before SHACL conformance.",
     )
-    parser.add_argument(
-        "--verbosity",
-        "-v",
-        action="count",
-        default=0,
-        help="Increase log verbosity: -v for INFO, -vv for DEBUG.",
-    )
+    add_verbosity_argument(parser)
     return parser
 
 
@@ -599,12 +500,12 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     _log_results(summary)
 
-    if args.summary_dir:
-        write_json_summary(summary, args.summary_dir, SUMMARY_FILENAME)
-
-    if args.print_summary:
-        json.dump(summary, sys.stdout, indent=2)
-        sys.stdout.write("\n")
+    emit_summary(
+        summary,
+        summary_dir=args.summary_dir,
+        summary_filename=SUMMARY_FILENAME,
+        print_summary=args.print_summary,
+    )
 
     sys.exit(0 if summary["passed"] else 1)
 

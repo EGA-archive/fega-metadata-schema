@@ -33,7 +33,7 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from fega_tools.io import collect_candidate_json
+    from fega_tools.io import collect_candidate_json, load_json_object
     from fega_tools.logging_utils import configure_logging
 except ModuleNotFoundError as exc:
     msg = (
@@ -201,19 +201,20 @@ def compare_schemas(schema1: Dict[str, Any], schema2: Dict[str, Any]) -> Dict[st
 def load_json(path: Path) -> Dict[str, Any]:
     """Load and parse a JSON file."""
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
+        return load_json_object(path)
+    except (json.JSONDecodeError, ValueError) as exc:
         logger.error(f"Invalid JSON in '{path}': {exc}")
         raise
 
+
 def find_schema_files(path: Path) -> Dict[str, Path]:
-    """Find all JSON files under path."""
+    """Find all JSON files under path keyed by root-relative path."""
     if path.is_dir():
-        return {p.name: p for p in collect_candidate_json([path])}
-    elif path.is_file():
+        root = path.resolve()
+        return {str(p.relative_to(root)): p for p in collect_candidate_json([root])}
+    if path.is_file():
         return {path.name: path}
-    else:
-        return {}
+    return {}
 
 def classify_change(diff: Dict[str, Any]) -> str:
     """Classify the type of change based on the diff results."""
@@ -334,7 +335,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         try:
             schema1 = load_json(path1)
             schema2 = load_json(path2)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, ValueError):
             logger.debug(f"Skipping '{fname}' due to JSON decode error")
             continue
 

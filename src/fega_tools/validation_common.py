@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Sequence
 
-from fega_tools.io import collect_candidate_json
+from fega_tools.io import collect_candidate_json, load_json_object
 
 DEFAULT_ROOT = Path("schemas/entities")
 
@@ -31,6 +31,14 @@ BIVALIDATOR_COUNT_KEYS = (
     "request_errors",
     "unknown_responses",
     "script_errors",
+)
+VALIDATION_COUNT_KEYS = BIVALIDATOR_COUNT_KEYS
+RESULT_STATUSES = (
+    VALID_STATUS,
+    INVALID_STATUS,
+    REQUEST_ERROR_STATUS,
+    UNKNOWN_STATUS,
+    SCRIPT_ERROR_STATUS,
 )
 
 
@@ -89,6 +97,21 @@ def find_example_coverage_gaps(
     return gaps
 
 
+def find_example_files(entity_dir: Path, category: str) -> List[Path]:
+    """Return JSON examples for one entity/category, or an empty list."""
+    category_dir = entity_dir / "examples" / category
+    return collect_candidate_json([category_dir]) if category_dir.is_dir() else []
+
+
+def expected_status_for(expectation: str) -> str:
+    """Return the validation status expected for a valid/invalid category."""
+    if expectation == "valid":
+        return VALID_STATUS
+    if expectation == "invalid":
+        return INVALID_STATUS
+    raise ValueError(f"Unknown example expectation: {expectation}")
+
+
 def coverage_gap_applies_to(gap: Dict[str, Any], category: str) -> bool:
     """Return whether a coverage gap affects one example category."""
     return category in gap.get("missing", []) or category in gap.get("empty", [])
@@ -109,10 +132,8 @@ def coverage_gaps_for_entity_category(
 
 def load_wrapped_example(path: Path) -> Dict[str, Any]:
     """Load a wrapped FEGA example and require top-level data/schema keys."""
-    with path.open("r", encoding="utf-8") as handle:
-        document = json.load(handle)
-
-    if not isinstance(document, dict) or not {"data", "schema"}.issubset(document):
+    document = load_json_object(path)
+    if not {"data", "schema"}.issubset(document):
         raise ValueError("Expected a JSON object containing both 'data' and 'schema' keys")
 
     return document
@@ -131,6 +152,125 @@ def add_counts(
     """Add validation counters from one summary into another."""
     for key in count_keys:
         target[key] += source.get(key, 0)
+
+
+def summarize_validation_results(
+    results: Sequence[Dict[str, Any]],
+    expected_status: str,
+    *,
+    coverage_gaps: Sequence[Dict[str, Any]] = (),
+) -> Dict[str, Any]:
+    """Build the shared counter and pass/fail block for file results."""
+    if expected_status not in {VALID_STATUS, INVALID_STATUS}:
+        raise ValueError(f"Unsupported expected status: {expected_status}")
+
+    status_counts = empty_counts(RESULT_STATUSES)
+    for result in results:
+        status = result.get("status")
+        if status not in status_counts:
+            raise ValueError(f"Unknown validation result status: {status}")
+        status_counts[status] += 1
+
+    expectation_failed_files = [
+        result.get("file", "")
+        for result in results
+        if result.get("status") != expected_status
+    ]
+    summary: Dict[str, Any] = {
+        **empty_counts(VALIDATION_COUNT_KEYS),
+        "coverage_gaps": list(coverage_gaps),
+        "files": list(results),
+        "expectation_failed_files": expectation_failed_files,
+        "n_total_files": len(results),
+        "n_failed_files": len(expectation_failed_files),
+    }
+    summary.update(
+        {
+            "total_files": len(results),
+            "completed_runs": status_counts[VALID_STATUS]
+            + status_counts[INVALID_STATUS],
+            "validation_passed": status_counts[VALID_STATUS],
+            "validation_failed": status_counts[INVALID_STATUS],
+            "request_errors": status_counts[REQUEST_ERROR_STATUS],
+            "unknown_responses": status_counts[UNKNOWN_STATUS],
+            "script_errors": status_counts[SCRIPT_ERROR_STATUS],
+        }
+    )
+    summary["passed"] = _validation_results_passed(summary, expected_status)
+    return summary
+
+
+def _validation_results_passed(summary: Dict[str, Any], expected_status: str) -> bool:
+    """Return whether a summarized result set satisfies its expectation."""
+    expected_count = (
+        summary["validation_passed"]
+        if expected_status == VALID_STATUS
+        else summary["validation_failed"]
+    )
+    return (
+        summary["total_files"] > 0
+        and summary["completed_runs"] == summary["total_files"]
+        and expected_count == summary["total_files"]
+        and summary["validation_passed"] + summary["validation_failed"]
+        == summary["total_files"]
+        and summary["request_errors"] == 0
+        and summary["unknown_responses"] == 0
+        and summary["script_errors"] == 0
+        and not summary.get("coverage_gaps")
+    )
+
+
+def aggregate_validation_counts(
+    summaries: Sequence[Dict[str, Any]],
+) -> Dict[str, int]:
+    """Aggregate standard validation counters across summary records."""
+    totals = empty_counts(VALIDATION_COUNT_KEYS)
+    for summary in summaries:
+        add_counts(totals, summary, VALIDATION_COUNT_KEYS)
+    return totals
+
+
+def aggregate_category_summaries(
+    entity_summaries: Sequence[Dict[str, Any]],
+    categories: Sequence[str] = CATEGORIES,
+) -> Dict[str, Any]:
+    """Aggregate nested entity/category validation summaries."""
+    category_totals: Dict[str, Dict[str, Any]] = {
+        category: {
+            "expectation": category,
+            "coverage_gaps": [],
+            **empty_counts(VALIDATION_COUNT_KEYS),
+        }
+        for category in categories
+    }
+    totals = empty_counts(VALIDATION_COUNT_KEYS)
+
+    for entity_summary in entity_summaries:
+        for category in categories:
+            category_summary = entity_summary["categories"][category]
+            add_counts(category_totals[category], category_summary, VALIDATION_COUNT_KEYS)
+            add_counts(totals, category_summary, VALIDATION_COUNT_KEYS)
+            category_totals[category]["coverage_gaps"].extend(
+                category_summary.get("coverage_gaps", [])
+            )
+
+    for category in categories:
+        category_totals[category]["passed"] = _validation_results_passed(
+            category_totals[category], expected_status_for(category)
+        )
+
+    totals["category_totals"] = category_totals
+    return totals
+
+
+def format_coverage_gap(gap: Dict[str, Any]) -> str:
+    """Format missing/empty example categories for a log message."""
+    details: List[str] = []
+    if gap.get("missing"):
+        details.append(f"missing {', '.join(gap['missing'])} examples")
+    if gap.get("empty"):
+        details.append(f"empty {', '.join(gap['empty'])} examples")
+    return "; ".join(details)
 
 
 def write_json_summary(summary: Dict[str, Any], summary_dir: Path, filename: str) -> None:

@@ -22,6 +22,7 @@ CONTEXT = {
 
 
 def test_root_type_survives_self_reference() -> None:
+    """Check that a root type remains valid when the document references itself."""
     document = {
         "@context": CONTEXT,
         "@id": "http://example.org/dataset/1",
@@ -33,6 +34,7 @@ def test_root_type_survives_self_reference() -> None:
 
 
 def test_nested_type_does_not_satisfy_root_requirement() -> None:
+    """Check that a nested type cannot satisfy the root requirement."""
     document = {
         "@context": CONTEXT,
         "@id": "http://example.org/dataset/1",
@@ -47,5 +49,6 @@ def test_nested_type_does_not_satisfy_root_requirement() -> None:
 
 
 def test_invalid_jsonld_context_is_reported() -> None:
+    """Check that an invalid JSON-LD context raises a clear error."""
     with pytest.raises(ValueError, match="Failed to expand JSON-LD"):
         root_has_required_type({"@context": "not a valid context reference"}, "dcat:Dataset")

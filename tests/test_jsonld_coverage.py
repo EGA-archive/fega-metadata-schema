@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _write_json(path: Path, value: object) -> None:
+    """Write a JSON value to a file, creating parent directories first."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value), encoding="utf-8")
 
@@ -28,6 +29,7 @@ def _write_entity(
     context_terms: dict,
     frame: dict,
 ) -> Path:
+    """Create a temporary entity with its schema, context, and frame files."""
     entity_dir = repo / "schemas" / "entities" / entity
     schema.setdefault("$schema", "https://json-schema.org/draft/2020-12/schema")
     schema.setdefault("$id", f"https://example.org/schemas/entities/{entity}/schema.json")

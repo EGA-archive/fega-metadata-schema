@@ -4,19 +4,21 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
-import json
 import logging
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence
 
 try:
-    from fega_tools.jsonld_coverage import validate_jsonld_coverage
-    from fega_tools.logging_utils import configure_logging
-    from fega_tools.validation_common import (
-        DEFAULT_ROOT,
-        write_json_summary,
+    from fega_tools.cli_utils import (
+        add_root_argument,
+        add_summary_arguments,
+        add_verbosity_argument,
+        emit_summary,
     )
+    from fega_tools.jsonld_coverage import validate_jsonld_coverage
+    from fega_tools.logging_utils import configure_logging, log_suite_status
+    from fega_tools.validation_common import DEFAULT_ROOT
 except ModuleNotFoundError as exc:
     msg = (
         "ERROR: The helper package 'fega_tools' is not importable.\n"
@@ -27,15 +29,6 @@ except ModuleNotFoundError as exc:
 
 
 LOGGER = logging.getLogger(Path(__file__).stem)
-
-try:
-    from colorama import Fore as _Fore, Style as _Style
-
-    _BOLD_GREEN = _Style.BRIGHT + _Fore.GREEN
-    _BOLD_RED = _Style.BRIGHT + _Fore.RED
-    _ANSI_RESET = _Style.RESET_ALL
-except ModuleNotFoundError:
-    _BOLD_GREEN = _BOLD_RED = _ANSI_RESET = ""
 
 
 SUMMARY_FILENAME = "jsonld_coverage_summary.json"
@@ -106,10 +99,8 @@ def _log_results(summary: Dict[str, Any]) -> None:
     )
     if summary["script_errors"]:
         LOGGER.info("Script/setup errors: %d", summary["script_errors"])
-    if summary["passed"]:
-        LOGGER.info("Tests %spassed%s", _BOLD_GREEN, _ANSI_RESET)
-    else:
-        LOGGER.info("Tests %sfailed%s", _BOLD_RED, _ANSI_RESET)
+    log_suite_status(LOGGER, summary["passed"])
+    if not summary["passed"]:
         _log_entity_failures(summary)
 
 
@@ -128,34 +119,13 @@ def make_arg_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--root",
-        type=Path,
-        default=DEFAULT_ROOT,
-        help=f"Entity schema root (default: {DEFAULT_ROOT})",
-    )
+    add_root_argument(parser, default=DEFAULT_ROOT)
     parser.add_argument(
         "--entity",
         help="Validate one entity by directory name, e.g. 'cohort'.",
     )
-    parser.add_argument(
-        "--summary-dir",
-        type=Path,
-        help=f"Optional directory where {SUMMARY_FILENAME} is written.",
-    )
-    parser.add_argument(
-        "--print-summary",
-        action="store_true",
-        default=False,
-        help="Print the full JSON summary to stdout (default: off).",
-    )
-    parser.add_argument(
-        "--verbosity",
-        "-v",
-        action="count",
-        default=0,
-        help="Increase log verbosity: -v for INFO, -vv for DEBUG.",
-    )
+    add_summary_arguments(parser, SUMMARY_FILENAME)
+    add_verbosity_argument(parser)
     return parser
 
 
@@ -177,12 +147,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     _log_results(summary)
 
-    if args.summary_dir:
-        write_json_summary(summary, args.summary_dir, SUMMARY_FILENAME)
-
-    if args.print_summary:
-        json.dump(summary, sys.stdout, indent=2)
-        sys.stdout.write("\n")
+    emit_summary(
+        summary,
+        summary_dir=args.summary_dir,
+        summary_filename=SUMMARY_FILENAME,
+        print_summary=args.print_summary,
+    )
 
     if summary["script_errors"]:
         sys.exit(2)

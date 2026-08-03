@@ -83,3 +83,14 @@ def configure_logging(verbosity: int = 0) -> None:
     root.handlers.clear()  # Avoid duplicate logs if configure_logging() runs twice
     root.setLevel(level)
     root.addHandler(handler)
+
+
+def log_suite_status(logger: logging.Logger, passed: bool) -> None:
+    """Log the standard coloured suite pass/fail line."""
+    if _HAVE_COLORAMA:
+        passed_text = f"{Style.BRIGHT}{Fore.GREEN}passed{Style.RESET_ALL}"
+        failed_text = f"{Style.BRIGHT}{Fore.RED}failed{Style.RESET_ALL}"
+    else:
+        passed_text = "passed"
+        failed_text = "failed"
+    logger.info("Tests %s", passed_text if passed else failed_text)

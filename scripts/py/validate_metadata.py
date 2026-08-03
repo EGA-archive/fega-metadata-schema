@@ -14,18 +14,15 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Sequence
 
-import requests
-
 try:
     from fega_tools.biovalidator import (
         DEFAULT_VALIDATOR_URL,
         assert_validator_reachable,
-        classify_response,
-        post_to_validator,
+        validate_document,
     )
     from fega_tools.io import collect_candidate_json
     from fega_tools.logging_utils import configure_logging
-    from fega_tools.validation_common import load_wrapped_example
+    from fega_tools.validation_common import VALID_STATUS, load_wrapped_example
 except ModuleNotFoundError as exc:
     msg = (
         "ERROR:  The helper package 'fega_tools' is not importable.\n"
@@ -83,30 +80,14 @@ def validate_paths(inputs: Sequence[Path], validator_url: str) -> Dict[str, Any]
         logger.debug(f"Validating '{fp}'")
         document = load_wrapped_example(fp)
 
-        try:
-            resp = post_to_validator(document, validator_url)
-            request_error = False
-        except (requests.RequestException, json.JSONDecodeError) as exc:
-            request_error = True
-            resp = str(exc)
-
-        if request_error:
+        result = validate_document(document, validator_url)
+        status = result["status"]
+        if status != VALID_STATUS:
             failed_files.append(str(fp))
-            errors_of_failed_files[str(fp)] = [resp]
-            logger.error(f"Validation FAILED (request error) for '{fp}'")
-
-        elif classify_response(resp) == "validation_failed":
-            failed_files.append(str(fp))
-            errors_of_failed_files[str(fp)] = resp
-            logger.error(f"Validation FAILED for '{fp}'")
-
-        elif classify_response(resp) == "validation_passed":
-            logger.debug(f"Validation PASSED for '{fp}'")
-
+            errors_of_failed_files[str(fp)] = result.get("errors", [status])
+            logger.error("Validation FAILED (%s) for '%s'", status, fp)
         else:
-            failed_files.append(str(fp))
-            errors_of_failed_files[str(fp)] = ["Unrecognised validator response"]
-            logger.error(f"Validation FAILED (unknown response) for '{fp}'")
+            logger.debug(f"Validation PASSED for '{fp}'")
 
     summary = {
         "timestamp": _dt.datetime.now(tz=_dt.timezone.utc).isoformat(timespec="seconds"),

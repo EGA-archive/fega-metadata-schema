@@ -1,26 +1,22 @@
-"""
-json_pointer.py - rewrite raw-GitHub URIs inside JSON structures
-"""
+"""Rewrite raw-GitHub URIs inside JSON-compatible structures and text."""
 from __future__ import annotations
 
-import logging
 import re
 from typing import Any, Dict, Optional, Tuple
 
-logger = logging.getLogger(__name__)
-
-# Regex matching the four groups of ``raw.githubusercontent.com`` URI up to and including the
-# branch / tag segment we want to swap.
+# Match a raw-GitHub URL through its branch/tag segment.  Keeping the optional
+# ``refs/...`` prefix means release tooling can rewrite both direct and fully
+# qualified raw URLs without changing their shape.
 RAW_GITHUB_RE = re.compile(
     r"https://raw\.githubusercontent\.com/"
     r"(?P<owner>[^/]+)/"
     r"(?P<repo>[^/]+)/"
-    r"(?:refs/(?:heads|tags|remotes/[^/]+)/)?"   # optional, non-capturing
+    r"(?P<ref_prefix>refs/(?:heads|tags|remotes/[^/]+)/)?"
     r"(?P<branch>[^/]+)/"
 )
 
 # Keys that are typically URIs inside our JSON Schemas / metadata instances.
-#   e.g., "$id": "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json"
+#   e.g., "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/biomaterial/schema.json"
 ID_KEYS = {"$id", "$ref", "@context"}
 
 _ALLOWED_SEGMENTS = {"owner", "repo", "branch"}
@@ -73,38 +69,78 @@ def _swap_multiple_segments(
         replacement occurs. If False, each segment is replaced independently
         when its *source* matches.
     """
-    match = RAW_GITHUB_RE.match(uri)
-    if match is None:
-        return None
-
-    owner, repo, branch = (
-        match.group("owner"),
-        match.group("repo"),
-        match.group("branch"),
+    rewritten, count = rewrite_raw_github_uris(
+        uri,
+        replacements,
+        require_all_match=require_all_match,
     )
+    return rewritten if count else None
 
-    if require_all_match:
-        for group, (src, _tgt) in replacements.items():
-            if match.group(group) != src:
-                return None
 
-    changed = False
-    for group, (src, tgt) in replacements.items():
-        current = match.group(group)
-        if current == src:
-            if group == "owner":
-                owner = tgt
-            elif group == "repo":
-                repo = tgt
-            elif group == "branch":
-                branch = tgt
-            changed = True
+def rewrite_raw_github_uris(
+    text: str,
+    replacements: Dict[str, Tuple[str, str]],
+    *,
+    require_all_match: bool = True,
+    uri_mappings: Optional[Dict[str, str]] = None,
+) -> Tuple[str, int]:
+    """Rewrite every matching raw-GitHub URL occurring in *text*.
 
-    if not changed:
-        return None
+    The search is not anchored to the beginning of the string, so URLs inside
+    descriptions, comments, or other JSON string values are handled as well.
+    The returned count is the number of URL occurrences replaced.
+    """
+    _validate_replacements(replacements)
+    if uri_mappings is None:
+        uri_mappings = {}
 
-    new_prefix = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/"
-    return RAW_GITHUB_RE.sub(new_prefix, uri, count=1)
+    replacements_count = 0
+    changed_pairs = []
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal replacements_count
+        groups = match.groupdict()
+
+        if require_all_match and any(
+            groups[group] != source
+            for group, (source, _target) in replacements.items()
+        ):
+            return match.group(0)
+
+        values = {
+            "owner": groups["owner"],
+            "repo": groups["repo"],
+            "branch": groups["branch"],
+        }
+        changed = False
+        for group, (source, target) in replacements.items():
+            if values[group] == source:
+                values[group] = target
+                changed = True
+
+        if not changed:
+            return match.group(0)
+
+        rewritten = (
+            f"https://raw.githubusercontent.com/{values['owner']}/"
+            f"{values['repo']}/{groups['ref_prefix'] or ''}{values['branch']}/"
+        )
+        replacements_count += 1
+        changed_pairs.append((match.group(0), rewritten))
+        return rewritten
+
+    rewritten_text = RAW_GITHUB_RE.sub(replace, text)
+    if replacements_count:
+        # A complete JSON string is the most useful mapping for callers of
+        # ``patch_json_tree``. For embedded prose, retain each matched URL
+        # prefix instead because there may be multiple URLs in one value.
+        if not any(character.isspace() for character in text):
+            uri_mappings.setdefault(text, rewritten_text)
+        else:
+            for source, target in changed_pairs:
+                uri_mappings.setdefault(source, target)
+
+    return rewritten_text, replacements_count
 
 
 # -------
@@ -125,18 +161,15 @@ def patch_json_tree(
         uri_mappings = {}
 
     if isinstance(obj, dict):
-        patched: Dict[str, Any] = {}
-        for key, value in obj.items():
-            if key in ID_KEYS and isinstance(value, str):
-                patched[key] = _maybe_swap(value, replacements, require_all_match, uri_mappings)
-            else:
-                patched[key] = patch_json_tree(
-                    value,
-                    replacements=replacements,
-                    require_all_match=require_all_match,
-                    uri_mappings=uri_mappings,
-                )
-        return patched
+        return {
+            key: patch_json_tree(
+                value,
+                replacements=replacements,
+                require_all_match=require_all_match,
+                uri_mappings=uri_mappings,
+            )
+            for key, value in obj.items()
+        }
 
     if isinstance(obj, list):
         return [
@@ -149,7 +182,10 @@ def patch_json_tree(
             for item in obj
         ]
 
-    # Anything other than lists or dictionaries (e.g., strings, numbers, booleans, None...) gets returned as it is, unchanged:
+    if isinstance(obj, str):
+        return _maybe_swap(obj, replacements, require_all_match, uri_mappings)
+
+    # Numbers, booleans, and null are returned unchanged.
     return obj
 
 # -------
@@ -170,9 +206,12 @@ def _maybe_swap(
     if not isinstance(value, str):
         return value
 
-    new_uri = _swap_multiple_segments(value, replacements, require_all_match)
-    if new_uri is None:
+    new_uri, count = rewrite_raw_github_uris(
+        value,
+        replacements,
+        require_all_match=require_all_match,
+        uri_mappings=uri_mappings,
+    )
+    if not count:
         return value
-
-    uri_mappings.setdefault(value, new_uri)
     return new_uri

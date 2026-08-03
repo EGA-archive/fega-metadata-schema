@@ -6,7 +6,9 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
+
+from fega_tools.io import collect_candidate_files
 
 try:
     from rdflib import Graph
@@ -217,7 +219,7 @@ def extract_violations_from_graph(results_graph: Graph) -> List[Dict[str, Any]]:
 # Utilities for batch operations
 # -------
 
-def collect_candidate_rdf(paths: List[Path]) -> List[Path]:
+def collect_candidate_rdf(paths: Sequence[Path]) -> List[Path]:
     """Collect all RDF files from the given paths.
 
     Supports: *.ttl, *.rdf, *.xml, *.jsonld, *.nt, *.n3
@@ -229,21 +231,5 @@ def collect_candidate_rdf(paths: List[Path]) -> List[Path]:
         A sorted list of RDF file paths found.
     """
     
-    files: Set[Path] = set()
     rdf_extensions = {".ttl", ".rdf", ".xml", ".jsonld", ".json-ld", ".nt", ".n3"}
-    
-    for p in paths:
-        if not p.exists():
-            logger.warning(f"Path not found: {p}")
-            continue
-            
-        if p.is_dir():
-            for fp in p.rglob("*"):
-                if fp.is_file() and fp.suffix.lower() in rdf_extensions:
-                    files.add(fp.resolve())
-        elif p.is_file() and p.suffix.lower() in rdf_extensions:
-            files.add(p.resolve())
-        else:
-            logger.debug(f"Ignoring non-RDF path: {p}")
-    
-    return sorted(files)
+    return collect_candidate_files(paths, rdf_extensions)

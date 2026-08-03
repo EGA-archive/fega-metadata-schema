@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import urldefrag
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
+from fega_tools.io import load_json_object
 from fega_tools.jsonld_utils import (
     JSONLD_KEYWORDS,
     build_id_to_path_map,
@@ -30,15 +31,6 @@ TRAVERSAL_KEYS = (
     "contains",
 )
 LOGGER = logging.getLogger(__name__)
-
-def load_json_object(path: Path) -> Dict[str, Any]:
-    """Load a JSON file and require the top-level value to be an object."""
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise ValueError(f"Expected a JSON object in {path}")
-    return value
-
 
 def _json_pointer_parts(fragment: str) -> List[str]:
     """Return decoded JSON Pointer parts from a URI fragment."""

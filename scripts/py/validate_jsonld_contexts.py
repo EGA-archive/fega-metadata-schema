@@ -19,8 +19,14 @@ import rdflib
 from rdflib.namespace import RDF
 
 try:
-    from fega_tools.io import collect_candidate_json
-    from fega_tools.logging_utils import configure_logging
+    from fega_tools.cli_utils import (
+        add_root_argument,
+        add_summary_arguments,
+        add_verbosity_argument,
+        emit_summary,
+    )
+    from fega_tools.io import clone_json, load_json
+    from fega_tools.logging_utils import configure_logging, log_suite_status
     from fega_tools.jsonld_utils import (
         find_repo_root,
         build_id_to_path_map,
@@ -28,19 +34,17 @@ try:
         resolve_ref,
     )
     from fega_tools.validation_common import (
-        BIVALIDATOR_COUNT_KEYS as COUNT_KEYS,
         DEFAULT_ROOT,
         INVALID_STATUS,
-        REQUEST_ERROR_STATUS,
         SCRIPT_ERROR_STATUS,
-        UNKNOWN_STATUS,
         VALID_STATUS,
-        add_counts as add_validation_counts,
-        empty_counts as make_empty_counts,
+        aggregate_validation_counts,
         find_entity_dirs,
+        find_example_files,
         find_example_coverage_gaps,
+        format_coverage_gap,
         load_wrapped_example,
-        write_json_summary,
+        summarize_validation_results,
     )
 except ModuleNotFoundError as exc:
     msg = (
@@ -52,15 +56,6 @@ except ModuleNotFoundError as exc:
 
 
 LOGGER = logging.getLogger(Path(__file__).stem)
-
-try:
-    from colorama import Fore as _Fore, Style as _Style
-
-    _BOLD_GREEN = _Style.BRIGHT + _Fore.GREEN
-    _BOLD_RED = _Style.BRIGHT + _Fore.RED
-    _ANSI_RESET = _Style.RESET_ALL
-except ModuleNotFoundError:
-    _BOLD_GREEN = _BOLD_RED = _ANSI_RESET = ""
 
 SUMMARY_FILENAME = "jsonld_summary.json"
 
@@ -84,7 +79,7 @@ def _context_url_is_acceptable(
     if schema_path is None:
         return False
     try:
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        schema = load_json(schema_path)
         schema_context = schema.get("@context")
         expected_path = (
             resolve_ref(schema_context, schema_path, id_to_path_map)
@@ -156,7 +151,7 @@ def validate_file_jsonld(
         return result
 
     # Step 7: RDF parse – replace @context with materialized version.
-    data_copy: Dict[str, Any] = json.loads(json.dumps(data))
+    data_copy: Dict[str, Any] = clone_json(data)
     data_copy["@context"] = materialized_ctx
 
     try:
@@ -192,22 +187,6 @@ def validate_file_jsonld(
 # Summarization helpers
 # ---------------------------------------------------------------------------
 
-def category_passed(summary: Dict[str, Any]) -> bool:
-    """Return True when the valid-example suite passes.
-
-    Fails if any file did not pass validation, if there are script/request
-    errors, or if the entity has coverage gaps (missing or empty valid
-    examples directory — all valid examples must include @context).
-    """
-    return (
-        len(summary["coverage_gaps"]) == 0
-        and summary["script_errors"] == 0
-        and summary["request_errors"] == 0
-        and summary["unknown_responses"] == 0
-        and summary["validation_failed"] == 0
-    )
-
-
 def summarize_entity(
     entity_dir: Path,
     id_to_path_map: Dict[str, Path],
@@ -215,7 +194,7 @@ def summarize_entity(
 ) -> Dict[str, Any]:
     """Validate and summarise valid examples for one entity."""
     valid_dir = entity_dir / "examples" / "valid"
-    files = collect_candidate_json([valid_dir]) if valid_dir.is_dir() else []
+    files = find_example_files(entity_dir, "valid")
 
     entity_coverage_gaps = [g for g in coverage_gaps if g.get("entity") == entity_dir.name]
 
@@ -226,48 +205,11 @@ def summarize_entity(
         outcome = "passed" if file_result["status"] == VALID_STATUS else "failed"
         LOGGER.debug("Validated '%s' -> %s", path.name, outcome)
 
-    status_counts = {
-        VALID_STATUS: 0,
-        INVALID_STATUS: 0,
-        REQUEST_ERROR_STATUS: 0,
-        UNKNOWN_STATUS: 0,
-        SCRIPT_ERROR_STATUS: 0,
-    }
-    for file_result in results:
-        status_counts[file_result["status"]] += 1
-
-    expectation_failed_files = [
-        r["file"] for r in results if r["status"] != VALID_STATUS
-    ]
-
-    summary: Dict[str, Any] = {
-        "entity": entity_dir.name,
-        "input_path": str(valid_dir),
-        "coverage_gaps": entity_coverage_gaps,
-        "total_files": len(files),
-        "completed_runs": status_counts[VALID_STATUS] + status_counts[INVALID_STATUS],
-        "validation_passed": status_counts[VALID_STATUS],
-        "validation_failed": status_counts[INVALID_STATUS],
-        "request_errors": status_counts[REQUEST_ERROR_STATUS],
-        "unknown_responses": status_counts[UNKNOWN_STATUS],
-        "script_errors": status_counts[SCRIPT_ERROR_STATUS],
-        "files": results,
-        "expectation_failed_files": expectation_failed_files,
-        "n_total_files": len(files),
-        "n_failed_files": len(expectation_failed_files),
-    }
-    summary["passed"] = category_passed(summary)
+    summary = summarize_validation_results(
+        results, VALID_STATUS, coverage_gaps=entity_coverage_gaps
+    )
+    summary.update({"entity": entity_dir.name, "input_path": str(valid_dir)})
     return summary
-
-
-def summarize_totals(
-    entity_summaries: Sequence[Dict[str, Any]],
-) -> Dict[str, int]:
-    """Aggregate validation counters across all entity summaries."""
-    totals = make_empty_counts(COUNT_KEYS)
-    for entity_summary in entity_summaries:
-        add_validation_counts(totals, entity_summary, COUNT_KEYS)
-    return totals
 
 
 # ---------------------------------------------------------------------------
@@ -300,15 +242,10 @@ def validate_jsonld_contexts(
 
     coverage_gaps = find_example_coverage_gaps(entity_dirs, ("valid",))
     for gap in coverage_gaps:
-        details: List[str] = []
-        if gap.get("missing"):
-            details.append(f"missing {', '.join(gap['missing'])} examples")
-        if gap.get("empty"):
-            details.append(f"empty {', '.join(gap['empty'])} examples")
         LOGGER.error(
             "Coverage gap for %s: %s — all valid examples must include @context",
             gap["entity"],
-            "; ".join(details),
+            format_coverage_gap(gap),
         )
 
     entity_summaries = [
@@ -316,7 +253,7 @@ def validate_jsonld_contexts(
         for entity_dir in entity_dirs
     ]
 
-    totals = summarize_totals(entity_summaries)
+    totals = aggregate_validation_counts(entity_summaries)
     overall_passed = all(s["passed"] for s in entity_summaries)
 
     input_paths = [s["input_path"] for s in entity_summaries]
@@ -346,10 +283,7 @@ def _log_results(summary: Dict[str, Any]) -> None:
     total_count = summary["total_valid_files"]
     LOGGER.info("%d / %d valid files passed JSON-LD context checks", passed_count, total_count)
 
-    if summary["passed"]:
-        LOGGER.info("Tests %spassed%s", _BOLD_GREEN, _ANSI_RESET)
-    else:
-        LOGGER.info("Tests %sfailed%s", _BOLD_RED, _ANSI_RESET)
+    log_suite_status(LOGGER, summary["passed"])
 
 
 # ---------------------------------------------------------------------------
@@ -371,34 +305,13 @@ def make_arg_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--root",
-        type=Path,
-        default=DEFAULT_ROOT,
-        help=f"Entity schema root (default: {DEFAULT_ROOT})",
-    )
+    add_root_argument(parser, default=DEFAULT_ROOT)
     parser.add_argument(
         "--entity",
         help="Validate one entity by directory name, e.g. 'cohort'.",
     )
-    parser.add_argument(
-        "--summary-dir",
-        type=Path,
-        help=f"Optional directory where {SUMMARY_FILENAME} is written.",
-    )
-    parser.add_argument(
-        "--print-summary",
-        action="store_true",
-        default=False,
-        help="Print the full JSON summary to stdout (default: off).",
-    )
-    parser.add_argument(
-        "--verbosity",
-        "-v",
-        action="count",
-        default=0,
-        help="Increase log verbosity: -v for INFO, -vv for DEBUG.",
-    )
+    add_summary_arguments(parser, SUMMARY_FILENAME)
+    add_verbosity_argument(parser)
     return parser
 
 
@@ -416,12 +329,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     _log_results(summary)
 
-    if args.summary_dir:
-        write_json_summary(summary, args.summary_dir, SUMMARY_FILENAME)
-
-    if args.print_summary:
-        json.dump(summary, sys.stdout, indent=2)
-        sys.stdout.write("\n")
+    emit_summary(
+        summary,
+        summary_dir=args.summary_dir,
+        summary_filename=SUMMARY_FILENAME,
+        print_summary=args.print_summary,
+    )
 
     sys.exit(0 if summary["passed"] else 1)
 

@@ -1,6 +1,7 @@
 """Shared Biovalidator HTTP helpers."""
 from __future__ import annotations
 
+import json
 from typing import Any, Dict
 
 import requests
@@ -8,6 +9,7 @@ from requests.exceptions import ConnectionError, Timeout
 
 from fega_tools.validation_common import (
     INVALID_STATUS,
+    REQUEST_ERROR_STATUS,
     UNKNOWN_STATUS,
     VALID_STATUS,
 )
@@ -42,3 +44,22 @@ def classify_response(response: Any) -> str:
     if isinstance(response, list):
         return INVALID_STATUS
     return UNKNOWN_STATUS
+
+
+def validate_document(document: Dict[str, Any], url: str) -> Dict[str, Any]:
+    """Submit one document and return a normalized validation result."""
+    try:
+        response = post_to_validator(document, url)
+    except requests.RequestException as exc:
+        return {"status": REQUEST_ERROR_STATUS, "errors": [str(exc)]}
+    except (json.JSONDecodeError, ValueError) as exc:
+        return {
+            "status": UNKNOWN_STATUS,
+            "errors": [f"Malformed validator response: {exc}"],
+        }
+
+    status = classify_response(response)
+    result: Dict[str, Any] = {"status": status}
+    if status != VALID_STATUS:
+        result["errors"] = response if isinstance(response, list) else [response]
+    return result

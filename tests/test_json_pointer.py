@@ -65,6 +65,7 @@ def test_validate_replacements_rejects_unknown_segment() -> None:
 
 
 def test_rewrite_raw_github_uris_preserves_refs_prefix_and_fragments() -> None:
+    """Check that URI rewriting preserves prefixes and fragments."""
     uri = (
         "https://raw.githubusercontent.com/"
         "M-" + "casado/fega-" + "metadata-" + "schema/refs/heads/main/"

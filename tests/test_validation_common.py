@@ -5,11 +5,15 @@ import json
 from fega_tools.validation_common import (
     BASIC_COUNT_KEYS,
     add_counts,
+    aggregate_category_summaries,
     coverage_gaps_for_entity_category,
     empty_counts,
+    expected_status_for,
     find_entity_dirs,
+    find_example_files,
     find_example_coverage_gaps,
     load_wrapped_example,
+    summarize_validation_results,
 )
 
 
@@ -52,3 +56,59 @@ def test_find_entity_dirs_and_load_wrapped_example(tmp_path) -> None:
     assert find_entity_dirs(tmp_path, None) == [entity]
     assert find_entity_dirs(tmp_path, "dataset", require_schema=True) == [entity]
     assert load_wrapped_example(example)["data"] == {"@type": "x"}
+
+
+def test_example_file_and_result_helpers(tmp_path) -> None:
+    entity = tmp_path / "cohort"
+    valid_dir = entity / "examples" / "valid"
+    valid_dir.mkdir(parents=True)
+    example = valid_dir / "example.json"
+    example.write_text("{}", encoding="utf-8")
+
+    results = [{"file": str(example), "status": "validation_passed"}]
+    summary = summarize_validation_results(results, expected_status_for("valid"))
+
+    assert find_example_files(entity, "valid") == [example.resolve()]
+    assert summary["passed"] is True
+    assert summary["total_files"] == 1
+    assert summary["expectation_failed_files"] == []
+
+
+def test_result_helpers_require_expected_status_and_report_operational_errors() -> None:
+    invalid_summary = summarize_validation_results(
+        [{"file": "bad.json", "status": "validation_passed"}],
+        expected_status_for("invalid"),
+    )
+    error_summary = summarize_validation_results(
+        [{"file": "bad.json", "status": "script_error"}],
+        expected_status_for("valid"),
+    )
+
+    assert invalid_summary["passed"] is False
+    assert invalid_summary["n_failed_files"] == 1
+    assert error_summary["script_errors"] == 1
+    assert error_summary["passed"] is False
+
+
+def test_category_aggregation_preserves_per_category_totals() -> None:
+    entity_summaries = [
+        {
+            "categories": {
+                "valid": summarize_validation_results(
+                    [{"file": "valid.json", "status": "validation_passed"}],
+                    "validation_passed",
+                ),
+                "invalid": summarize_validation_results(
+                    [{"file": "invalid.json", "status": "validation_failed"}],
+                    "validation_failed",
+                ),
+            }
+        }
+    ]
+
+    totals = aggregate_category_summaries(entity_summaries)
+
+    assert totals["total_files"] == 2
+    assert totals["category_totals"]["valid"]["passed"] is True
+    assert totals["category_totals"]["invalid"]["passed"] is True
+    assert entity_summaries[0]["categories"]["invalid"]["n_failed_files"] == 0

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, FrozenSet, List, Set, Tuple
 from urllib.parse import urlparse
 
-GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/M-casado/fega-metadata-schema/main/"
+GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
 
 JSONLD_KEYWORDS = {
     "@base",

@@ -14,6 +14,7 @@ def test_fega_tools_modules_import() -> None:
     """Check that the main helper modules can be imported."""
     modules = [
         "fega_tools.biovalidator",
+        "fega_tools.cli_utils",
         "fega_tools.io",
         "fega_tools.json_pointer",
         "fega_tools.jsonld_coverage",
@@ -31,6 +32,7 @@ def test_validation_scripts_show_help() -> None:
     """Check that each validation script can start and show its help text."""
     scripts = [
         "scripts/py/schema_diff.py",
+        "scripts/py/modify_ids.py",
         "scripts/py/validate_examples.py",
         "scripts/py/validate_jsonld_contexts.py",
         "scripts/py/validate_jsonld_coverage.py",

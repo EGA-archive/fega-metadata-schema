@@ -20,6 +20,7 @@ logs/
 # Ignore temporary files
 *.tmp
 *.temp
+tmp/
 
 # Summary artifact files from validation tests
 *summary*.json

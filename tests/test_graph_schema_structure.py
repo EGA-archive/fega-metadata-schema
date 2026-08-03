@@ -8,12 +8,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_graph_schema() -> dict:
+    """Load the graph schema from the repository."""
     return json.loads(
         (REPO_ROOT / "schemas/graph/schema.json").read_text(encoding="utf-8")
     )
 
 
 def test_graph_entity_dispatch_uses_type_declarations() -> None:
+    """Check that graph entities route through their declared types."""
     schema = load_graph_schema()
     defs = schema["$defs"]
 
@@ -54,6 +56,7 @@ def test_graph_entity_dispatch_uses_type_declarations() -> None:
 
 
 def test_graph_profile_requirements_use_declaration_predicates() -> None:
+    """Check that graph requirements identify entities by declaration predicates."""
     defs = load_graph_schema()["$defs"]
 
     for requirement, entity_name in (
