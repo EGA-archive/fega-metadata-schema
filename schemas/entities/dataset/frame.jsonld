@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/dataset/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
   "@type": ["ega:dataset", "dcat:Dataset"],
   "@embed": "@always",
   "@explicit": false,

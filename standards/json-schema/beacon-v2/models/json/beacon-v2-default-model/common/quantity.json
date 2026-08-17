@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/quantity.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/quantity.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Definition of a quantity class. Provenance: GA4GH Phenopackets v2 `Quantity`",

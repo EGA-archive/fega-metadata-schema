@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/responses/examples-fullDocuments/beaconInfo-MAX-example.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/responses/examples-fullDocuments/beaconInfo-MAX-example.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "info": {},
     "meta": {

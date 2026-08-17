@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/responses/beaconMapResponse.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/responses/beaconMapResponse.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "A `beaconMapResponse` provides information about the beacon instance such as the different endpoints supported by this implementation of the Beacon API. This response is aimed to allow Beacon clients such as web front ends and Beacon network aggregators to evaluate which access patterns can be implemented against individual beacons.",

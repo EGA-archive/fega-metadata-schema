@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/biomaterial/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
   "@type": "ega:biomaterial",
   "@embed": "@always",
   "@explicit": false,

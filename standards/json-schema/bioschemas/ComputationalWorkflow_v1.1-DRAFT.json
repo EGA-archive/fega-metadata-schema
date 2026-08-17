@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/bioschemas/ComputationalWorkflow_v1.1-DRAFT.json",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/bioschemas/ComputationalWorkflow_v1.1-DRAFT.json",
   "type": "object",
   "$comment": "Source: https://discovery.biothings.io/api/schema/bioschemasdrafts:ComputationalWorkflow/validation (accessed 2025-08-22). Licence: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/. Changes: aligned fields to EGA metadata model conventions; converted draft-07-style single-schema array items to draft 2020-12-compatible homogeneous items.",
   "@context": {

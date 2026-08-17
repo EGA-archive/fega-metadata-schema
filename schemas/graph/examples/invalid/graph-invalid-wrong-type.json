@@ -1,9 +1,9 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/graph/context.jsonld",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
     "@id": "ega:EGAG-invalid-type",
     "@type": "ega:notGraph",
     "@graph": [

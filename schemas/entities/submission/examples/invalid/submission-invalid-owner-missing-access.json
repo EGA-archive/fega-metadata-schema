@@ -1,7 +1,7 @@
 {
-  "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/submission/schema.json"},
+  "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
   "data": {
-    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/submission/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
     "@id": "ega:EGAB00000000106",
     "@type": "ega:submission",
     "title": "Submission with owner missing access level",

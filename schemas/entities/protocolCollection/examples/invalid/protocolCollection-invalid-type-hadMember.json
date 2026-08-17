@@ -1,13 +1,13 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/protocolCollection/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json"
   },
   "data": {
     "inSubmission": {
       "@id": "ega:EGAB00000000001",
       "@type": "ega:submission"
     },
-    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/protocolCollection/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
     "@id": "ega:EGAL00000000005",
     "@type": ["ega:protocolCollection", "prov:Collection", "prov:Plan"],
     "title": "Protocol collection with an invalid member type",

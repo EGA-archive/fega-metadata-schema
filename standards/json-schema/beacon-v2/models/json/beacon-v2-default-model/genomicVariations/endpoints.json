@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/genomicVariations/endpoints.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/genomicVariations/endpoints.json",
     "components": {
         "parameters": {
             "alternateBases": {

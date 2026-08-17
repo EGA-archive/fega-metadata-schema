@@ -43,7 +43,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/responses/sections/beaconInfoResults.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/responses/sections/beaconInfoResults.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Metadata describing a Beacon instance.",

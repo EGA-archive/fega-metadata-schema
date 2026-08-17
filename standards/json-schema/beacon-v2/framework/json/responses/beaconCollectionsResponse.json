@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/responses/beaconCollectionsResponse.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/responses/beaconCollectionsResponse.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "A type of Beacon response that includes details about the **collections** in a beacon. The types of collections are defined in each beacon's configuration; if using the Beacon v2+ default model usually the types `dataset` and `cohort` are supported.",

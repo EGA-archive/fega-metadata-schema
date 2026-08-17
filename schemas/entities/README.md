@@ -12,7 +12,12 @@ The schemas are designed to **work together** to properly represent the EGA meta
 
 For validating metadata instances against these schemas, we use the [**ELIXIR Biovalidator**](https://github.com/elixir-europe/biovalidator). Biovalidator is particularly useful as it can handle custom keywords integrating external APIs. For example, the keyword ``graphRestriction`` allows for us to perform ontology term validation. We include examples and test JSON files at [``*/examples``] to help understand the metadata to be validated and to perform checks within the repository.
 
-Automatic validation runs for pull requests and pushes to ``dev`` are defined in [``json_validation_deploying_biovalidator.yml``](../../.github/workflows/json_validation_deploying_biovalidator.yml). While ``main`` remains the empty default branch, GitHub does not expose these ``workflow_dispatch`` forms; use the local validation commands in the root [``README.md``](../../README.md) instead.
+Automatic validation for pull requests and pushes to `main` is defined in
+[`ci.yml`](../../.github/workflows/ci.yml). It validates schemas, examples,
+JSON-LD contexts and frames, RDF/SHACL output, release policy, and the generated
+release-candidate shape. See the root [`README.md`](../../README.md) for focused
+local commands and the [release documentation](../../docs/releases/README.md)
+for the complete gate and publication process.
 
 #### Third party standards
 Inside the [``standards``](../../standards/) directory, we maintain validation constraints (e.g., JSON Schema, SHACL Shapes) derived or directly taken from third-party standards that are relevant to the EGA metadata model. These are sometimes directly referenced within the EGA metadata model entities, or they are used for other layers of validation (e.g., HealthDCAT-AP validation through SHACL Shapes).

@@ -64,7 +64,7 @@
         "telephone": "schema:telephone",
         "status": "adms:status",
 
-        "schemas": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/",
+        "schemas": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/",
         "entities": "schemas:entities/",
         "commonDefinitionsDoc": "schemas:common/schema.json#",
         "biomaterial": "entities:biomaterial/schema.json",

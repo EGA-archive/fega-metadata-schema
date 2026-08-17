@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/protocolCollection/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
   "@type": ["ega:protocolCollection", "prov:Collection", "prov:Plan"],
   "@embed": "@always",
   "@explicit": false,

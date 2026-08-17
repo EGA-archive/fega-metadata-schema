@@ -270,7 +270,7 @@
             "type": "boolean"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/common/beaconCommonComponents.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/common/beaconCommonComponents.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Definition of relatively simple components used in different points of the Beacon specification, both in requests and responses, therefore not associated exclusively with one or the other. Separate schema documents are provided for complex components.",
     "title": "Beacon Common Components",

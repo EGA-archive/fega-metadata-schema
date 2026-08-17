@@ -10,7 +10,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/standards/json-schema/beacon-v2/framework/json/configuration/beaconConfigurationSchema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/configuration/beaconConfigurationSchema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "The Beacon configuration reports several attributes of the beacon instance related to security, maturity and available entry types. Where appropriate the details returned in `service-info` should mirror the ones in this configuration.",

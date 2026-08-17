@@ -1,9 +1,9 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/protocol/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/protocol/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
     "@id": "ega:EGAT00000000003",
     "name": "Minimal Computational Workflow",
     "url": "https://example.org/workflows/minimal",
