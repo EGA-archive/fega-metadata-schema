@@ -23,25 +23,22 @@ Thank you for your interest in improving the EGA metadata model!  We welcome pul
 ## 3  Pull-request workflow
 
 1. **Fork** the repository (or create a feature branch if you have push rights).
-2. Create a **topic branch** off ``main`` or ``dev``, e.g. `feat/add-sample-tissue-enum`.
-3. Make your changes and verify locally that files within ``schemas/entities/*/examples`` validate against the local schemas. The **easiest way to do this** is by manually triggering the ``json_validation_deploying_biovalidator.yml`` workflow at its [Actions](https://github.com/M-casado/fega-metadata-schema/actions/workflows/json_validation_deploying_biovalidator.yml) page. You can provide the branch (e.g., ``my-branch``), commit or tag in the form (see image below) and the workflow will do the rest for you (just check the outcome!). You can run actions on this workflow only as an active contributor, but you can replicate this by forking the repository and running the action in your own fork.
-
-![Example of manually triggering a workflow](./docs/images/workflow-manual-trigger.png)
-
-4. **Update metadata artefacts** if you changed schemas:
-   * Either manually trigger [``check-schema-diff.yml``](.github/workflows/check-schema-diff.yml) or run [``schema-diff.py``](scripts/py/schema-diff.py) directly. Both will give you an idea of what semantic versioning changes correspond to the schemas.
-   * Increment the `meta:version` field of each JSON Schema.
-   
-5. **Add or update data / docs** so behaviour is demonstrably correct.
-6. **Amend `CHANGELOG.md`** under the *Unreleased* section.
-7. Commit with a **clear message** (`type(scope): summary`, e.g. `feat(schema): add new library_strategy enum values`).
-8. Push and **open the PR**.  The pull-request template will guide you through the last checks.
+2. Create a **topic branch** off `main`, e.g. `feat/add-sample-tissue-enum`.
+3. Make the smallest complete change and add or update examples/docs so its behaviour is demonstrable. CI runs the independent Python, schema, JSON-LD, frame, RDF, SHACL, PR-note, release-policy and release-consistency checks on the pull request.
+4. Fill the PR template's strict `## Release notes` section. If compatibility is reported as `unknown`, add a concrete `## Compatibility review` rationale.
+5. Manually update top-level `meta:version` in every affected component schema. Do not edit the generated manifest, versioned changelog, citation version, component inventory or URI snapshots; preparation generates and asserts them.
+6. Run focused checks locally where practical; a realistic minimum is `env PYTHONPATH=src .venv/bin/python scripts/py/release.py discover -v` followed by `env PYTHONPATH=src .venv/bin/python scripts/py/release.py verify --mode development -v`.
+7. **Add or update data / docs** so behaviour is demonstrably correct.
+8. Commit with a **clear message** (`type(scope): summary`, e.g. `feat(schema): add new library_strategy enum values`).
+9. Push and **open the PR**.  The pull-request template will guide you through the last checks.
 
 ### Review & merge rules
 
 * Two approving reviews from maintainers are required.
 * CI **must pass** (e.g., lints, validation).
-* Squash-and-merge is preferred unless history needs to be preserved.
+* Squash-and-merge is acceptable for ordinary PRs. Generated two-commit release PRs are merged with a merge commit so their reviewed R1 and R2 commits remain addressable.
+
+The complete preparation, review, publication and recovery runbook is in the [release guide](./docs/releases/README.md).
 
 ## 4  Coding & style guidelines
 
@@ -50,13 +47,13 @@ Thank you for your interest in improving the EGA metadata model!  We welcome pul
 | **Python**          | Type hints encouraged; keep reusable logic in `src/fega_tools/`.          |
 | **JSON Schemas**    | `$id`, `title`, `description` and `meta:version` are mandatory; use `$ref` over copy-paste. More details at [``schemas/entities``](./schemas/entities/README.md). |
 | **Commit messages** | Conventional Commits style (`fix:`, `feat:`, `docs:` …).                                       |
-| **Docs**            | Markdown (`.md`), diagrams as SVG/PNG in `docs/images/`.                                      |
+| **Docs**            | Markdown (`.md`), Mermaid for process diagrams, and SVG/PNG in `docs/images/` for static graphics. |
 
 ## 5  License & contributor certificate
 
 By submitting code, documentation or schema changes you agree that your contribution is licensed under the terms stated in [`LICENSE`](./LICENSE).  If you include third-party material, ensure it is compatible with this license and properly attributed.
 
-## 7  Need help?
+## 6  Need help?
 
 * **Helpdesk:** [Need-help form](https://ega-archive.org/need-help/)
 * **Slack:** [ELIXIR FEGA Slack channel](https://elixir-europe.slack.com/archives/C05UHABF0CT)

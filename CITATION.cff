@@ -5,6 +5,7 @@ version: 2.0.0
 type: software
 abstract: "Machine-readable definitions of the European Genome-phenome Archive (EGA) metadata model, together with examples, validation utilities, and documentation."
 license: MIT
+copyright: "© 2025 Federated European Genome-phenome Archive (FEGA)"
 repository-code: "https://github.com/EGA-archive/fega-metadata-schema"
 url: "https://github.com/EGA-archive/fega-metadata-schema"
 keywords:
@@ -21,11 +22,6 @@ authors:
     family-names: "Casado Barbero"
     affiliation: "European Bioinformatics Institute (EMBL-EBI)"
     orcid: "https://orcid.org/0000-0002-7747-6256"
-
-  - given-names: "Anandhi"
-    family-names: "Iyappan"
-    affiliation: "European Molecular Biology Laboratory (EMBL) (FEGA Germany, GHGA)"
-    orcid: "https://orcid.org/0000-0002-5571-4962"
 
   - given-names: "Coline"
     family-names: "Thomas"
@@ -52,35 +48,20 @@ authors:
     affiliation: "University of Oslo (FEGA Norway)"
     orcid: "https://orcid.org/0000-0002-9016-4820"
 
-  - given-names: "Amy"
-    family-names: "Curwin"
-    affiliation: "Centre for Genomic Regulation (CRG)"
-    orcid: "https://orcid.org/0000-0003-1086-2483"
-
-  - given-names: "Grant"
-    family-names: "McNair"
-    affiliation: "Canada's Michael Smith Genome Sciences Centre (FEGA Canada)"
-    orcid: "https://orcid.org/0009-0006-1362-0681"
-
   - given-names: "Wolmar"
     family-names: "Nyberg Åkerström"
     affiliation: "NBIS; SciLifeLab; Uppsala University (FEGA Sweden)"
     orcid: "https://orcid.org/0000-0002-3890-6620"
 
-  - given-names: "Miguel"
-    family-names: "Cisneiros e Faria Lourenço"
-    affiliation: "BioData.pt (FEGA Portugal)"
-    orcid: "https://orcid.org/0000-0002-6681-8564"
+  - given-names: "Amy"
+    family-names: "Curwin"
+    affiliation: "Centre for Genomic Regulation (CRG)"
+    orcid: "https://orcid.org/0000-0003-1086-2483"
 
   - given-names: "Akiris"
     family-names: "Moctezuma Cervantes"
     affiliation: "Centre for Genomic Regulation (CRG)"
     orcid: "https://orcid.org/0009-0002-7343-1779"
-
-  - given-names: "Gabriele"
-    family-names: "Rinck"
-    affiliation: "European Bioinformatics Institute (EMBL-EBI)"
-    orcid: "https://orcid.org/0000-0001-6428-3431"
 
   - given-names: "Robin"
     family-names: "Liechti"
@@ -106,9 +87,24 @@ authors:
     affiliation: "Canada's Michael Smith Genome Sciences Centre (FEGA Canada)"
     orcid: "https://orcid.org/0000-0002-3484-4493"
 
+  - given-names: "Grant"
+    family-names: "McNair"
+    affiliation: "Canada's Michael Smith Genome Sciences Centre (FEGA Canada)"
+    orcid: "https://orcid.org/0009-0006-1362-0681"
+
+  - given-names: "Gabriele"
+    family-names: "Rinck"
+    affiliation: "European Bioinformatics Institute (EMBL-EBI)"
+    orcid: "https://orcid.org/0000-0001-6428-3431"
+
+  - given-names: "Miguel"
+    family-names: "Cisneiros e Faria Lourenço"
+    affiliation: "BioData.pt (FEGA Portugal)"
+    orcid: "https://orcid.org/0000-0002-6681-8564"
+
   - given-names: "Alban"
     family-names: "Gaignard"
-    affiliation: "University of Nantes (FEGA France)"
+    affiliation: "Institut Français de Bioinformatique (FEGA France)"
     orcid: "https://orcid.org/0000-0002-3597-8557"
 
   - given-names: "Alexandros"
@@ -118,7 +114,7 @@ authors:
 
   - given-names: "David"
     family-names: "Salgado"
-    affiliation: "French Institute of Health and Medical Research (INSERM) (FEGA France)"
+    affiliation: "Institut Français de Bioinformatique (FEGA France)"
     orcid: "https://orcid.org/0000-0002-5905-3591"
 
   - given-names: "Ulvi"
@@ -136,13 +132,24 @@ authors:
     affiliation: "University of Lodz (FEGA Poland)"
     orcid: "https://orcid.org/0000-0002-7040-8322"
 
-  - given-names: "Błażej"
-    family-names: "Marciniak"
-    affiliation: "University of Lodz (FEGA Poland)"
-    orcid: "https://orcid.org/0000-0003-1571-1473"
+  - given-names: "Karoline"
+    family-names: "Mauer"
+    affiliation: "German Center for Neurodegenerative Diseases (DZNE) (FEGA Germany, GHGA)"
+    orcid: "https://orcid.org/0000-0002-9454-7941"
+
+  - given-names: "Helge"
+    family-names: "Hecht"
+    affiliation: "Masaryk University (FEGA Czech Republic)"
+    orcid: "https://orcid.org/0000-0001-6744-996X"
+
+  - given-names: "Aldar"
+    family-names: "Cabrelles Muñoz"
+    affiliation: "Centre for Genomic Regulation (CRG)"
+    orcid: "https://orcid.org/0000-0002-1131-3139"
 
 contact:
   - given-names: "Marcos"
     family-names: "Casado Barbero"
     affiliation: "European Bioinformatics Institute (EMBL-EBI)"
+    email: "mcasado@ebi.ac.uk"
     orcid: "https://orcid.org/0000-0002-7747-6256"

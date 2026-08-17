@@ -10,20 +10,6 @@
 | **Acknowledgements** | [Ana T. Alonso](https://orcid.org/0009-0004-3243-0045) (CRG) – Figures 1 and 2 |
 | **Reviewers** | Federico Bianchini (UiO)<br>[Sabela de la Torre](https://orcid.org/0000-0002-5129-2248) (CRG)<br>[Jordi Rambla De Argila](https://orcid.org/0000-0001-9091-257X) (CRG)<br>Gabriele Rinck (EMBL-EBI)<br>Mireia Marín Ginestar (CRG)<br>Grant McNair (CGA)<br>Robin Liechti (SIB)<br>Akiris Moctezuma Cervantes (CRG) |
 
-### Log of changes
-
-| Date | version | Who | Description |
-| ----: | ----- | :---- | :---- |
-| **11/06/2026** | v1.1.1 | Marcos Casado Barbero | Improved format of document |
-| **29/05/2026** | v1.1.0 | Marcos Casado Barbero | Datafiles are no longer mapped to dcat:Distribution; they are parts (dcterms:hasPart) of Datasets, with skos:closeMatch dcat:Dataset. A new Distribution entity (dcat:Distribution) is added for access-level metadata. Updates to entity definitions, Figure 5, disambiguation section, open questions, and JSON Schemas. |
-| **02/04/2026** | [v1.0.1](https://doi.org/10.5281/zenodo.19388370) | Marcos Casado Barbero | Addition of PRIDE contributors |
-| **27/02/2026** | [v1.0.0](https://doi.org/10.5281/zenodo.18802072) | Marcos Casado Barbero | Address review comments from Jordi Rambla De Argila; add new figures and tables |
-| **20/01/2026** | v0.0.4 | Marcos Casado Barbero | Add "Metadata model naming conventions" section and update model naming across document; general text review. |
-| **07/01/2026** | v0.0.3 | Marcos Casado Barbero | Address ongoing feedback and update content |
-| **31/08/2025** | v0.0.2 | Amy Curwin, Gabriele Rinck, Sabela de la Torre, Federico Bianchini, Anandhi Iyappan, Grant McNair, Robin Liechti, Marcos Casado Barbero, Akiris Moctezuma, Jorge Oliveira, Miguel Cisneiros | First internal group review |
-| **29/07/2025** | v0.0.1 | Marcos Casado Barbero, Anandhi Iyappan, Silvia Bahena, Amy J. Curwin, Jorge Oliveira, Coline Thomas | Drafted technical report |
-| **16/08/2024** | v0.0.0 | Marcos Casado Barbero | Drafted document template and sections |
-
 ### Contents
 
 - [**Glossary of Terms and Abbreviations**](#glossary-of-terms-and-abbreviations)
@@ -407,7 +393,7 @@ The EGA metadata schemas are built for **continuous development**. See more deta
 
 Validating data through the EGA v2 model is plain and simple: it requires access to a **Biovalidator endpoint and feeding it a JSON document**. To interact with the validator, Biovalidator can be deployed locally or you can use a provided API (e.g., [biovalidator.ega.ebi.ac.uk/validate](http://biovalidator.ega.ebi.ac.uk/validate)[^7]). When Biovalidator is deployed locally or elsewhere, a /validate endpoint is exposed and accepts JSON documents containing both the schema and data, or references to them. This same endpoint outputs the result of the validation when used. Further details about deploying Biovalidator can be found at its [GitHub repository](https://github.com/EbiEga/biovalidator).
 
-The group has created onboarding materials on this matter, including a dedicated [FEGA Metadata Technical Deep Dive](https://doi.org/10.5281/zenodo.14968151) and succinct posters ([1](https://doi.org/10.7490/f1000research.1120212.1), [2](https://doi.org/10.7490/f1000research.1119732.1), [3](https://doi.org/10.7490/f1000research.1119417.1)). Furthermore, an example of the end-to-end validation workflow can be found in the automated [json\_validation\_deploying\_biovalidator.yml](../.github/workflows/json_validation_deploying_biovalidator.yml). In fact, it can be manually triggered for maintainers who are not proficient at coding, easing the assertion of data validation even further.
+The group has created onboarding materials on this matter, including a dedicated [FEGA Metadata Technical Deep Dive](https://doi.org/10.5281/zenodo.14968151) and succinct posters ([1](https://doi.org/10.7490/f1000research.1120212.1), [2](https://doi.org/10.7490/f1000research.1119732.1), [3](https://doi.org/10.7490/f1000research.1119417.1)). End-to-end validation is part of the required [`ci.yml`](../.github/workflows/ci.yml) merge gate and can also be run manually from the Actions page, easing the assertion of data validation for maintainers who are not proficient at coding.
 
 ## 6.5 RDF and linked data
 
@@ -1940,7 +1926,7 @@ The introduction of **linked data principles** represents a significant step for
 
 * JSON documents referencing (in their @context) these schema files can be automatically expanded into RDF-compliant JSON-LD (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)) by inheriting the schemas' @context.
 
-For instance, a cohort JSON document referencing ``cohort/schema.json`` through its [URI](https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/schema.json) will inherit the schema's context when expanded by a JSON-LD processor (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)). This enables terms used as keys (e.g., 'label') and CURIE values (e.g., 'ega:EGAD00000000001'), to be expanded, pointing to resolvable URIs (e.g., https://www.w3.org/2000/01/rdf-schema\#label and https://identifiers.org/ega:EGAD00000000001, respectively).
+For instance, a cohort JSON document referencing ``cohort/schema.json`` through its [development URI](https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json) will inherit the schema's context when expanded by a JSON-LD processor (see [Figure 17](#figure-17-diagram-depicting-the-expansion-of-a-json-document-into-json-ld-with-the-addition-of-context)). Production integrations should replace `main` with a specific release tag. This enables terms used as keys (e.g., 'label') and CURIE values (e.g., 'ega:EGAD00000000001'), to be expanded, pointing to resolvable URIs (e.g., https://www.w3.org/2000/01/rdf-schema\#label and https://identifiers.org/ega:EGAD00000000001, respectively).
 
 ##### ***Figure 17\.** Diagram depicting the expansion of a JSON document into JSON-LD with the addition of @context.*
 
@@ -1972,7 +1958,7 @@ flowchart TB
     n6 -. Which looks for the<br>referenced <code>@context</code> in .-> n3
     n6 L_n6_n7_0@== "With the schemas @context,<br>it expands the JSON-LD" ==> n7
     n1 -.-> n8
-    n4 -.-> n9["<code>@context: https\://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/schemas/entities/cohort/schema.json</code>"]
+    n4 -.-> n9["<code>@context: https\://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json</code>"]
     n7 -.-> n10
     n1@{ shape: doc}
     n4@{ shape: proc}
@@ -2180,17 +2166,17 @@ gitGraph
 
 ### 7.9.1 EGA v2 model schemas
 
-The EGA v2 model schemas follow a **branch → release-branch → tag** workflow:
+The EGA v2 model schemas follow a **protected trunk (``main``) → generated release PR → immutable tag** workflow:
 
-* Day-to-day work lives on dev.
+* Day-to-day work is merged into the protected `main` branch.
 
-* The latest stable snapshot is main.
+* `main` is the latest development state; stable consumers should pin a release tag.
 
-* Each published version first gets a branch following [semantic version](https://semver.org) (vX.Y.Z), and later an immutable tag with the same name (vX.Y.Z). Validators and applications can fetch these static releases from GitHub through their version names.
+* Each publication is reviewed as an automatically generated, two-commit release PR. An immutable [semantic version](https://semver.org) tag (`vX.Y.Z`) points to the exact reviewed release commit, while the second commit restores `main` development URIs.
 
-Full details of the release process can be found at the [releases/README.md](./docs/releases/README.md). The workflow includes **manual and automated steps**, where artifacts (e.g., release\_manifest.json) are created, and semantic versions are checked, as well as the URIs used to identify each schema and its versions.
+Full details of the release process can be found in the [**release runbook**](./releases/README.md). The workflow automatically calculates semantic versions, rewrites and checks schema URIs, compiles the changelog and manifest, runs validation gates, and verifies the published tag remotely.
 
-The [release\_manifest.json](./docs/releases/release_manifest.json) is a machine-readable summary of the schema version in each release. This document gets automatically generated prior to each release.
+The [release\_manifest.json](../build/release_manifest.json) is a machine-readable summary of component versions and checksums in each release. It is generated and validated automatically.
 
 ### 7.9.2 Model extensions
 
@@ -2315,9 +2301,9 @@ The plan's **Emergency / Major / Minor / Patch** categories map directly onto th
 
 * Major changes invoke the committee veto cycle.
 
-* Emergency patches (e.g. security, legal compliance) bypass the timer but must be back-ported to main and dev within 48 hours, with a retrospective review by the Strategic and Operations committees, as per the FEGA [change-management policy (v1.0, 03-10-2024)](https://docs.google.com/document/d/1xSzh38zMxINBIN9aHQ6_Z5sacE1clmRBtkbSi5x_qZ4/edit?tab=t.0#heading=h.bly7duplfw9t).
+* Emergency patches (e.g. security, legal compliance) bypass the timer but must be merged to `main` within 48 hours, followed by a corrective immutable release and retrospective review by the Strategic and Operations committees, as per the FEGA [change-management policy (v1.0, 03-10-2024)](https://docs.google.com/document/d/1xSzh38zMxINBIN9aHQ6_Z5sacE1clmRBtkbSi5x_qZ4/edit?tab=t.0#heading=h.bly7duplfw9t).
 
-Further operational details (diagrams, CI scripts, release checklists…) live in the releases/README.md of the schema repository and are kept up to date by the MWG team.
+Further operational details, CI gates, recovery steps, and the human checklist live in the repository's [release runbook](./releases/README.md) and are kept up to date by the MWG team.
 
 # 9. Dependencies
 
