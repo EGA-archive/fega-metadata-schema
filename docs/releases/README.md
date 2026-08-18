@@ -333,7 +333,8 @@ Category: None
 
 Not applicable
 ```
-3. Confirm the PR contains exactly R1 followed by R2 and that **Release consistency** runs.
+3. Add the label ``release`` to the PR if not already added.
+4. Confirm the PR contains exactly R1 followed by R2 and that **Release consistency** runs.
 
 > [!IMPORTANT]
 > This is a maintainer gate: the release PR must target `main`, must retain both generated commits, and must be reviewed as a release candidate rather than edited.

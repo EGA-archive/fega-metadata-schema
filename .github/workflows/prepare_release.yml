@@ -112,11 +112,13 @@ jobs:
           PREVIOUS: ${{ steps.plan.outputs.previous }}
           PR_COUNT: ${{ steps.notes.outputs.pr_count }}
         run: |
-          echo "## Release preparation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Version: `$TAG`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Previous release/bootstrap: `${PREVIOUS:-bootstrap}`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Pull requests collected: `$PR_COUNT`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Branch: `$BRANCH`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- R1: `$R1`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- R2: `$R2`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Compare/open PR: https://github.com/${{ github.repository }}/compare/main...$BRANCH?expand=1" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Release preparation"
+            printf -- '- Version: `%s`\n' "$TAG"
+            printf -- '- Previous release/bootstrap: `%s`\n' "${PREVIOUS:-bootstrap}"
+            printf -- '- Pull requests collected: `%s`\n' "$PR_COUNT"
+            printf -- '- Branch: `%s`\n' "$BRANCH"
+            printf -- '- R1: `%s`\n' "$R1"
+            printf -- '- R2: `%s`\n' "$R2"
+            printf -- '- Compare/open PR: https://github.com/${{ github.repository }}/compare/main...%s?quick_pull=1&labels=release\n' "$BRANCH"
+          } >> "$GITHUB_STEP_SUMMARY"
