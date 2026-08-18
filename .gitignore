@@ -35,3 +35,5 @@ package-lock.json
 
 build/lib/
 build/bdist*/
+
+validation-summaries/
