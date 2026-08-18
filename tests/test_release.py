@@ -107,6 +107,58 @@ def test_version_assertion_and_rationale_hook(tmp_path: Path) -> None:
     assert report["errors"] == []
 
 
+def test_initial_prerelease_component_reset_is_allowed_without_manifest(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "2.0.0-draft.1")
+    _repo(current, "1.0.0-draft.1")
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert report["errors"] == []
+
+
+def test_prerelease_component_reset_is_rejected_after_first_release(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "2.0.0-draft.1")
+    _repo(current, "1.0.0-draft.1")
+    _write(previous / "build/release_manifest.json", {"bundle_version": "2.0.0-draft.1"})
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert any("below automatic minimum" in error for error in report["errors"])
+
+
+def test_initial_prerelease_component_reset_does_not_hide_schema_changes(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "2.0.0-draft.1")
+    _repo(current, "1.0.0-draft.1")
+    schema_path = current / "schemas/widget/schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["required"] = ["name"]
+    _write(schema_path, schema)
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert any("below automatic minimum" in error for error in report["errors"])
+
+
+def test_stable_component_downgrade_is_rejected_before_first_release(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "2.0.0")
+    _repo(current, "1.0.0-draft.1")
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert any("below automatic minimum" in error for error in report["errors"])
+
+
+def test_first_v1_prerelease_bundle_is_valid_bootstrap_input(tmp_path: Path) -> None:
+    _repo(tmp_path, "2.0.0-draft.1")
+    report = analyse_release(
+        tmp_path,
+        bootstrap=True,
+        requested_version="1.0.0-draft.1",
+        repository=REPOSITORY,
+    )
+    assert report["errors"] == []
+
+
 def test_rationale_association_requires_affected_changed_path(tmp_path: Path) -> None:
     root = tmp_path / "current"
     _repo(root, "1.0.0")
@@ -150,6 +202,15 @@ def test_initial_changelog_is_allowed_as_bootstrap_input(tmp_path: Path) -> None
     assert check_release_policy(base, head, ["CHANGELOG.md"]) == []
 
 
+def test_initial_changelog_release_section_is_rejected(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    head = tmp_path / "head"
+    head.mkdir(parents=True)
+    (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\n## [1.0.0-draft.1] - 2026-08-18\n", encoding="utf-8")
+    errors = check_release_policy(base, head, ["CHANGELOG.md"])
+    assert errors == ["Ordinary PRs must not add generated release sections to CHANGELOG.md"]
+
+
 def test_existing_changelog_remains_protected(tmp_path: Path) -> None:
     base = tmp_path / "base"
     head = tmp_path / "head"
@@ -157,8 +218,31 @@ def test_existing_changelog_remains_protected(tmp_path: Path) -> None:
     head.mkdir(parents=True)
     (base / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n", encoding="utf-8")
     (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\nChanged\n", encoding="utf-8")
+    (base / "build/release_manifest.json").parent.mkdir(parents=True)
+    (base / "build/release_manifest.json").write_text("{}\n", encoding="utf-8")
     errors = check_release_policy(base, head, ["CHANGELOG.md"])
     assert errors == ["Ordinary PRs must not edit generated CHANGELOG.md"]
+
+
+def test_pre_release_changelog_unreleased_edit_is_allowed(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    head = tmp_path / "head"
+    base.mkdir(parents=True)
+    head.mkdir(parents=True)
+    (base / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Existing.\n", encoding="utf-8")
+    (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Updated.\n", encoding="utf-8")
+    assert check_release_policy(base, head, ["CHANGELOG.md"]) == []
+
+
+def test_pre_release_changelog_release_section_is_rejected(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    head = tmp_path / "head"
+    base.mkdir(parents=True)
+    head.mkdir(parents=True)
+    (base / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n", encoding="utf-8")
+    (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\n## [1.0.0-draft.1] - 2026-08-18\n", encoding="utf-8")
+    errors = check_release_policy(base, head, ["CHANGELOG.md"])
+    assert errors == ["Ordinary PRs must not add generated release sections to CHANGELOG.md"]
 
 
 def test_removed_component_is_analysis_only_and_manifest_has_no_history(tmp_path: Path) -> None:

@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
   "type": "object",
   "title": "EGA protocol metadata schema",
-  "meta:version": "2.0.0-draft.1",
+  "meta:version": "1.0.0-draft.1",
   "$async": true,
   "description": "Detailed plan of instructions on how a procedure is done. For example, sample preparation, sequencing or feature extraction techniques.",
   "@context": "./context.jsonld",

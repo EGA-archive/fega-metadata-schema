@@ -178,7 +178,7 @@ Compatibility is an accepted-input lower bound, not proof that all data remains 
 
 Without an applicable rationale, `unknown` requires a major bump. A concrete rationale from a PR that changed the component or a reachable dependency permits a reviewed lower bump but still requires at least a version change. Examples do not prove compatibility.
 
-The first intended published test release is the genuine prerelease `v2.0.0-draft.1`; the later official release is `v2.0.0`. Version 1 is intentionally skipped: v1 represents the current EGA model, unrelated to this repository's release series, yet releasing a v1 for this second iteration of the model would confuse users.
+The first intended published test release is the genuine prerelease `v1.0.0-draft.1`.
 
 ## Local commands and CI gates
 
@@ -285,7 +285,7 @@ In ``main``, use the commands in the [previous section](#local-commands-and-ci-g
 2. Enter the bundle SemVer (e.g., `v2.0.0-draft.1`) and dispatch.
 3. Inspect the run summary for the candidate branch, tag, R1 and R2, and inspect every failure log.
 
-The workflow validates SemVer, confirms branch/tag names are unused, verifies development mode, discovers the previous tag or bootstrap path, generates records, proves R1 locally, creates exactly two commits, verifies R2 and pushes `release/vX.Y.Z` without force. On the first release it promotes the existing `[Unreleased]` text into `2.0.0-draft.1`; a later no-change promotion from that prerelease to `2.0.0` receives a generated promotion entry.
+The workflow validates SemVer, confirms branch/tag names are unused, verifies development mode, discovers the previous tag or bootstrap path, generates records, proves R1 locally, creates exactly two commits, verifies R2 and pushes `release/vX.Y.Z` without force. On the first release it promotes the existing `[Unreleased]` text into the chosen bundle version; a later no-change promotion from that prerelease to its matching stable version receives a generated promotion entry.
 
 > [!IMPORTANT]
 > This is a maintainer gate: do not proceed until the preparation summary names the intended branch and both commit IDs and the run is successful.

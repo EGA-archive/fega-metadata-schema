@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
     "type": "object",
     "title": "EGA common metadata definitions",
-    "meta:version": "2.0.0-draft.1",
+    "meta:version": "1.0.0-draft.1",
     "$async": true,
     "description": "Metadata schema for common definitions inherited by other EGA metadata schemas.",
     "@context": "./context.jsonld",
