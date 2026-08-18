@@ -196,7 +196,10 @@ def write_outputs(values: Mapping[str, object], destination: str | Path | None =
     path = Path(target)
     with path.open("a", encoding="utf-8") as handle:
         for key, value in values.items():
-            handle.write(f"{key}={str(value).lower() if isinstance(value, bool) else value}\n")
+            rendered = "" if value is None else (
+                str(value).lower() if isinstance(value, bool) else str(value)
+            )
+            handle.write(f"{key}={rendered}\n")
 
 
 def _is_stable_promotion(previous: str | None, current: str, public_count: int) -> bool:

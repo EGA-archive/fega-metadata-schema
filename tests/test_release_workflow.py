@@ -20,6 +20,7 @@ from fega_tools.release_workflow import (
     resolve_release_candidate,
     validate_candidate_chain,
     verify_candidate,
+    write_outputs,
 )
 
 
@@ -119,6 +120,14 @@ def test_plan_first_v1_prerelease_bootstrap_without_previous_tag(tmp_path: Path)
     assert result.previous is None
     assert result.tag == "v1.0.0-draft.1"
     assert result.branch == "release/v1.0.0-draft.1"
+
+
+def test_write_outputs_serialises_missing_values_as_empty(tmp_path: Path) -> None:
+    destination = tmp_path / "github-output"
+
+    write_outputs({"previous": None, "enabled": True, "version": "1.0.0"}, destination)
+
+    assert destination.read_text(encoding="utf-8") == "previous=\nenabled=true\nversion=1.0.0\n"
 
 
 def test_prepare_notes_selects_stable_promotion(tmp_path: Path) -> None:

@@ -193,44 +193,73 @@ python3 scripts/py/release.py discover -v
 Analyze **semantic versioning for schema changes**. The first form compares two explicit JSON files and is the debugging example for an isolated change:
 
 ```console
-python3 scripts/py/release.py semver path/to/before.schema.json path/to/after.schema.json -v
+python3 scripts/py/release.py semver \
+    path/to/before.schema.json \
+    path/to/after.schema.json \
+    -v
 ```
 
 Select one discovered component with `--component`, or report all components with `--all`. Supply the prior tag (or branch name) with `--previous-ref` for analysis:
 
 ```console
-python3 scripts/py/release.py semver --component process --previous-ref v1.2.3 -v
-python3 scripts/py/release.py semver --all --previous-ref v1.2.3 -v
+python3 scripts/py/release.py semver \
+    --component process \
+    --previous-ref v1.2.3 \
+    -v
+
+python3 scripts/py/release.py semver \
+    --all \
+    --previous-ref v1.2.3 \
+    -v
 ```
 
-**Collect pull request metadata** for release notes generation:
+**Collect pull request metadata** for release notes generation. To know what the latest commit to main is, and copy its SHA from GitHub, you can go to the [list of commits](https://github.com/EGA-archive/fega-metadata-schema/commits/main/) and click on copy the SHA for the latest commit:
 
 ```console
-python3 scripts/py/release_notes.py collect --repository OWNER/REPOSITORY --previous-ref v1.2.3 --source-sha COMMIT_SHA --output prs.json -v
+python3 scripts/py/release_notes.py collect \
+    --repository OWNER/REPOSITORY \
+    --previous-ref v1.2.3 \
+    --source-sha COMMIT_SHA \
+    --output prs.json \
+    -v
 ```
 
 **Generate changelog entries**. Use `--dry-run` to preview output without writing:
 
 ```console
-python3 scripts/py/release_notes.py changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --prs-json prs.json --dry-run -v
+python3 scripts/py/release_notes.py changelog \
+    --bundle-version 2.0.0-draft.1 \
+    --release-date 2026-08-06 \
+    --prs-json prs.json \
+    --dry-run \
+    -v
 ```
 
 Start from scratch (i.e., bootstrap) with a new changelog file:
 
 ```console
-python3 scripts/py/release_notes.py bootstrap-changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --output /tmp/CHANGELOG.next.md
+python3 scripts/py/release_notes.py bootstrap-changelog \
+    --bundle-version 2.0.0-draft.1 \
+    --release-date 2026-08-06 \
+    --output /tmp/CHANGELOG.next.md
 ```
 
 **Generate a release manifest** with `--dry-run` to preview:
 
 ```console
-python3 scripts/py/release.py manifest --bundle-version 2.0.0-draft.1 --source-commit COMMIT_SHA --dry-run -o manifest.json
+python3 scripts/py/release.py manifest \
+    --bundle-version 2.0.0-draft.1 \
+    --source-commit COMMIT_SHA \
+    --dry-run \
+    -o manifest.json
 ```
 
 **Verify schema and release** configuration in development mode:
 
 ```console
-python3 scripts/py/release.py verify --mode development -v
+python3 scripts/py/release.py verify \
+    --mode development \
+    -v
 ```
 
 The release-notes CLI also provides `validate-pr`, `render`, and `collect`; inspect `--help` for their required inputs before using them.
@@ -274,18 +303,16 @@ python3 scripts/py/release.py verify --mode development -v
 
 ### 4. Preview release inputs locally
 
-In ``main``, use the commands in the [previous section](#local-commands-and-ci-gates) to inspect discovered components, compare a before/after schema, analyse all components against a previous ref, preview changelog output from collected PR JSON, generate a dry-run manifest, and verify development mode. The changelog command requires `--release-date` and `--prs-json`. Obtain PR JSON with the implemented `release_notes.py collect` command when GitHub access is available.
+In ``main``, use the commands in the [previous section](#local-commands-and-ci-gates) to inspect discovered components, compare a before/after schema, analyse all components against a previous ref, preview changelog output from collected PR JSON, generate a dry-run manifest, and verify development mode. All of this is done automatically in the next steps, but it is good practice to preview the inputs and outputs locally before dispatching a candidate release.
 
 > [!CAUTION]
 > If analysis or a dry run fails, fix the underlying ordinary PR or metadata and merge a correction into `main`. Never hand-edit generated R1/R2 files.
 
 ### 5. Dispatch 'Prepare release'
 
-1. Open **Actions → Prepare release → Run workflow** on `main`.
+1. Open **Actions -> [Prepare release](https://github.com/EGA-archive/fega-metadata-schema/actions/workflows/prepare_release.yml) -> Run workflow**, using `main` as the target branch.
 2. Enter the bundle SemVer (e.g., `v2.0.0-draft.1`) and dispatch.
 3. Inspect the run summary for the candidate branch, tag, R1 and R2, and inspect every failure log.
-
-The workflow validates SemVer, confirms branch/tag names are unused, verifies development mode, discovers the previous tag or bootstrap path, generates records, proves R1 locally, creates exactly two commits, verifies R2 and pushes `release/vX.Y.Z` without force. On the first release it promotes the existing `[Unreleased]` text into the chosen bundle version; a later no-change promotion from that prerelease to its matching stable version receives a generated promotion entry.
 
 > [!IMPORTANT]
 > This is a maintainer gate: do not proceed until the preparation summary names the intended branch and both commit IDs and the run is successful.

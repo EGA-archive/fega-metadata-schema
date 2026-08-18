@@ -50,7 +50,7 @@ jobs:
           RELEASE_DATE: ${{ steps.plan.outputs.release_date }}
         run: |
           args=(notes --repository "$REPOSITORY" --source "$(git rev-parse main)" --version "${TAG#v}" --release-date "$RELEASE_DATE" --snapshot /tmp/prs.json --changelog /tmp/CHANGELOG.next.md)
-          if [ -n "$PREVIOUS" ]; then args+=(--previous "$PREVIOUS"); fi
+          if [[ -n "$PREVIOUS" && "$PREVIOUS" != "None" && "$PREVIOUS" != "null" ]]; then args+=(--previous "$PREVIOUS"); fi
           python scripts/py/release_workflow.py "${args[@]}"
       - name: Analyse candidate against previous release
         env:
@@ -58,7 +58,7 @@ jobs:
           PREVIOUS: ${{ steps.plan.outputs.previous }}
         run: |
           args=(--bundle-version "${TAG#v}" --prs-json /tmp/prs.json --output /tmp/release-analysis.json)
-          if [ -n "$PREVIOUS" ]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
+          if [[ -n "$PREVIOUS" && "$PREVIOUS" != "None" && "$PREVIOUS" != "null" ]]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
           python scripts/py/release.py analyse "${args[@]}"
       - name: Materialise R1 release tree
         env:
@@ -68,7 +68,7 @@ jobs:
           RELEASE_DATE: ${{ steps.plan.outputs.release_date }}
         run: |
           args=(--source-commit "$SOURCE" --date "$RELEASE_DATE" --bundle-version "${TAG#v}" --prs-json /tmp/prs.json --changelog /tmp/CHANGELOG.next.md --output /tmp/release-analysis.json)
-          if [ -n "$PREVIOUS" ]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
+          if [[ -n "$PREVIOUS" && "$PREVIOUS" != "None" && "$PREVIOUS" != "null" ]]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
           python scripts/py/release.py prepare "${args[@]}"
           python scripts/py/release.py verify --mode release --ref "$TAG"
       - name: Create R1 release commit
