@@ -114,7 +114,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/framework/json/requests/filteringTerms.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/requests/filteringTerms.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Filtering terms are the main means to select subsets of records from a Beacon response. While the name implies the application to a generated response, in practice implementations may apply them at the query stage. Note: In the processing of Beacon v2.0 requests multiple filters are assumed to be chained by the logical AND operator.",

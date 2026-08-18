@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/policy/schema.json",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
   "type": "object",
   "title": "EGA policy metadata schema",
   "meta:version": "1.0.0-draft.1",
@@ -123,7 +123,7 @@
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:relatedMatch",
-          "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/DAC/schema.json#governs",
+          "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json#governs",
           "mapping_justification": "semapv:ManualMappingCuration",
           "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",

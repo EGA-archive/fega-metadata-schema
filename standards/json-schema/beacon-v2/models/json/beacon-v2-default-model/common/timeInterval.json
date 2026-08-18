@@ -1,6 +1,6 @@
 {
     "$comments": "From https://github.com/phenopackets/phenopacket-schema/blob/v2/docs/time-interval.rst",
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/timeInterval.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/timeInterval.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
     "description": "Time interval with start and end defined as ISO8601 time stamps.",
