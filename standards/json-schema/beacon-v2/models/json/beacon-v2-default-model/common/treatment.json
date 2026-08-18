@@ -1,6 +1,6 @@
 {
     "$comments": "Compares to https://github.com/phenopackets/phenopacket-schema/blob/master/docs/treatment.rst, with modifications.",
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/treatment.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/treatment.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Treatment(s) prescribed/administered, defined by treatment ID, date and age of onset, dose, schedule and duration.",

@@ -147,7 +147,7 @@
             ]
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/commonDefinitions.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/commonDefinitions.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Definitions for concepts used in several entry types, but that having only one property are not complex enough to require a full independent schema document.",
     "title": "Common Definitions"

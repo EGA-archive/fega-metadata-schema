@@ -1,9 +1,9 @@
 {
   "schema": {
-    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json"
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/study/schema.json"
   },
   "data": {
-    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/study/schema.json",
     "@id": "ega:EGAS00001000002",
     "@type": "ega:study",
     "title": "Minimal case-control genomics study",
