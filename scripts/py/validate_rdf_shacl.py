@@ -16,6 +16,7 @@ try:
         add_summary_arguments,
         add_verbosity_argument,
         emit_summary,
+        help_with_example,
     )
     from fega_tools.io import clone_json
     from fega_tools.jsonld_utils import (
@@ -449,12 +450,12 @@ def make_arg_parser() -> argparse.ArgumentParser:
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument(
         "--entity",
-        help="Validate one entity by directory name, e.g. 'dataset'.",
+        help=help_with_example("Validate one entity by directory name", "--entity dataset"),
     )
     selection.add_argument(
         "--all-entities",
         action="store_true",
-        help="Validate every entity directory under --root.",
+        help=help_with_example("Validate every entity directory under --root", "--all-entities"),
     )
     parser.add_argument(
         "--shapes",
@@ -463,17 +464,17 @@ def make_arg_parser() -> argparse.ArgumentParser:
         nargs="+",
         type=Path,
         required=True,
-        help="SHACL shape files or directories (TTL, RDF/XML, JSON-LD, etc.).",
+        help=help_with_example("SHACL shape files or directories", "--shapes standards/rdf"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)
     parser.add_argument(
         "--shacl-report",
         action="store_true",
-        help="Include raw pySHACL validation reports in the JSON summary.",
+        help=help_with_example("Include raw pySHACL reports in the JSON summary", "--shacl-report"),
     )
     parser.add_argument(
         "--required-root-type",
-        help="Require a root RDF node with this type IRI before SHACL conformance.",
+        help=help_with_example("Require this root RDF type IRI", "--required-root-type https://example.org/Type"),
     )
     add_verbosity_argument(parser)
     return parser

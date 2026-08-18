@@ -56,6 +56,7 @@ try:
         add_summary_arguments,
         add_verbosity_argument,
         emit_summary,
+        help_with_example,
     )
     from fega_tools.io import clone_json, load_json
     from fega_tools.logging_utils import configure_logging, log_suite_status
@@ -1537,18 +1538,18 @@ def make_arg_parser() -> argparse.ArgumentParser:
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument(
         "--entity",
-        help="Validate one entity by directory name, e.g. 'cohort'.",
+        help=help_with_example("Validate one entity by directory name", "--entity cohort"),
     )
     selection.add_argument(
         "--file",
         type=Path,
         dest="input_file",
-        help="Validate one wrapped JSON example and trace it with -vv.",
+        help=help_with_example("Validate one wrapped JSON example", "--file example.json"),
     )
     parser.add_argument(
         "--url",
         default=DEFAULT_VALIDATOR_URL,
-        help=f"Biovalidator endpoint URL (default: {DEFAULT_VALIDATOR_URL})",
+        help=help_with_example(f"Biovalidator endpoint URL (default: {DEFAULT_VALIDATOR_URL})", "--url http://localhost:3020/validate"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)
     add_verbosity_argument(parser)

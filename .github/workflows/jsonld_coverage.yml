@@ -1,5 +1,5 @@
-name: Python tests
-# Runs the automated tests for the project's Python tools. It catches code regressions before changes are merged.
+name: JSON-LD coverage
+# Checks that the schemas have the context terms and frame fields needed for JSON-LD use. It highlights missing or unexpected coverage.
 
 on:
   pull_request:
@@ -8,18 +8,16 @@ on:
   merge_group:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
+permissions: {contents: read}
 concurrency:
-  group: python-tests-${{ github.event.pull_request.number || github.ref }}
+  group: jsonld-coverage-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Python tests
+  coverage:
+    name: JSON-LD coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - name: Check out tested snapshot
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -34,9 +32,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
-      - name: Install test dependencies
-        run: python -m pip install -r requirements-lock.txt
-      - name: Install project
-        run: python -m pip install --no-deps -e .
-      - name: Run Python tests
-        run: python -m pytest
+      - name: Install validation tooling
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Validate JSON-LD coverage
+        run: |
+          python scripts/py/validate_jsonld_coverage.py \
+            --root schemas/entities \
+            --summary-dir validation-summaries \
+            -v
+      - name: Upload coverage summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with: {name: jsonld-coverage-summary, path: validation-summaries, if-no-files-found: warn}

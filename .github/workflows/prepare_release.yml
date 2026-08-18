@@ -1,0 +1,122 @@
+name: Prepare release
+# Collects PR information and creates the two-commit candidate branch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_version:
+        description: Bundle SemVer (for example v2.0.0 or v2.0.0-draft.1)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare release branch
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out protected main
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
+      - name: Install release tooling
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Plan version, branch, and previous tag
+        id: plan
+        env:
+          REQUESTED_VERSION: ${{ inputs.bundle_version }}
+        run: python scripts/py/release_workflow.py plan --version "$REQUESTED_VERSION"
+      - name: Collect PR metadata and render changelog
+        id: notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TAG: ${{ steps.plan.outputs.tag }}
+          PREVIOUS: ${{ steps.plan.outputs.previous }}
+          RELEASE_DATE: ${{ steps.plan.outputs.release_date }}
+        run: |
+          args=(notes --repository "$REPOSITORY" --source "$(git rev-parse main)" --version "${TAG#v}" --release-date "$RELEASE_DATE" --snapshot /tmp/prs.json --changelog /tmp/CHANGELOG.next.md)
+          if [ -n "$PREVIOUS" ]; then args+=(--previous "$PREVIOUS"); fi
+          python scripts/py/release_workflow.py "${args[@]}"
+      - name: Analyse candidate against previous release
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          PREVIOUS: ${{ steps.plan.outputs.previous }}
+        run: |
+          args=(--bundle-version "${TAG#v}" --prs-json /tmp/prs.json --output /tmp/release-analysis.json)
+          if [ -n "$PREVIOUS" ]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
+          python scripts/py/release.py analyse "${args[@]}"
+      - name: Materialise R1 release tree
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          PREVIOUS: ${{ steps.plan.outputs.previous }}
+          SOURCE: ${{ steps.notes.outputs.source }}
+          RELEASE_DATE: ${{ steps.plan.outputs.release_date }}
+        run: |
+          args=(--source-commit "$SOURCE" --date "$RELEASE_DATE" --bundle-version "${TAG#v}" --prs-json /tmp/prs.json --changelog /tmp/CHANGELOG.next.md --output /tmp/release-analysis.json)
+          if [ -n "$PREVIOUS" ]; then args+=(--previous-ref "$PREVIOUS"); else args+=(--bootstrap); fi
+          python scripts/py/release.py prepare "${args[@]}"
+          python scripts/py/release.py verify --mode release --ref "$TAG"
+      - name: Create R1 release commit
+        id: r1
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          BRANCH: ${{ steps.plan.outputs.branch }}
+        run: |
+          git switch -c "$BRANCH"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add --all
+          git commit -m "release: $TAG"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Create R2 development commit
+        id: r2
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          R1: ${{ steps.r1.outputs.sha }}
+        run: |
+          python scripts/py/release.py normalise --from-ref "$TAG" --to-ref main
+          git add --all
+          git commit -m "chore: resume development after $TAG"
+          r2=$(git rev-parse HEAD)
+          test "$(git rev-parse "$r2^")" = "$R1"
+          test "$(git rev-parse "$R1^")" = "$(git rev-parse main)"
+          echo "sha=$r2" >> "$GITHUB_OUTPUT"
+      - name: Verify R2 and push branch without force
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          BRANCH: ${{ steps.plan.outputs.branch }}
+        run: |
+          python scripts/py/release.py verify --mode development --ref main
+          git push origin "HEAD:$BRANCH"
+      - name: Write preparation summary
+        env:
+          TAG: ${{ steps.plan.outputs.tag }}
+          BRANCH: ${{ steps.plan.outputs.branch }}
+          R1: ${{ steps.r1.outputs.sha }}
+          R2: ${{ steps.r2.outputs.sha }}
+          PREVIOUS: ${{ steps.plan.outputs.previous }}
+          PR_COUNT: ${{ steps.notes.outputs.pr_count }}
+        run: |
+          echo "## Release preparation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Version: `$TAG`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Previous release/bootstrap: `${PREVIOUS:-bootstrap}`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Pull requests collected: `$PR_COUNT`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: `$BRANCH`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- R1: `$R1`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- R2: `$R2`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Compare/open PR: https://github.com/${{ github.repository }}/compare/main...$BRANCH?expand=1" >> "$GITHUB_STEP_SUMMARY"

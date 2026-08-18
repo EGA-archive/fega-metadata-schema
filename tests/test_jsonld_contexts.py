@@ -18,11 +18,11 @@ def test_profile_context_resolves_to_the_base_graph_context() -> None:
     """Profiles may declare the base graph context instead of a sibling file."""
     id_map = build_id_to_path_map(REPO_ROOT)
     profile_ref = (
-        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
         "schemas/graph/profiles/dataset-and-datafile.schema.json"
     )
     graph_context = (
-        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
         "schemas/graph/context.jsonld"
     )
     example = REPO_ROOT / "schemas/graph/examples/valid/graph-valid-dataset-datafile.json"
@@ -34,11 +34,11 @@ def test_flat_profiles_and_graph_requirement_defs_are_addressable() -> None:
     """Flat profile files resolve, while requirements remain graph definitions."""
     id_map = build_id_to_path_map(REPO_ROOT)
     profile_ref = (
-        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
         "schemas/graph/profiles/organism-lab-data.schema.json"
     )
     graph_ref = (
-        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
         "schemas/graph/schema.json"
     )
 
@@ -57,6 +57,16 @@ def test_flat_profiles_and_graph_requirement_defs_are_addressable() -> None:
         "hasLabProtocol",
     ):
         assert requirement in graph_schema["$defs"]
+
+
+def test_context_map_uses_repository_and_ref_discovered_from_schema_ids(tmp_path: Path) -> None:
+    schema_path = tmp_path / "schemas/widget/schema.json"
+    context_path = tmp_path / "schemas/widget/context.jsonld"
+    schema_path.parent.mkdir(parents=True)
+    schema_path.write_text(json.dumps({"$id": "https://raw.githubusercontent.com/fork/project/v2.0.0-draft.1/schemas/widget/schema.json"}), encoding="utf-8")
+    context_path.write_text('{"@context": {}}', encoding="utf-8")
+    id_map = build_id_to_path_map(tmp_path)
+    assert id_map["https://raw.githubusercontent.com/fork/project/v2.0.0-draft.1/schemas/widget/context.jsonld"] == context_path
 
 
 def test_named_graph_context_check_counts_named_graph_triples() -> None:

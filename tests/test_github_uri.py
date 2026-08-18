@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from fega_tools.json_pointer import (
-    _validate_replacements,
+from fega_tools.github_uri import (
+    validate_replacements,
+    parse_raw_github_uri,
     patch_json_tree,
     rewrite_raw_github_uris,
 )
@@ -61,7 +62,7 @@ def test_patch_json_tree_requires_all_segments_to_match_by_default() -> None:
 def test_validate_replacements_rejects_unknown_segment() -> None:
     """Check that unsupported replacement segment names are rejected."""
     with pytest.raises(ValueError, match="Invalid segment"):
-        _validate_replacements({"tag": ("main", "dev")})
+        validate_replacements({"tag": ("main", "dev")})
 
 
 def test_rewrite_raw_github_uris_preserves_refs_prefix_and_fragments() -> None:
@@ -87,3 +88,19 @@ def test_rewrite_raw_github_uris_preserves_refs_prefix_and_fragments() -> None:
     assert rewritten == f"prefix {expected} suffix"
     assert count == 1
     assert mappings[uri.split("/schemas/")[0] + "/"] == expected.split("/schemas/")[0] + "/"
+
+
+def test_parse_raw_github_uri_separates_prefixed_ref_and_suffix() -> None:
+    uri = parse_raw_github_uri(
+        "https://raw.githubusercontent.com/owner/repo/refs/heads/main/"
+        "schemas/x.json?download=1#anchor"
+    )
+    assert uri is not None
+    assert uri.ref_prefix == "refs/heads/"
+    assert uri.ref == "main"
+    assert uri.path == "schemas/x.json"
+    assert uri.suffix == "?download=1#anchor"
+    assert uri.render(ref="v1.0.0", preserve_prefix=False) == (
+        "https://raw.githubusercontent.com/owner/repo/v1.0.0/"
+        "schemas/x.json?download=1#anchor"
+    )

@@ -10,6 +10,11 @@ from typing import Any, Dict
 from fega_tools.validation_common import DEFAULT_ROOT, write_json_summary
 
 
+def help_with_example(description: str, example: str) -> str:
+    """Return concise argparse help with a concrete mock invocation."""
+    return f"{description.rstrip('.')} Example: {example}"
+
+
 def add_root_argument(
     parser: argparse.ArgumentParser,
     *,
@@ -20,7 +25,8 @@ def add_root_argument(
         "--root",
         type=Path,
         default=default,
-        help=f"Entity schema root (default: {default})",
+        metavar="PATH",
+        help=help_with_example(f"Entity schema root (default: {default})", "--root schemas/entities"),
     )
 
 
@@ -32,13 +38,14 @@ def add_summary_arguments(
     parser.add_argument(
         "--summary-dir",
         type=Path,
-        help=f"Optional directory where {summary_filename} is written.",
+        metavar="DIR",
+        help=help_with_example(f"Optional directory where {summary_filename} is written", "--summary-dir reports"),
     )
     parser.add_argument(
         "--print-summary",
         action="store_true",
         default=False,
-        help="Print the full JSON summary to stdout (default: off).",
+        help=help_with_example("Print the full JSON summary to stdout (default: off)", "--print-summary"),
     )
 
 
@@ -53,7 +60,7 @@ def add_verbosity_argument(
         "-v",
         action="count",
         default=0,
-        help=help_text,
+        help=help_with_example(help_text, "-v"),
     )
 
 

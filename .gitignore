@@ -32,3 +32,6 @@ server.pid
 .pytest_cache/
 
 package-lock.json
+
+build/lib/
+build/bdist*/

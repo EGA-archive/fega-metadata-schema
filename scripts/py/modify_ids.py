@@ -22,9 +22,9 @@ from typing import Dict, List, Sequence, Tuple
 
 try:
     from fega_tools.io import collect_candidate_files
-    from fega_tools.json_pointer import (
-        _ALLOWED_SEGMENTS,
-        _validate_replacements,
+    from fega_tools.github_uri import (
+        ALLOWED_SEGMENTS,
+        validate_replacements,
         patch_json_tree,
     )
     from fega_tools.logging_utils import configure_logging
@@ -39,6 +39,8 @@ except ModuleNotFoundError as exc:
 
 logger = logging.getLogger(Path(__file__).stem)
 
+from fega_tools.cli_utils import help_with_example
+
 # -------
 # CLI argument helpers
 # -------
@@ -48,19 +50,19 @@ def _add_segment_arg(parser: argparse.ArgumentParser, segment: str) -> None:
         f"--{segment}",
         metavar=("SOURCE", "TARGET"),
         nargs=2,
-        help=f"Replace '{segment}' segment: SOURCE -> TARGET",
+        help=help_with_example(f"Replace '{segment}' segment from SOURCE to TARGET", f"--{segment} old new"),
     )
 
 
 def _parse_replacements(args: argparse.Namespace) -> Dict[str, Tuple[str, str]]:
     replacements: Dict[str, Tuple[str, str]] = {}
-    for segment in _ALLOWED_SEGMENTS: # repo, owner, branch
+    for segment in ALLOWED_SEGMENTS: # repo, owner, branch
         value = getattr(args, segment)
         if value is not None:
             replacements[segment] = tuple(value)
     if not replacements:
         raise SystemExit("ERROR: No replacements requested. Use --owner/--repo/--branch.")
-    _validate_replacements(replacements)
+    validate_replacements(replacements)
     return replacements
 
 # -------
@@ -86,18 +88,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "inputs",
         type=Path,
         nargs="+",
-        help="JSON/JSON-LD file(s) or directory(ies) to rewrite",
+        help=help_with_example("JSON/JSON-LD files or directories to rewrite", "schemas/entities"),
     )
 
-    for segment in _ALLOWED_SEGMENTS: # repo, owner, branch
+    for segment in ALLOWED_SEGMENTS: # repo, owner, branch
         _add_segment_arg(parser, segment)
 
     parser.add_argument(
         "--independent",
         action="store_true",
-        help=(
+        help=help_with_example(
             "Apply replacements independently (default requires all specified "
-            "segments to match before any replacement occurs)."
+            "segments to match before any replacement occurs)", "--independent"
         ),
     )
     output_group = parser.add_mutually_exclusive_group() # allow either output directory or in-place modification
@@ -106,20 +108,20 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--output",
         dest="output_directory",
         type=Path,
-        help="Directory for modified copies while preserving originals",
+        help=help_with_example("Directory for modified copies while preserving originals", "--output converted"),
     )
     output_group.add_argument(
         "-w",
         "--in-place",
         action="store_true",
-        help="Rewrite files in place instead of copying",
+        help=help_with_example("Rewrite files in place instead of copying", "--in-place"),
     )
     parser.add_argument(
         "--verbosity",
         "-v",
         action="count",
         default=0,
-        help="Increase logging verbosity by adding more 'v's: '-v' for debug, '-vv' for all messages (trace).",
+        help=help_with_example("Increase logging verbosity by adding more 'v's", "-v"),
     )
     return parser
 

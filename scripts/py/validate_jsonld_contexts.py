@@ -12,6 +12,7 @@ import datetime as _dt
 import json
 import logging
 import sys
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -24,6 +25,7 @@ try:
         add_summary_arguments,
         add_verbosity_argument,
         emit_summary,
+        help_with_example,
     )
     from fega_tools.io import clone_json, load_json
     from fega_tools.logging_utils import configure_logging, log_suite_status
@@ -156,7 +158,29 @@ def validate_file_jsonld(
 
     try:
         graph = rdflib.Dataset()
-        graph.parse(data=json.dumps(data_copy), format="json-ld", base=schema_ref)
+        # RDFLib's JSON-LD parser still calls the deprecated
+        # ``Dataset.default_context`` property and constructs its deprecated
+        # ``ConjunctiveGraph`` compatibility sink internally.  These warnings
+        # are emitted by RDFLib itself while parsing an otherwise valid
+        # dataset; suppress only those two known upstream warnings here so
+        # genuine deprecations from this code remain visible.
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=(
+                    r"Dataset\.default_context is deprecated, "
+                    r"use Dataset\.default_graph instead\."
+                ),
+                category=DeprecationWarning,
+                module=r"rdflib(?:\.|$)",
+            )
+            warnings.filterwarnings(
+                "ignore",
+                message=r"ConjunctiveGraph is deprecated, use Dataset instead\.",
+                category=DeprecationWarning,
+                module=r"rdflib(?:\.|$)",
+            )
+            graph.parse(data=json.dumps(data_copy), format="json-ld", base=schema_ref)
     except Exception as exc:  # noqa: BLE001 – rdflib raises diverse exceptions
         result.update({"status": INVALID_STATUS, "errors": [f"RDF parse failed: {exc}"]})
         return result
@@ -308,7 +332,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
     add_root_argument(parser, default=DEFAULT_ROOT)
     parser.add_argument(
         "--entity",
-        help="Validate one entity by directory name, e.g. 'cohort'.",
+        help=help_with_example("Validate one entity by directory name", "--entity cohort"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)
     add_verbosity_argument(parser)

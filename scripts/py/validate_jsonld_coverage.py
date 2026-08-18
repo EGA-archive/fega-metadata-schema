@@ -15,6 +15,7 @@ try:
         add_summary_arguments,
         add_verbosity_argument,
         emit_summary,
+        help_with_example,
     )
     from fega_tools.jsonld_coverage import validate_jsonld_coverage
     from fega_tools.logging_utils import configure_logging, log_suite_status
@@ -122,7 +123,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
     add_root_argument(parser, default=DEFAULT_ROOT)
     parser.add_argument(
         "--entity",
-        help="Validate one entity by directory name, e.g. 'cohort'.",
+        help=help_with_example("Validate one entity by directory name", "--entity cohort"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)
     add_verbosity_argument(parser)

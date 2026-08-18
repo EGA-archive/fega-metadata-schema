@@ -21,6 +21,7 @@ try:
         validate_document,
     )
     from fega_tools.io import collect_candidate_json
+    from fega_tools.cli_utils import help_with_example
     from fega_tools.logging_utils import configure_logging
     from fega_tools.validation_common import VALID_STATUS, load_wrapped_example
 except ModuleNotFoundError as exc:
@@ -119,21 +120,21 @@ def make_arg_parser() -> argparse.ArgumentParser:
         "inputs",
         nargs="+",
         type=Path,
-        help="Files or directories to validate (at least one, e.g., 'schemas/entities/cohort/examples/valid/cohort-valid-detailed-study-defined.json').",
+        help=help_with_example("Files or directories to validate", "schemas/entities"),
     )
     parser.add_argument(
         "--url",
         "-u",
         dest="validator_url",
         default=DEFAULT_VALIDATOR_URL,
-        help=f"Biovalidator /validate endpoint (default: {DEFAULT_VALIDATOR_URL})",
+        help=help_with_example(f"Biovalidator /validate endpoint (default: {DEFAULT_VALIDATOR_URL})", "--url http://localhost:3020/validate"),
     )
     parser.add_argument(
         "--verbosity",
         "-v",
         action="count",
         default=0,
-        help="Increase log verbosity by adding more 'v's: '-v' for debug, '-vv' for all messages (trace).",
+        help=help_with_example("Increase log verbosity by adding more 'v's", "-v"),
     )
     return parser
 

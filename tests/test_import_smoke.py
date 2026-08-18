@@ -16,7 +16,7 @@ def test_fega_tools_modules_import() -> None:
         "fega_tools.biovalidator",
         "fega_tools.cli_utils",
         "fega_tools.io",
-        "fega_tools.json_pointer",
+        "fega_tools.github_uri",
         "fega_tools.jsonld_coverage",
         "fega_tools.jsonld_utils",
         "fega_tools.logging_utils",
@@ -33,6 +33,8 @@ def test_validation_scripts_show_help() -> None:
     scripts = [
         "scripts/py/schema_diff.py",
         "scripts/py/modify_ids.py",
+        "scripts/py/release.py",
+        "scripts/py/verify_remote_release.py",
         "scripts/py/validate_examples.py",
         "scripts/py/validate_jsonld_contexts.py",
         "scripts/py/validate_jsonld_coverage.py",

@@ -1,0 +1,51 @@
+name: Release consistency
+# Checks that a release pull request has the expected candidate commits and release metadata. It confirms that development pointers are restored correctly.
+
+on:
+  pull_request:
+  merge_group:
+
+permissions: {contents: read}
+concurrency:
+  group: release-consistency-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  consistency:
+    name: Release consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out tested snapshot
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {ref: '${{ github.event.pull_request.head.sha || github.sha }}', fetch-depth: 0}
+      - name: Ordinary pull request
+        if: github.event_name != 'pull_request' || !startsWith(github.head_ref, 'release/v')
+        run: echo 'Not a release candidate; release consistency checks are not applicable.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/v')
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
+      - name: Install release tooling
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/v')
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Validate reviewed R1 then R2 commits
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/v')
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          test "$(git rev-list --count "$BASE_SHA..$HEAD_SHA")" -eq 2
+          r1=$(git rev-parse "$HEAD_SHA^"); r2=$HEAD_SHA
+          test "$(git rev-parse "$r1^")" = "$BASE_SHA"
+          test "$(git rev-parse "$r2^")" = "$r1"
+          tag=$(git show "$r1:build/release_manifest.json" | jq -r .tag)
+          test "$HEAD_BRANCH" = "release/$tag"
+          test "$(git show "$r1:build/release_manifest.json" | jq -r .source_commit)" = "$BASE_SHA"
+          worktree=$(mktemp -d)
+          git worktree add --detach "$worktree" "$r1"
+          env PYTHONPATH="$worktree/src" python "$worktree/scripts/py/release.py" --root "$worktree" verify --mode release --ref "$tag"
+          env PYTHONPATH="$worktree/src" python "$worktree/scripts/py/release.py" --root "$worktree" normalise --from-ref "$tag" --to-ref main
+          git -C "$worktree" diff --exit-code "$r2" -- .
+          echo "## Release candidate $tag" >> "$GITHUB_STEP_SUMMARY"

@@ -21,6 +21,7 @@ try:
         add_summary_arguments,
         add_verbosity_argument,
         emit_summary,
+        help_with_example,
     )
     from fega_tools.logging_utils import configure_logging, log_suite_status
     from fega_tools.validation_common import (
@@ -194,14 +195,14 @@ def make_arg_parser() -> argparse.ArgumentParser:
     add_root_argument(parser, default=DEFAULT_ROOT)
     parser.add_argument(
         "--entity",
-        help="Validate one entity by directory name, e.g. 'cohort'.",
+        help=help_with_example("Validate one entity by directory name", "--entity cohort"),
     )
     parser.add_argument(
         "--url",
         "-u",
         dest="validator_url",
         default=DEFAULT_VALIDATOR_URL,
-        help=f"Biovalidator /validate endpoint (default: {DEFAULT_VALIDATOR_URL})",
+        help=help_with_example(f"Biovalidator /validate endpoint (default: {DEFAULT_VALIDATOR_URL})", "--url http://localhost:3020/validate"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)
     add_verbosity_argument(parser)

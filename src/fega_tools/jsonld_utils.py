@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, FrozenSet, List, Set, Tuple
 from urllib.parse import urlparse
 
-GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/dev/"
+GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
 
 JSONLD_KEYWORDS = {
     "@base",
@@ -65,6 +65,7 @@ def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
     schema, plus every ``context.jsonld``, found under *repo_root*.
     """
     id_map: Dict[str, Path] = {}
+    raw_prefixes = {GITHUB_RAW_PREFIX}
 
     schema_files = sorted(
         {*repo_root.rglob("schema.json"), *repo_root.rglob("*.schema.json")}
@@ -76,6 +77,12 @@ def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
             schema_id = schema.get("$id", "")
             if schema_id:
                 id_map[schema_id] = schema_file
+                try:
+                    relative = schema_file.relative_to(repo_root).as_posix()
+                    if schema_id.endswith(relative):
+                        raw_prefixes.add(schema_id[: -len(relative)])
+                except ValueError:
+                    pass
         except (json.JSONDecodeError, OSError):
             pass
         # Register via inferred raw-GitHub URL as well.
@@ -86,11 +93,19 @@ def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
         except ValueError:
             pass
 
+    for schema_file in schema_files:
+        try:
+            relative = schema_file.relative_to(repo_root).as_posix()
+        except ValueError:
+            continue
+        for prefix in raw_prefixes:
+            id_map.setdefault(prefix + relative, schema_file)
+
     for context_file in sorted(repo_root.rglob("context.jsonld")):
         try:
-            rel = context_file.relative_to(repo_root)
-            url = GITHUB_RAW_PREFIX + str(rel).replace("\\", "/")
-            id_map[url] = context_file
+            relative = context_file.relative_to(repo_root).as_posix()
+            for prefix in raw_prefixes:
+                id_map[prefix + relative] = context_file
         except ValueError:
             pass
 
