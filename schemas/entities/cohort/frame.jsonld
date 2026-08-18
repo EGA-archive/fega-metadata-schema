@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/cohort/schema.json",
   "@type": "ega:cohort",
   "@embed": "@always",
   "@explicit": false,

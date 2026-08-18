@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.0-draft.1] - 2026-08-18
+
 ### Added
 
 - Added the initial FEGA metadata model, including entity, graph, profile, and shared-definition schemas with component version metadata.

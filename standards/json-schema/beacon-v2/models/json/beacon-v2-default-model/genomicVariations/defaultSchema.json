@@ -520,7 +520,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/genomicVariations/defaultSchema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/genomicVariations/defaultSchema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Schema for a genomic variant entry.",

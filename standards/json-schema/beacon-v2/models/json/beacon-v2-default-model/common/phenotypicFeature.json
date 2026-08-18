@@ -1,6 +1,6 @@
 {
     "$defs": {},
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/phenotypicFeature.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/phenotypicFeature.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Used to describe a phenotype that characterizes the subject or biosample.",
     "properties": {

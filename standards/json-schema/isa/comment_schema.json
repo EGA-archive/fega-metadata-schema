@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/isa/comment_schema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/isa/comment_schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "ISA Comment schema - it corresponds to ISA Comment[] construct",
     "description": "JSON-schema representing an ISA model Comment object",
@@ -23,7 +23,7 @@
     "examples": [
         {
             "@id": "urn:uuid:7bf38b37-99a3-4e2c-a2cc-4b8f7b63c3e1",
-            "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/isa/comment_schema.json",
+            "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/isa/comment_schema.json",
             "@type": "Comment",
             "name": "deviation",
             "value": "Operator shortened incubation by 2 minutes due to observed over-digestion."
