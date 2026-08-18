@@ -1,0 +1,328 @@
+{
+  "$schema": "release_manifest.schema.json",
+  "manifest_version": 2,
+  "bundle_version": "1.0.0-draft.1",
+  "tag": "v1.0.0-draft.1",
+  "release_date": "2026-08-18",
+  "source_repository": "EGA-archive/fega-metadata-schema",
+  "source_commit": "79b1554133f58d83e9f40daf27a831ab814824bf",
+  "components": [
+    {
+      "name": "common",
+      "schema": "schemas/common/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "standard:standards/json-schema/beacon-v2"
+      ],
+      "checksums": {
+        "schema": "9c3747d7a664b48cfa68c11d70bbb33fd3bfdbc95d463846417ed361db725140",
+        "context": "015f6cc0a74703985c102bcf9f702de52d9a38936e717239b0c33e96362a245d"
+      }
+    },
+    {
+      "name": "DAC",
+      "schema": "schemas/entities/DAC/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "bcf811e809fdc5be1b72a4f7bf629d6823ef731f2b813b35c61f43b158b43e48",
+        "context": "6dbae4d7eeb81acd119f88806cec4ff2e0454ea6734c559c7c4b72649dd2c389",
+        "frame": "adba6a3798a19d2eceb3e75adb449a096a8be20be50a886a29bd82302a0ff529"
+      }
+    },
+    {
+      "name": "biomaterial",
+      "schema": "schemas/entities/biomaterial/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/beacon-v2",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "af7b9de0a2fc10c45032860e2a2eb62d0ba3359e38691cdcf37fee8d6bb77791",
+        "context": "4cfc30aeb5eae62a4320589fb3b6f0a972a2163c8554f385b59896d6406908a0",
+        "frame": "403e205792796430e730aca6609b94ffb639b93c0c58102a8a36798d17b66f71"
+      }
+    },
+    {
+      "name": "cohort",
+      "schema": "schemas/entities/cohort/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/beacon-v2",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "e3b8b80f3cc100703e6f37c93665e12fb00b4a4dfadc88ebd9b18466e7e2bc09",
+        "context": "d108db70a63ac3042eeaed1c47f1911b566b8b4cb6a2e870b22a59a8b73ec54c",
+        "frame": "1ab99de480c24d97a5632ca30d872379e285c98d5999d1c244a624d6b8f255d4"
+      }
+    },
+    {
+      "name": "datafile",
+      "schema": "schemas/entities/datafile/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/datafile/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "041a1a71668ef7308757c2af9dfb3d2690548cfdcbc1af082da1e7ff79d96005",
+        "context": "33de84cf5990fe009781a822aa7358c45ce37e31e229a503744194a51ec90e02",
+        "frame": "4fb677353ec9cdb765a22829f7d1e5c8602a1aa823fe1bd2aaed014789c46a43"
+      }
+    },
+    {
+      "name": "dataset",
+      "schema": "schemas/entities/dataset/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "9dd94761b4a35ec963c5aea27ae0ad9c75c5098988beccd148ef77da9cf3e106",
+        "context": "9a105cdf0a1bf5f6bf92cb31ec13fa7bb1ef8cf5c1f0fd532b943c9a58c1391f",
+        "frame": "1bd9a60f4fbd1333d0f596e6c5a5260c889b77f3bbfe7dd99b32d2163336d1a3"
+      }
+    },
+    {
+      "name": "policy",
+      "schema": "schemas/entities/policy/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "2c3249d0b6f16576d1fd56ac03d8de86ea0bb8999ea4b9c341c3b45e297b9c33",
+        "context": "f86269f8c16fb53f21b04305e07364681b1d2dcc64fb18919fab101de8ead92c",
+        "frame": "bca077b3258539c2f803af7fca23ac9354c03080cc123a114fe239ab052b5fec"
+      }
+    },
+    {
+      "name": "process",
+      "schema": "schemas/entities/process/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "7fa458cc78b31ce7f5b091da3abaec950db62c24f4e9bfde597faf502538fbd1",
+        "context": "0d5440e4723bcf6aa6f738e865eee5b12f71098fc1cd1f4ed492965a5ed1cebe",
+        "frame": "2410137ec68a3a1b32c60315a11054322e825a2dc87c8e24186160900f0d95cb"
+      }
+    },
+    {
+      "name": "protocol",
+      "schema": "schemas/entities/protocol/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/bioschemas",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "e963e7a06b1b522d5837c020d6d643857b98c67271e27f3d25ffef765a57ff5e",
+        "context": "293b13cea8e1a36f59560b7522dcdb064515c447125c8a4e7a3acd2c3b1d5e89",
+        "frame": "d0cb63305f3b625c2f705a4b5ba5e13d5e7ecdd9293c63eb1ec5bf94a5a55adc"
+      }
+    },
+    {
+      "name": "protocolCollection",
+      "schema": "schemas/entities/protocolCollection/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "bc67cba16be130a27e1f8d7d38ca69b78e6aaf75e4f12eeb22094582f7534703",
+        "context": "313da8eecb35426ae7b880b3586d55d63843cb7d3990c52a81f5bcde39f01e1e",
+        "frame": "30421a6e69c40357ddc2a7f3ea10f602ea3142752da97d0dd68ee6d50f35e7fe"
+      }
+    },
+    {
+      "name": "study",
+      "schema": "schemas/entities/study/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "92f20ac05fba53a72da7ff9e41f9bc9fcc665c5b32e0ec66073c84693bf6d6b6",
+        "context": "25fec071db313340cf24925a8316d2cc1a6a2ad79c48b61b0dd3658135df2e19",
+        "frame": "2ce363206386da729d746668041f5610427073611a288b201d693b106e107151"
+      }
+    },
+    {
+      "name": "submission",
+      "schema": "schemas/entities/submission/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "common",
+        "standard:standards/json-schema/json-ld.org"
+      ],
+      "checksums": {
+        "schema": "3578ac185adf529c15221cae3b352f06925373029299e4a960bb020ae407c66f",
+        "context": "b2ca1c623f31d443064da9c90ed4316a9d9e7c288bf483fc7c6fca7183acd4d1",
+        "frame": "c62656775c0404473b81281c012024290bf0208a9f6cced3e28aff5acdfbf211"
+      }
+    },
+    {
+      "name": "biomaterial-and-process",
+      "schema": "schemas/graph/profiles/biomaterial-and-process.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/biomaterial-and-process.schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "DAC",
+        "biomaterial",
+        "cohort",
+        "common",
+        "datafile",
+        "dataset",
+        "graph",
+        "policy",
+        "process",
+        "protocol",
+        "protocolCollection",
+        "study",
+        "submission"
+      ],
+      "checksums": {
+        "schema": "e3b1ad330cf78e97c9ece3d486d96064fee545c2f6ac105ce8f5d8c01fbc54a5"
+      }
+    },
+    {
+      "name": "dataset-and-datafile",
+      "schema": "schemas/graph/profiles/dataset-and-datafile.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/dataset-and-datafile.schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "DAC",
+        "biomaterial",
+        "cohort",
+        "common",
+        "datafile",
+        "dataset",
+        "graph",
+        "policy",
+        "process",
+        "protocol",
+        "protocolCollection",
+        "study",
+        "submission"
+      ],
+      "checksums": {
+        "schema": "2c63d8011077e191ce816c2fb6b274de9e3d717b9525da886d35b0dcedd5bb51"
+      }
+    },
+    {
+      "name": "organism-lab-data",
+      "schema": "schemas/graph/profiles/organism-lab-data.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "DAC",
+        "biomaterial",
+        "cohort",
+        "common",
+        "datafile",
+        "dataset",
+        "graph",
+        "policy",
+        "process",
+        "protocol",
+        "protocolCollection",
+        "study",
+        "submission"
+      ],
+      "checksums": {
+        "schema": "600b6defd43958bf069e6bb9597878a8e0b6c7fd777c07031d44f65d8da2ac98"
+      }
+    },
+    {
+      "name": "graph",
+      "schema": "schemas/graph/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
+      "version": "1.0.0-draft.1",
+      "dependencies": [
+        "DAC",
+        "biomaterial",
+        "cohort",
+        "common",
+        "datafile",
+        "dataset",
+        "policy",
+        "process",
+        "protocol",
+        "protocolCollection",
+        "standard:standards/json-schema/json-ld.org",
+        "study",
+        "submission"
+      ],
+      "checksums": {
+        "schema": "682f3a2af9a8fa81739da695b15fddcb7578b7bfedf675a3a4ff34c110383a3d",
+        "context": "76c27055c49281f37a8278f549ad4d53be228b1d727291cc749393a958f54e22",
+        "frame": "ba370ef2bf6c9845109b64cca4f1c96ae1dc34336687c95f847ef5bf92061939"
+      }
+    }
+  ],
+  "standards": [
+    {
+      "name": "beacon-v2",
+      "path": "standards/json-schema/beacon-v2",
+      "sha256": "0c90011030dafc1573dd67b03b7d7ed827b9696b63d5070adbf3b2e08f1a2897",
+      "file_count": 132
+    },
+    {
+      "name": "bioschemas",
+      "path": "standards/json-schema/bioschemas",
+      "sha256": "66cdaddcdc2348d931944efcd25bd44af202f27877751b403dee053a3a008d8b",
+      "file_count": 4
+    },
+    {
+      "name": "isa",
+      "path": "standards/json-schema/isa",
+      "sha256": "145f529a9337f4d44c974af3f44a522a18d71c05754d28cda2a8a292549754db",
+      "file_count": 4
+    },
+    {
+      "name": "json-ld.org",
+      "path": "standards/json-schema/json-ld.org",
+      "sha256": "ea8c448a4cc6be248d035fda96521a867ca4a5cb7c546a23c15130265c6c4fbb",
+      "file_count": 4
+    },
+    {
+      "name": "dcatap",
+      "path": "standards/rdf/dcatap",
+      "sha256": "c70b093ae0a289a2d064874365234059b2dc51dd9169a2ca5f8861dd3f8c2593",
+      "file_count": 3
+    },
+    {
+      "name": "healthdcat-ap",
+      "path": "standards/rdf/healthdcat-ap",
+      "sha256": "c62fb86e4b10759d20c69406ee0314aaab58a590276c2271cdda1ba8ef40f0a0",
+      "file_count": 3
+    }
+  ]
+}
