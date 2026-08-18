@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -141,6 +142,25 @@ def test_policy_has_no_fragment_or_config_dependency(tmp_path: Path) -> None:
     assert check_release_policy(tmp_path, tmp_path, ["release.toml"])
 
 
+def test_initial_changelog_is_allowed_as_bootstrap_input(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    head = tmp_path / "head"
+    head.mkdir(parents=True)
+    (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n", encoding="utf-8")
+    assert check_release_policy(base, head, ["CHANGELOG.md"]) == []
+
+
+def test_existing_changelog_remains_protected(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    head = tmp_path / "head"
+    base.mkdir(parents=True)
+    head.mkdir(parents=True)
+    (base / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n", encoding="utf-8")
+    (head / "CHANGELOG.md").write_text("# Changelog\n\n## [Unreleased]\n\nChanged\n", encoding="utf-8")
+    errors = check_release_policy(base, head, ["CHANGELOG.md"])
+    assert errors == ["Ordinary PRs must not edit generated CHANGELOG.md"]
+
+
 def test_removed_component_is_analysis_only_and_manifest_has_no_history(tmp_path: Path) -> None:
     previous = tmp_path / "previous"
     current = tmp_path / "current"
@@ -232,7 +252,7 @@ def test_cli_smoke_paths(tmp_path: Path) -> None:
     _repo(tmp_path)
     repository = Path(__file__).parents[1]
     env = {"PYTHONPATH": str(repository / "src")}
-    result = subprocess.run([str(repository / ".venv/bin/python"), "scripts/py/release.py", "--root", str(tmp_path), "discover"], cwd=repository, env=env, capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "scripts/py/release.py", "--root", str(tmp_path), "discover"], cwd=repository, env=env, capture_output=True, text=True)
     assert result.returncode == 0
 
 
@@ -251,7 +271,7 @@ def test_cli_semver_previous_ref_uses_archived_tree(tmp_path: Path) -> None:
     schema["meta:version"] = "1.0.1"
     _write(schema_path, schema)
     repository = Path(__file__).parents[1]
-    result = subprocess.run([str(repository / ".venv/bin/python"), "scripts/py/release.py", "--root", str(tmp_path), "semver", "--all", "--previous-ref", "v1.0.0"], cwd=repository, env={"PYTHONPATH": str(repository / "src")}, capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "scripts/py/release.py", "--root", str(tmp_path), "semver", "--all", "--previous-ref", "v1.0.0"], cwd=repository, env={"PYTHONPATH": str(repository / "src")}, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert '"widget"' in result.stdout
 
@@ -266,6 +286,6 @@ def test_cli_analyse_fails_when_declared_version_is_too_low(tmp_path: Path) -> N
     schema["description"] = "changed"
     _write(schema_path, schema)
     repository = Path(__file__).parents[1]
-    result = subprocess.run([str(repository / ".venv/bin/python"), "scripts/py/release.py", "--root", str(current), "analyse", "--previous", str(previous), "--repository", REPOSITORY], cwd=repository, env={"PYTHONPATH": str(repository / "src")}, capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "scripts/py/release.py", "--root", str(current), "analyse", "--previous", str(previous), "--repository", REPOSITORY], cwd=repository, env={"PYTHONPATH": str(repository / "src")}, capture_output=True, text=True)
     assert result.returncode == 2
     assert "meta:version is unchanged" in result.stdout

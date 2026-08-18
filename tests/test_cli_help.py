@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 
 from scripts.py import (
@@ -20,7 +21,7 @@ from fega_tools.release_notes import build_parser as build_notes_parser
 
 
 ROOT = Path(__file__).parents[1]
-PYTHON = ROOT / ".venv/bin/python"
+PYTHON = sys.executable
 
 
 def _assert_documented(parser) -> None:
