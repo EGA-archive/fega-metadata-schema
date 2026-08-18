@@ -115,6 +115,13 @@ def test_bootstrap_preserves_unreleased_body_and_rejects_duplicate() -> None:
         bootstrap_changelog(rendered, bundle_version="2.0.0-draft.1", release_date=date(2026, 8, 6))
 
 
+def test_bootstrap_accepts_first_v1_prerelease() -> None:
+    existing = "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Legacy bullet.\n"
+    rendered = bootstrap_changelog(existing, bundle_version="1.0.0-draft.1", release_date="2026-08-18")
+    assert "## [1.0.0-draft.1] - 2026-08-18" in rendered
+    assert "### Added\n\n- Legacy bullet." in rendered
+
+
 def test_stable_promotion_has_automated_statement_without_pr_subsection() -> None:
     rendered = promote_changelog("# Changelog\n\n## [Unreleased]\n", stable_version="2.0.0", previous_prerelease="2.0.0-draft.1", release_date=date(2026, 8, 6))
     assert "Automated promotion of [2.0.0-draft.1] to [2.0.0]." in rendered

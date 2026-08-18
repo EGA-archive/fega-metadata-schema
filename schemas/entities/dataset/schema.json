@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
     "type": "object",
     "title": "EGA dataset metadata schema",
-    "meta:version": "2.0.0-draft.1",
+    "meta:version": "1.0.0-draft.1",
     "$async": true,
     "description": "A collection of Datafiles, published or curated by a single agent, and available for access or download in one or more representations. Datasets are subject to a particular policy for controlled-access, commonly making them the units of access distribution.",
     "@context": "./context.jsonld",

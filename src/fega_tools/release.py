@@ -517,6 +517,9 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
     rationales = approved_rationales or {}
     current_groups = {item["name"]: item for item in discover_standard_groups(root)}
     previous_groups = {item["name"]: item for item in discover_standard_groups(previous_root.resolve())} if previous_root and previous else {}
+    previous_has_release_manifest = bool(
+        previous_root and (previous_root.resolve() / "build/release_manifest.json").is_file()
+    )
     required_by_name: dict[str, Severity] = {}
     detail_by_name: dict[str, list[dict[str, Any]]] = {}
     old_by_name: dict[str, Component | None] = {}
@@ -577,7 +580,15 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
             if component.version == old.version and details:
                 errors.append(f"Component '{component.name}' changed but meta:version is unchanged")
             minimum = old.version.bump(required if required != Severity.UNKNOWN else Severity.MAJOR)
-            if component.version < minimum:
+            allow_initial_prerelease_reset = (
+                not previous_has_release_manifest
+                and not details
+                and required == Severity.SAME
+                and bool(old.version.prerelease)
+                and bool(component.version.prerelease)
+                and component.version < old.version
+            )
+            if component.version < minimum and not allow_initial_prerelease_reset:
                 errors.append(f"Component '{component.name}' declares {component.version}, below automatic minimum {minimum}")
         records.append({"name": component.name, "schema": component.schema.as_posix(), "id": component.identifier, "version": str(component.version), "previous_version": str(old.version) if old else None, "required_change": required.label(), "dependencies": dependencies.get(component.name, []), "checksums": _asset_hashes(root, component), "details": details, "compatibility_exception": exception or {"used": False}, "automatic_required_change": original_required.label()})
     current_ids = {_normalise_uri(item.identifier) for item in current}

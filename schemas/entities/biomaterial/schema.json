@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
   "type": "object",
   "title": "EGA Biomaterial metadata schema",
-  "meta:version": "2.0.0-draft.1",
+  "meta:version": "1.0.0-draft.1",
   "$async": true,
   "description": "Represents any biological material, from whole organisms (including humans) to subcellular components and macromolecules (e.g., DNA samples).",
   "@context": "./context.jsonld",

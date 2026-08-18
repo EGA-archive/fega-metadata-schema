@@ -13,6 +13,7 @@ from typing import Iterable
 
 _CITATION_VERSION_RE = re.compile(r"(?m)^version\s*:\s*([^\r\n#]+?)\s*(?:#.*)?$")
 _UNRELEASED_RE = re.compile(r"(?m)^##\s+\[Unreleased\]\s*$")
+_RELEASE_HEADING_RE = re.compile(r"(?m)^##\s+\[(?!Unreleased\])[^\]\r\n]+\](?:\s+-.*)?\s*$")
 
 
 def check_release_policy(base_root: Path, head_root: Path, changed_paths: Iterable[str]) -> list[str]:
@@ -23,11 +24,21 @@ def check_release_policy(base_root: Path, head_root: Path, changed_paths: Iterab
         base_changelog = base_root / "CHANGELOG.md"
         head_changelog = head_root / "CHANGELOG.md"
         if base_changelog.is_file():
-            errors.append("Ordinary PRs must not edit generated CHANGELOG.md")
-        elif not head_changelog.is_file() or not _UNRELEASED_RE.search(
-            head_changelog.read_text(encoding="utf-8")
-        ):
-            errors.append("Initial CHANGELOG.md must contain an ## [Unreleased] section")
+            base_text = base_changelog.read_text(encoding="utf-8")
+            head_text = head_changelog.read_text(encoding="utf-8") if head_changelog.is_file() else ""
+            has_previous_release = (base_root / "build/release_manifest.json").is_file()
+            if has_previous_release:
+                errors.append("Ordinary PRs must not edit generated CHANGELOG.md")
+            elif not _UNRELEASED_RE.search(base_text) or not _UNRELEASED_RE.search(head_text):
+                errors.append("Pre-release CHANGELOG.md edits require an ## [Unreleased] section")
+            elif _RELEASE_HEADING_RE.search(base_text) or _RELEASE_HEADING_RE.search(head_text):
+                errors.append("Ordinary PRs must not add generated release sections to CHANGELOG.md")
+        else:
+            head_text = head_changelog.read_text(encoding="utf-8") if head_changelog.is_file() else ""
+            if not _UNRELEASED_RE.search(head_text):
+                errors.append("Initial CHANGELOG.md must contain an ## [Unreleased] section")
+            elif _RELEASE_HEADING_RE.search(head_text):
+                errors.append("Ordinary PRs must not add generated release sections to CHANGELOG.md")
     if "build/release_manifest.json" in paths:
         errors.append("Ordinary PRs must not edit generated build/release_manifest.json")
     if "release.toml" in paths:

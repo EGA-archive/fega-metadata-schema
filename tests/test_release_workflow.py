@@ -25,6 +25,7 @@ from fega_tools.release_workflow import (
 
 def test_plan_helpers_select_valid_semver_and_exact_refs() -> None:
     assert normalise_version("v2.0.0-draft.1") == "2.0.0-draft.1"
+    assert normalise_version("v1.0.0-draft.1") == "1.0.0-draft.1"
     assert latest_semver_tag(["v1.2.0", "v1.1.9", "v2.0.0-rc.1", "v2.0.0", "release/x"]) == "v2.0.0"
     assert exact_remote_ref_exists("refs/tags/v1.2.3", remote_refs=["refs/tags/v1.2.3"])
     assert not exact_remote_ref_exists("refs/tags/v1.2.3", remote_refs=["refs/tags/v1.2.30"])
@@ -98,6 +99,26 @@ def test_plan_release_uses_exact_remote_refs_and_latest_semver(tmp_path: Path) -
     assert result.previous == "v1.10.0"
     assert result.source == "source-sha"
     assert result.branch == "release/v2.0.0"
+
+
+def test_plan_first_v1_prerelease_bootstrap_without_previous_tag(tmp_path: Path) -> None:
+    outputs = {
+        ("git", "check-ref-format", "--branch", "release/v1.0.0-draft.1"): "",
+        ("git", "ls-remote", "--heads", "origin", "refs/heads/release/v1.0.0-draft.1"): "",
+        ("git", "ls-remote", "--tags", "origin", "refs/tags/v1.0.0-draft.1"): "",
+        ("git", "tag", "--list", "v[0-9]*"): "",
+        ("git", "rev-parse", "main"): "main-sha\n",
+    }
+
+    def git(args, **_kwargs):
+        key = tuple(args)
+        return subprocess.CompletedProcess(args, 0, stdout=outputs[key], stderr="")
+
+    result = plan_release(tmp_path, "v1.0.0-draft.1", release_date="2026-08-18", git=git)
+    assert result.version == "1.0.0-draft.1"
+    assert result.previous is None
+    assert result.tag == "v1.0.0-draft.1"
+    assert result.branch == "release/v1.0.0-draft.1"
 
 
 def test_prepare_notes_selects_stable_promotion(tmp_path: Path) -> None:
