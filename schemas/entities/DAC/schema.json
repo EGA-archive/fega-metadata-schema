@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
   "type": "object",
   "title": "EGA Data Access Committee metadata schema",
-  "meta:version": "0.0.0",
+  "meta:version": "2.0.0-draft.1",
   "$async": true,
   "description": "Metadata for an EGA Data Access Committee (DAC), the body managing data access requests, overseeing the approval process for data usage in accordance with its defined Policy.",
   "$comment": "#! Instead of EGA stable IDs, the embedded memberships, agents and contact points use JSON-LD identifiers only, including fragment identifiers rooted at the DAC URI (e.g., ega:EGAC00000000001#contact-point-1).",

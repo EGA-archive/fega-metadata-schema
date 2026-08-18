@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
     "type": "object",
     "title": "EGA process metadata schema",
-    "meta:version": "0.0.0",
+    "meta:version": "2.0.0-draft.1",
     "$async": true,
     "description": "A specific execution of a protocol or procedure, applied to specific inputs (Biomaterial or Datafile) and producing specific outputs (Biomaterial or Datafile).",
     "@context": "./context.jsonld",

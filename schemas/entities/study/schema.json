@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
     "type": "object",
     "title": "EGA study metadata schema",
-    "meta:version": "0.0.0",
+    "meta:version": "2.0.0-draft.1",
     "$async": true,
     "description": "Compilation of Protocol Collections (e.g., examinations, analyses or critical inspections) applied to investigate a particular topic within the context of a given Project.",
     "@context": "./context.jsonld",

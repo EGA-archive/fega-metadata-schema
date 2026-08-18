@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
   "type": "object",
   "title": "EGA Graph metadata schema",
-  "meta:version": "0.0.0",
+  "meta:version": "2.0.0-draft.1",
   "$async": true,
   "description": "A typed named JSON-LD graph containing complete EGA entity instances. This schema validates each item against the schema selected by its EGA @type. It does not validate graph-wide relationship semantics.",
   "@context": "./context.jsonld",
