@@ -120,5 +120,5 @@ jobs:
             printf -- '- Branch: `%s`\n' "$BRANCH"
             printf -- '- R1: `%s`\n' "$R1"
             printf -- '- R2: `%s`\n' "$R2"
-            printf -- '- Compare/open PR: https://github.com/${{ github.repository }}/compare/main...%s?expand=1\n' "$BRANCH"
+            printf -- '- Compare/open PR: https://github.com/${{ github.repository }}/compare/main...%s?quick_pull=1&labels=release\n' "$BRANCH"
           } >> "$GITHUB_STEP_SUMMARY"

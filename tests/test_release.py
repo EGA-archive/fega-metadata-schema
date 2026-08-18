@@ -46,7 +46,9 @@ def _repo(root: Path, version: str = "1.0.0") -> None:
     _write(root / "standards/json-schema/example/schema.json", {"type": "string"})
     (root / "CITATION.cff").write_text("cff-version: 1.2.0\nversion: 0.0.0\n", encoding="utf-8")
     (root / "build").mkdir(parents=True, exist_ok=True)
-    (root / "build/release_manifest.schema.json").write_text((Path(__file__).parents[1] / "build/release_manifest.schema.json").read_text(), encoding="utf-8")
+    manifest_schema = json.loads((Path(__file__).parents[1] / "build/release_manifest.schema.json").read_text())
+    manifest_schema["$id"] = f"https://raw.githubusercontent.com/{REPOSITORY}/main/build/release_manifest.schema.json"
+    _write(root / "build/release_manifest.schema.json", manifest_schema)
 
 
 def test_semver_prerelease_precedence_and_bumps() -> None:
