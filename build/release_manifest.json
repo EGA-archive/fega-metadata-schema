@@ -10,7 +10,7 @@
     {
       "name": "common",
       "schema": "schemas/common/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/common/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "standard:standards/json-schema/beacon-v2"
@@ -23,7 +23,7 @@
     {
       "name": "DAC",
       "schema": "schemas/entities/DAC/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/DAC/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -38,7 +38,7 @@
     {
       "name": "biomaterial",
       "schema": "schemas/entities/biomaterial/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/biomaterial/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -54,7 +54,7 @@
     {
       "name": "cohort",
       "schema": "schemas/entities/cohort/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/cohort/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -70,7 +70,7 @@
     {
       "name": "datafile",
       "schema": "schemas/entities/datafile/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/datafile/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/datafile/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -85,7 +85,7 @@
     {
       "name": "dataset",
       "schema": "schemas/entities/dataset/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/dataset/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -100,7 +100,7 @@
     {
       "name": "policy",
       "schema": "schemas/entities/policy/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/policy/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -115,7 +115,7 @@
     {
       "name": "process",
       "schema": "schemas/entities/process/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/process/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -130,7 +130,7 @@
     {
       "name": "protocol",
       "schema": "schemas/entities/protocol/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/protocol/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -146,7 +146,7 @@
     {
       "name": "protocolCollection",
       "schema": "schemas/entities/protocolCollection/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/protocolCollection/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -161,7 +161,7 @@
     {
       "name": "study",
       "schema": "schemas/entities/study/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/study/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -176,7 +176,7 @@
     {
       "name": "submission",
       "schema": "schemas/entities/submission/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/submission/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "common",
@@ -191,7 +191,7 @@
     {
       "name": "biomaterial-and-process",
       "schema": "schemas/graph/profiles/biomaterial-and-process.schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/graph/profiles/biomaterial-and-process.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/biomaterial-and-process.schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "DAC",
@@ -215,7 +215,7 @@
     {
       "name": "dataset-and-datafile",
       "schema": "schemas/graph/profiles/dataset-and-datafile.schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/graph/profiles/dataset-and-datafile.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/dataset-and-datafile.schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "DAC",
@@ -239,7 +239,7 @@
     {
       "name": "organism-lab-data",
       "schema": "schemas/graph/profiles/organism-lab-data.schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/graph/profiles/organism-lab-data.schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "DAC",
@@ -263,7 +263,7 @@
     {
       "name": "graph",
       "schema": "schemas/graph/schema.json",
-      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/graph/schema.json",
+      "id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
       "version": "1.0.0-draft.1",
       "dependencies": [
         "DAC",

@@ -1,5 +1,5 @@
 {
-  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/schemas/entities/policy/schema.json",
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
   "@type": ["ega:policy", "dct:Policy", "dct:RightsStatement"],
   "@embed": "@always",
   "@explicit": false,

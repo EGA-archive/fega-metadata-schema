@@ -30,7 +30,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/framework/json/requests/beaconRequestBody.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/framework/json/requests/beaconRequestBody.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Schema for the Beacon request. It is named `RequestBody` to keep the same nomenclature used by OpenAPI v3, but it actually contains the definition of the whole HTTP POST request payload.",
     "properties": {

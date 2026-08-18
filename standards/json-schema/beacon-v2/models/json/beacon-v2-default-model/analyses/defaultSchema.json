@@ -1,6 +1,6 @@
 {
     "$comment": "version: ga4gh-beacon-analysis-v2.0.0",
-    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/v1.0.0-draft.1/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/analyses/defaultSchema.json",
+    "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/analyses/defaultSchema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "The `analysis` schema represents a information about the data analysis steps leading to (a set of) genomic variation call(s).",
