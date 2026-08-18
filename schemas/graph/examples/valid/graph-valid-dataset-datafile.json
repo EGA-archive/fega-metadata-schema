@@ -1,0 +1,215 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/dataset-and-datafile.schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG00000000002",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAD00000000002",
+        "@type": [
+          "ega:dataset",
+          "dcat:Dataset"
+        ],
+        "id": "ega:EGAD00000000002",
+        "title": "Minimal controlled-access genome dataset",
+        "description": "Small controlled-access dataset containing one aligned genome data file.",
+        "datasetType": [
+          "whole genome sequencing"
+        ],
+        "dct:type": [
+          {
+            "@id": "http://publications.europa.eu/resource/authority/dataset-type/SYNTHETIC_DATA"
+          }
+        ],
+        "hasPart": [
+          {
+            "@id": "ega:EGAF00000000001",
+            "@type": "ega:datafile"
+          }
+        ],
+        "hasPolicy": "ega:EGAP00000000001",
+        "dct:accessRights": {
+          "@id": "http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC"
+        },
+        "dcatap:applicableLegislation": [
+          {
+            "@id": "http://data.europa.eu/eli/reg/2016/679/2016-05-04"
+          }
+        ],
+        "dcat:distribution": [
+          {
+            "@id": "https://ega-archive.org/datasets/EGAD00000000002/request",
+            "@type": "dcat:Distribution",
+            "dcatap:applicableLegislation": [
+              {
+                "@id": "http://data.europa.eu/eli/reg/2016/679/2016-05-04"
+              }
+            ]
+          }
+        ],
+        "dcat:theme": [
+          {
+            "@id": "http://publications.europa.eu/resource/authority/data-theme/HEAL"
+          }
+        ],
+        "healthdcatap:healthCategory": [
+          {
+            "@id": "http://publications.europa.eu/resource/authority/health-category/GEN"
+          }
+        ],
+        "healthdcatap:hdab": {
+          "@id": "https://example.org/agents/hdab-minimal-001",
+          "@type": "foaf:Organization",
+          "cv:contactPoint": {
+            "@id": "https://example.org/contact-points/hdab-minimal-001"
+          }
+        },
+        "dcat:contactPoint": [
+          {
+            "@id": "https://example.org/contact-points/hdab-minimal-001",
+            "@type": [
+              "vcard:Kind",
+              "cv:ContactPoint"
+            ],
+            "vcard:hasURL": {
+              "@id": "https://www.test-dataset-helpdesk.example.org"
+            },
+            "cv:contactPage": {
+              "@id": "https://example.org/contact/hdab-helpdesk"
+            }
+          }
+        ],
+        "dcat:keyword": [
+          {
+            "@value": "genomics",
+            "@language": "en"
+          }
+        ],
+        "dct:provenance": [
+          {
+            "@type": "dct:ProvenanceStatement",
+            "rdfs:label": {
+              "@value": "Minimal controlled-access genome dataset example for FEGA validation.",
+              "@language": "en"
+            }
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      },
+      {
+        "@id": "ega:EGAF00000000001",
+        "@type": "ega:datafile",
+        "fileName": "case2_case2_father_Case2_F.R1.fastq.gz",
+        "fileFormat": {
+          "id": "EDAM:format_1930",
+          "label": "FASTQ"
+        },
+        "dataContent": {
+          "id": "EDAM:data_2977",
+          "label": "Nucleic acid sequence"
+        },
+        "checksums": [
+          {
+            "algorithm": "MD5",
+            "value": "d41d8cd98f00b204e9800998ecf8427e",
+            "appliesTo": "unencrypted"
+          }
+        ],
+        "isPartOf": [
+          {
+            "@id": "ega:EGAD00000000002",
+            "@type": [
+              "ega:dataset",
+              "dcat:Dataset"
+            ]
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      },
+      {
+        "@id": "ega:EGAP00000000001",
+        "@type": [
+          "ega:policy",
+          "dct:Policy"
+        ],
+        "title": "Example Genomics Data Access Policy",
+        "description": "Terms governing controlled access to the Example Genomics dataset.",
+        "status": "released",
+        "governedBy": [
+          {
+            "@id": "ega:EGAC00000000001",
+            "@type": "ega:DAC"
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        },
+        "policyText": "Use of the dataset is limited to the approved research purpose ... . Users must protect confidentiality, must not attempt re-identification, and must report suspected misuse to the governing DAC."
+      },
+      {
+        "@id": "ega:EGAC00000000001",
+        "@type": "ega:DAC",
+        "title": "Example Genomics Data Access Committee",
+        "description": "Committee responsible for reviewing controlled-access requests for the Example Genomics programme.",
+        "status": "released",
+        "contactPoint": [
+          {
+            "@type": "cv:ContactPoint",
+            "email": "dac@example.org"
+          }
+        ],
+        "components": [
+          {
+            "@type": "org:Membership",
+            "agent": {
+              "@type": [
+                "prov:Agent",
+                "prov:Person"
+              ],
+              "name": "Jane Doe",
+              "email": "jane.doe@example.org"
+            },
+            "roles": [
+              "main_contact",
+              "administrator"
+            ]
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      },
+      {
+        "@id": "ega:EGAB00000000001",
+        "@type": "ega:submission",
+        "title": "Example Genomics submission",
+        "status": "draft",
+        "components": [
+          {
+            "@type": "entityDoc:/$defs/component",
+            "agent": {
+              "@id": "ega:EGAW00000000001",
+              "@type": "prov:Agent"
+            },
+            "roles": [
+              "creator",
+              "owner"
+            ],
+            "accessLevel": "write"
+          }
+        ]
+      }
+    ]
+  }
+}

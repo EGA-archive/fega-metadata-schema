@@ -1,0 +1,40 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/biomaterial-and-process.schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-biomaterial-and-process-missing-biomaterial",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAA00000000002",
+        "@type": [
+          "ega:process",
+          "prov:Activity"
+        ],
+        "title": "DNA extraction run",
+        "hadProtocolCollection": {
+          "@id": "ega:EGAL00000000001",
+          "@type": "ega:protocolCollection"
+        },
+        "used": [
+          {
+            "@id": "ega:EGAN00000000001",
+            "@type": "ega:biomaterial"
+          }
+        ],
+        "generated": [
+          {
+            "@id": "ega:EGAN00000000002",
+            "@type": "ega:biomaterial"
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-protocolCollection",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAL00000000001",
+        "@type": [
+          "ega:protocolCollection",
+          "prov:Collection",
+          "prov:Plan"
+        ],
+        "title": "DNA extraction plan",
+        "version": "1.0.0",
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      }
+    ]
+  }
+}

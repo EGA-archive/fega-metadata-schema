@@ -1,0 +1,45 @@
+name: PR release notes
+# Checks that each pull request contains the structured release information used to build the changelog. It keeps release summaries consistent.
+
+on:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-release-notes-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-notes:
+    name: PR release notes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Explain merge-queue event
+        if: github.event_name == 'merge_group'
+        run: echo 'PR release-note validation was completed on the constituent pull requests.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Check out pull-request snapshot
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        if: github.event_name == 'pull_request'
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        if: github.event_name == 'pull_request'
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
+      - name: Install release-note tooling
+        if: github.event_name == 'pull_request'
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Validate structured release notes
+        if: github.event_name == 'pull_request'
+        run: |
+          body_file=$(mktemp)
+          
+          # Extract the PR description from GitHub's event JSON and save it:
+          jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" > "$body_file"
+          test -f scripts/py/release_notes.py
+          python scripts/py/release_notes.py validate-pr \
+            --body-file "$body_file" \
+            -v

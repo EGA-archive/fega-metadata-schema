@@ -1,0 +1,176 @@
+{
+    "@context": {
+        "id": "schema:identifier",
+        "label": "rdfs:label",
+        "name": "schema:name",
+        "description": "schema:description",
+        "identifier": "schema:identifier",
+        "url": {
+            "@id": "schema:url",
+            "@type": "@id"
+        },
+        "affiliation": "schema:affiliation",
+        "text": "schema:text",
+        "fileFormat": "schema:encodingFormat",
+        "modifiers": {
+            "@id": "commonDefinitionsDoc:modifiers",
+            "@container": "@set"
+        },
+        "causeOfDeath": "commonDefinitionsDoc:causeOfDeath",
+        "evidence": {
+            "@id": "commonDefinitionsDoc:evidence",
+            "@container": "@set"
+        },
+        "excluded": "commonDefinitionsDoc:excluded",
+        "familyHistory": "commonDefinitionsDoc:familyHistory",
+        "negated": "commonDefinitionsDoc:negated",
+        "occurrence": "commonDefinitionsDoc:occurrence",
+        "onset": "commonDefinitionsDoc:onset",
+        "proportion": "commonDefinitionsDoc:proportion",
+        "referenceRange": "commonDefinitionsDoc:referenceRange",
+        "route": "commonDefinitionsDoc:route",
+        "severity": "commonDefinitionsDoc:severity",
+        "stagingSystemVersion": "commonDefinitionsDoc:stagingSystemVersion",
+        "survivalTimeInDays": "commonDefinitionsDoc:survivalTimeInDays",
+        "timeOfDeath": "commonDefinitionsDoc:timeOfDeath",
+        "tnmFindings": {
+            "@id": "commonDefinitionsDoc:tnmFindings",
+            "@container": "@set"
+        },
+        "tumorAttributes": "commonDefinitionsDoc:tumorAttributes",
+        "tumorGrade": "commonDefinitionsDoc:tumorGrade",
+        "tumorProgression": "commonDefinitionsDoc:tumorProgression",
+        "tumorSize": {
+            "@id": "commonDefinitionsDoc:tumorSize",
+            "@container": "@set"
+        },
+        "type": "commonDefinitionsDoc:type",
+        "category": "commonDefinitionsDoc:category",
+        "datatype": {
+            "@id": "commonDefinitionsDoc:datatype",
+            "@type": "@id"
+        },
+        "unit": "commonDefinitionsDoc:unit",
+        "value": "commonDefinitionsDoc:value",
+        "defaultValue": "schema:defaultValue",
+        "valueRequired": "schema:valueRequired",
+        "multipleValues": "schema:multipleValues",
+        "parameterReference": {
+            "@id": "commonDefinitionsDoc:parameterReference"
+        },
+        "givenName": "schema:givenName",
+        "familyName": "schema:familyName",
+        "email": "schema:email",
+        "telephone": "schema:telephone",
+        "status": "adms:status",
+
+        "schemas": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/",
+        "entities": "schemas:entities/",
+        "commonDefinitionsDoc": "schemas:common/schema.json#",
+        "biomaterial": "entities:biomaterial/schema.json",
+        "protocol": "entities:protocol/schema.json",
+        "process": "entities:process/schema.json",
+        "datafile": "entities:datafile/schema.json",
+        "dataset": "entities:dataset/schema.json",
+        "policy": "entities:policy/schema.json",
+        "DAC": "entities:DAC/schema.json",
+        "study": "entities:study/schema.json",
+        "cohort": "entities:cohort/schema.json",
+        "project": "entities:project/schema.json",
+        "protocolCollection": "entities:protocolCollection/schema.json",
+        "submission": "entities:submission/schema.json",
+
+        "identifiers": "https://identifiers.org/",
+        "ega": "identifiers:ega:",
+        "prov": "https://www.w3.org/ns/prov#",
+        "owl": "https://www.w3.org/2002/07/owl#",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "schema": "http://schema.org/",
+        "bioschemastypes": "https://discovery.biothings.io/ns/bioschemas/bioschemas:",
+        "p-plan": "http://purl.org/net/p-plan#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "beaconRepo": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/v2.1.1/models/json/beacon-v2-default-model/",
+        "dct": "http://purl.org/dc/terms/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "dpv": "https://w3id.org/dpv#",
+        "adms": "http://www.w3.org/ns/adms#",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "vcard": "http://www.w3.org/2006/vcard/ns#",
+        "cv": "http://data.europa.eu/m8g/",
+        "isa": "https://isa-specs.readthedocs.io/en/latest/isajson.html#",
+        "edam": "http://edamontology.org/",
+        "spdx": "http://spdx.org/rdf/terms#",
+        "org": "http://www.w3.org/ns/org#",
+        "eu-ehds": "https://w3id.org/dpv/legal/eu/ehds#",
+
+
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dcatap": "http://data.europa.eu/r5r/",
+        "healthdcatap": "http://healthdataportal.eu/ns/health#",
+
+        "efo": "identifiers:efo:",
+        "pato": "identifiers:PATO:",
+        "BTO": "identifiers:BTO",
+        "COB": {
+            "@id": "http://purl.obolibrary.org/obo/COB_",
+            "@prefix": true
+        },
+
+        "egav1crg.1": "https://submission.ega-archive.org/api/spec/#/paths/submissions",
+        "egav1crg.2": "https://dac.ega-archive.org/api/spec/#/operations",
+        "egav1ebi": "https://github.com/enasequence/webin-xml/master/src/main/resources/uk/ac/ebi/ena/sra/schema/",
+
+        "sameAs": {
+            "@id": "schema:sameAs",
+            "@container": "@set"
+        },
+        "wasUsedBy": {
+            "@reverse": "used",
+            "@container": "@set"
+        },
+        "used": {
+            "@id": "prov:used",
+            "@container": "@set"
+        },
+        "wasGeneratedBy": {
+            "@id": "prov:wasGeneratedBy",
+            "@container": "@set"
+        },
+        "generated": {
+            "@id": "prov:generated",
+            "@container": "@set"
+        },
+        "wasDerivedFrom": {
+            "@id": "prov:wasDerivedFrom",
+            "@container": "@set"
+        },
+        "wasAttributedTo": {
+            "@id": "prov:wasAttributedTo",
+            "@container": "@set"
+        },
+        "actedOnBehalfOf": {
+            "@id": "prov:actedOnBehalfOf",
+            "@container": "@set"
+        },
+        "isPartOf": {
+            "@id": "dct:isPartOf",
+            "@container": "@set"
+        },
+        "inSubmission": {
+            "@id": "commonDefinitionsDoc:/$defs/inSubmission"
+        },
+        "hasPart": {
+            "@id": "dct:hasPart",
+            "@container": "@set"
+        },
+        "wasInformedBy": {
+            "@id": "prov:wasInformedBy",
+            "@container": "@set"
+        },
+        "informs": {
+            "@reverse": "wasInformedBy",
+            "@container": "@set"
+        }
+    }
+}

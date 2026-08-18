@@ -1,0 +1,59 @@
+{
+  "@context": [
+    "../common/context.jsonld",
+    {
+      "graphDoc": "schemas:graph/schema.json#",
+      "entityDoc": {
+        "@id": "entities:submission/schema.json#",
+        "@prefix": true
+      },
+      "ega:graph": {
+        "@id": "ega:graph"
+      },
+      "ega:biomaterial": {
+        "@id": "ega:biomaterial",
+        "@context": "../entities/biomaterial/context.jsonld"
+      },
+      "ega:cohort": {
+        "@id": "ega:cohort",
+        "@context": "../entities/cohort/context.jsonld"
+      },
+      "ega:DAC": {
+        "@id": "ega:DAC",
+        "@context": "../entities/DAC/context.jsonld"
+      },
+      "ega:datafile": {
+        "@id": "ega:datafile",
+        "@context": "../entities/datafile/context.jsonld"
+      },
+      "ega:dataset": {
+        "@id": "ega:dataset",
+        "@context": "../entities/dataset/context.jsonld"
+      },
+      "ega:policy": {
+        "@id": "ega:policy",
+        "@context": "../entities/policy/context.jsonld"
+      },
+      "ega:process": {
+        "@id": "ega:process",
+        "@context": "../entities/process/context.jsonld"
+      },
+      "ega:protocol": {
+        "@id": "ega:protocol",
+        "@context": "../entities/protocol/context.jsonld"
+      },
+      "ega:protocolCollection": {
+        "@id": "ega:protocolCollection",
+        "@context": "../entities/protocolCollection/context.jsonld"
+      },
+      "ega:study": {
+        "@id": "ega:study",
+        "@context": "../entities/study/context.jsonld"
+      },
+      "ega:submission": {
+        "@id": "ega:submission",
+        "@context": "../entities/submission/context.jsonld"
+      }
+    }
+  ]
+}

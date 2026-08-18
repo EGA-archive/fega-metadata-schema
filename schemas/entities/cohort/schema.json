@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+  "type": "object",
+  "title": "EGA Cohort metadata schema",
+  "meta:version": "2.0.0-draft.1",
+  "$async": true,
+  "description": "A group of Biomaterials (e.g., individuals, biopsies) sharing specific characteristics, facilitating comparative studies and discovery.",
+  "$comment": "We need to review that Cohorts can contain high-level (non granular) coverage of the biomaterials: populationCoverage, spatialCoverage and temporalCoverage. @Context for Beacon's entities is unfinished. Just a draft of the root properties for now. Ideally they'll have the context of their schemas embedded in them, so we can reference. Not quite there yet though.",
+  "@context": "./context.jsonld",
+  "required": ["@id", "inSubmission"],
+  "allOf": [
+    {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    },
+    {
+        "title": "Entity type restriction",
+        "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionCohort"
+    },
+    {
+      "title": "Compatibility with Beacon v2 JSON Schema",
+      "$ref": "../../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/cohorts/defaultSchema.json",
+      "$comment": "#! Beacon compatibility requires the root 'id', while EGA JSON-LD requires '@id'. They have distinct semantics: 'id' is the Beacon/domain identifier property and '@id' is the RDF node identity."
+    }
+  ],
+  "properties": {
+    "@id": {
+      "$ref": "../../common/schema.json#/$defs/@id"
+    },
+
+    "@type": {
+      "title": "Cohort resource type",
+      "description": "The JSON-LD type for an EGA cohort.",
+      "allOf": [
+        { "$ref": "../../common/schema.json#/$defs/@type" }
+      ],
+      "examples": [
+        "ega:cohort",
+        ["ega:cohort", "prov:Collection"]
+      ]
+    },
+
+    "description": {
+      "$ref": "../../common/schema.json#/$defs/description"
+    },
+    
+    "sameAs": {
+      "allOf": [
+        {"$ref": "../../common/schema.json#/$defs/sameAs"},
+        {
+          "title": "Entity type restriction",
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionCohort"
+          }
+        }
+      ]
+    },
+
+    "hadMember": {
+      "allOf": [
+        {"$ref": "../../common/schema.json#/$defs/hadMember"},
+        {
+          "title": "Entity type restriction",
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"
+          }
+        }
+      ]
+    },
+    
+    "isPartOf": {
+      "allOf": [
+        { "$ref": "../../common/schema.json#/$defs/isPartOf" },
+        {
+          "title": "Entity type restriction",
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
+          }
+        }
+      ]
+    },
+
+        "inSubmission": {
+      "$ref": "../../common/schema.json#/$defs/inSubmission"
+    }
+  }
+}

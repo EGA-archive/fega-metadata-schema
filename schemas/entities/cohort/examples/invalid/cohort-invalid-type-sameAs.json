@@ -1,0 +1,21 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@type": "ega:cohort",
+    "id": "ega:cohort-invalid-sameas-type",
+    "name": "Catalonia adult genomics cohort",
+    "cohortType": "study-defined",
+    "sameAs": [
+      {
+        "@id": "ega:EGAP00000000001",
+        "@type": "ega:process"
+      }
+    ]
+  }
+}

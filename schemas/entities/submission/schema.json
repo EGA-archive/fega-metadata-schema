@@ -1,0 +1,403 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+  "type": "object",
+  "title": "EGA Submission metadata schema",
+  "meta:version": "2.0.0-draft.1",
+  "$async": true,
+  "description": "Administrative metadata for an EGA Submission, the authoritative container that owns EGA entities and records who may view or edit them.",
+  "@context": "./context.jsonld",
+  "required": ["@id", "@type", "title", "status", "components"],
+  "meta:sssomMappings": [],
+  "allOf": [
+    {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    },
+    {
+      "title": "Entity type restriction",
+      "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionSubmission"
+    }
+  ],
+  "properties": {
+    "@id": {
+      "$ref": "../../common/schema.json#/$defs/@id",
+      "examples": [
+        "ega:EGAB00000000001",
+        "ega:EGAB00001000002"
+      ]
+    },
+
+    "@type": {
+      "title": "Submission resource type",
+      "description": "JSON-LD types for an EGA Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@type"
+        }
+      ],
+      "examples": [
+        "ega:submission",
+        ["ega:submission", "prov:Collection"]
+      ]
+    },
+
+    "title": {
+      "title": "Submission title",
+      "description": "A human-readable administrative name for the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/label"
+        }
+      ],
+      "examples": [
+        "Rare disease genome submission",
+        "Northern Health longitudinal cohort submission"
+      ]
+    },
+
+    "description": {
+      "title": "Submission description",
+      "description": "A brief administrative description of the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/description"
+        }
+      ],
+      "examples": [
+        "Administrative container for the Example Genomics programme metadata.",
+        "Submission containing the studies, biomaterials, processes, files, datasets and access-control records for a longitudinal health project."
+      ]
+    },
+
+    "status": {
+      "title": "Submission status",
+      "description": "The lifecycle status of the Submission record.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "adms:status",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "match_string": "status",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-07-21"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/statusSubmissionLifeCycle"
+        }
+      ],
+      "examples": ["draft", "submitted"]
+    },
+
+    "components": {
+      "type": "array",
+      "title": "Submission participants",
+      "description": "Role assignments identifying the EGA user accounts responsible for the Submission and their administrative access level.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "egav1crg.1:post#collaborators",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "match_string": "status",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-07-27"
+        }
+      ],
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/component"
+      },
+      "allOf": [
+        {
+          "title": "A submission needs to have one creator",
+          "contains": {
+            "type": "object",
+            "required": ["roles"],
+            "properties": {
+              "roles": {
+                "type": "array",
+                "contains": {"const": "creator"}
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "title": "A submission needs to have one owner",
+          "contains": {
+            "type": "object",
+            "required": ["roles"],
+            "properties": {
+              "roles": {
+                "type": "array",
+                "contains": {"const": "owner"}
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@type": "entityDoc:/$defs/component",
+            "agent": {
+              "@id": "ega:EGAW00000000001",
+              "@type": "prov:Agent"
+            },
+            "roles": ["creator", "owner"],
+            "accessLevel": "write"
+          }
+        ],
+        [
+          {
+            "@type": "entityDoc:/$defs/component",
+            "agent": {
+              "@id": "ega:EGAW00000000002",
+              "@type": "prov:Agent"
+            },
+            "roles": ["creator"]
+          },
+          {
+            "@type": "entityDoc:/$defs/component",
+            "agent": {
+              "@id": "ega:EGAW00000000003",
+              "@type": "prov:Agent"
+            },
+            "roles": ["owner"],
+            "accessLevel": "write"
+          },
+          {
+            "@type": "entityDoc:/$defs/component",
+            "agent": {
+              "@id": "ega:EGAW00000000004",
+              "@type": "prov:Agent"
+            },
+            "roles": ["collaborator"],
+            "accessLevel": "read"
+          }
+        ]
+      ]
+    },
+
+    "hasEntities": {
+      "title": "Submission entities",
+      "description": "EGA entities administratively owned by this Submission, to which the assigned roles and rights of this submission's components apply.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:narrowMatch",
+          "object_id": "dct:hasPart",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "match_string": "hasEntities",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-07-27"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/relationshipArray"
+        },
+        {
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionNonSubmissionEntity"
+          }
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAS00000000001",
+            "@type": "ega:study"
+          }
+        ],
+        [
+          {
+            "@id": "ega:EGAN00000000001",
+            "@type": "ega:biomaterial"
+          },
+          {
+            "@id": "ega:EGAF00000000001",
+            "@type": "ega:datafile"
+          }
+        ]
+      ]
+    },
+
+    "sameAs": {
+      "title": "Same as",
+      "description": "External or equivalent identifiers for the Submission.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/sameAs"
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "https://example.org/submissions/rare-disease-genomes"
+          }
+        ],
+        [
+          {
+            "@id": "https://registry.example.org/submission/northern-health"
+          }
+        ]
+      ]
+    }
+  },
+  
+  "$defs": {
+    "component": {
+      "type": "object",
+      "title": "Submission participant assignment",
+      "description": "An assignment connecting an identified EGA user account to Submission responsibilities and, where applicable, an administrative access level.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/agentRoleAssignment"
+        },
+        {
+          "if": {
+            "required": ["roles"],
+            "properties": {
+              "roles": {
+                "contains": {"const": "owner"}
+              }
+            }
+          },
+          "then": {
+            "required": ["accessLevel"],
+            "properties": {
+              "accessLevel": {"const": "write"}
+            }
+          }
+        }
+      ],
+      "required": ["roles", "accessLevel"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            {
+              "const": "entityDoc:/$defs/component"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "contains": {
+                "const": "entityDoc:/$defs/component"
+              }
+            }
+          ],
+          "examples": [
+            "entityDoc:/$defs/component",
+            ["entityDoc:/$defs/component"]
+          ]
+        },
+        "agent": {
+          "title": "Submission participant account",
+          "description": "The authenticated EGA user account receiving the role assignment.",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/agent"
+            }
+          ],
+          "required": ["@id"],
+          "properties": {
+            "@id": {
+              "$ref": "../../common/schema.json#/$defs/egaStableIdentifierUserAccount"
+            }
+          },
+          "examples": [
+            {
+              "@id": "ega:EGAW00000000001",
+              "@type": "prov:Agent"
+            },
+            {
+              "@id": "ega:EGAW00001000002",
+              "@type": ["prov:Agent", "prov:Person"],
+              "name": "Jane Doe"
+            }
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "title": "Submission roles",
+          "description": "Responsibilities held by the EGA user account. Creator records provenance, owner identifies the current authoritative owner, and collaborator identifies delegated access.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["creator", "owner", "collaborator"],
+            "examples": ["owner", "collaborator"]
+          },
+          "examples": [
+            ["creator", "owner"],
+            ["collaborator"]
+          ]
+        },
+        "accessLevel": {
+          "type": "string",
+          "title": "Administrative access level",
+          "description": "Maximum administrative access granted over the Submission and its owned metadata entities. Write access includes read access.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:exactMatch",
+              "object_id": "egav1crg.1:post#collaborators/access_type",
+              "mapping_justification": "semapv:ManualMappingCuration",
+              "object_match_field": "rdfs:comment",
+              "subject_match_field": "rdfs:comment",
+              "match_string": "status",
+              "author_id": ["orcid:0000-0002-7747-6256"],
+              "creator_id": ["orcid:0000-0002-7747-6256"],
+              "reviewer_id": [""],
+              "confidence": 1.0,
+              "mapping_date": "2026-07-27"
+            }
+          ],
+          "enum": ["read", "write", "none"],
+          "examples": ["read", "write"]
+        }
+      },
+      "examples": [
+        {
+          "@type": "entityDoc:/$defs/component",
+          "agent": {
+            "@id": "ega:EGAW00000000001",
+            "@type": "prov:Agent"
+          },
+          "roles": ["creator", "owner"],
+          "accessLevel": "write"
+        },
+        {
+          "@type": "entityDoc:/$defs/component",
+          "agent": {
+            "@id": "ega:EGAW00001000002",
+            "@type": "prov:Agent"
+          },
+          "roles": ["collaborator"],
+          "accessLevel": "read"
+        }
+      ]
+    }
+  }
+}

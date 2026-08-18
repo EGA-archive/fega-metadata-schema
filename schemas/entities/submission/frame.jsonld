@@ -1,0 +1,36 @@
+{
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+  "@type": "ega:submission",
+  "@embed": "@always",
+  "@explicit": false,
+  "title": {},
+  "description": {},
+  "status": {},
+  "components": [
+    {
+      "@embed": "@always",
+      "agent": {
+        "@embed": "@always",
+        "@type": {},
+        "name": {},
+        "sameAs": [
+          {
+            "@embed": "@always"
+          }
+        ]
+      },
+      "roles": {},
+      "accessLevel": {}
+    }
+  ],
+  "hasEntities": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "sameAs": [
+    {
+      "@embed": "@always"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/dataset-and-datafile.schema.json",
+  "title": "Dataset and Datafile",
+  "description": "Requires a graph to contain at least one Dataset and one Datafile.",
+  "meta:version": "2.0.0-draft.1",
+  "@context": "../context.jsonld",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../schema.json" },
+    { "$ref": "../schema.json#/$defs/hasDataset" },
+    { "$ref": "../schema.json#/$defs/hasDatafile" }
+  ]
+}

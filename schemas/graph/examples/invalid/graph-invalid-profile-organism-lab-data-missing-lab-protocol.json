@@ -1,0 +1,50 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-organism-lab-data-missing-lab-protocol",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAN-invalid-organism",
+        "@type": ["ega:biomaterial", "prov:Entity", "COB:0000022"],
+        "label": "SUBJECT-invalid",
+        "sex": {"phenotypicSex": {"id": "PATO:0000383", "label": "female"}},
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      },
+      {
+        "@id": "ega:EGAT-invalid-workflow",
+        "@type": ["ega:protocol", "prov:Plan", "bioschemastypes:ComputationalWorkflow"],
+        "name": "Computational workflow, not a lab protocol",
+        "url": "https://example.org/workflows/invalid",
+        "version": "1.0.0",
+        "programmingLanguage": ["Python"],
+        "creator": [{"name": "Example Author"}],
+        "dateCreated": "2026-01-01T00:00:00Z",
+        "license": "https://spdx.org/licenses/Apache-2.0",
+        "sdPublisher": {"name": "European Genome-phenome Archive"},
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      },
+      {
+        "@id": "ega:EGAD-invalid",
+        "@type": ["ega:dataset", "dcat:Dataset"],
+        "title": "Invalid profile dataset",
+        "description": "Dataset for a requirement failure example.",
+        "datasetType": ["whole genome sequencing"],
+        "hasPart": [{"@id": "ega:EGAF-invalid", "@type": "ega:datafile"}],
+        "hasPolicy": "ega:EGAP-invalid",
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      },
+      {
+        "@id": "ega:EGAF-invalid",
+        "@type": "ega:datafile",
+        "fileName": "invalid.fastq.gz",
+        "fileFormat": {"id": "EDAM:format_1930", "label": "FASTQ"},
+        "dataContent": {"id": "EDAM:data_2977", "label": "Nucleic acid sequence"},
+        "checksums": [{"algorithm": "MD5", "value": "d41d8cd98f00b204e9800998ecf8427e", "appliesTo": "unencrypted"}],
+        "isPartOf": [{"@id": "ega:EGAD-invalid", "@type": ["ega:dataset", "dcat:Dataset"]}],
+        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+      }
+    ]
+  }
+}

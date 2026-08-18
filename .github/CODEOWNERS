@@ -1,0 +1,7 @@
+# CODEOWNERS
+
+# Anything inside the "schemas/", "standards/", "src/" and "scripts/" directories must be reviewed by the current admin (@m-casado)
+/schemas/     @m-casado
+/standards/   @m-casado
+/src/     @m-casado
+/scripts/   @m-casado

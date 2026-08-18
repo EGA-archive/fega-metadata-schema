@@ -1,0 +1,1594 @@
+#!/usr/bin/env python3
+"""Validate JSON-LD frame round-trips for FEGA valid examples.
+
+This test checks that our JSON-LD frames can rebuild the
+nested JSON shape expected by the JSON Schemas from graph-like JSON-LD input.
+It starts from each valid example, flattens it, adds an unrelated noise node,
+frames it back into schema-shaped JSON-LD, and validates that result.
+
+The RDF/N-Quads route checks meaning, not formatting. JSON-LD, flattened
+JSON-LD, framed JSON-LD, and RDF/N-Quads can all describe the same graph in
+different syntaxes. The script canonicalizes the original and framed data as
+N-Quads (triplets) so it can detect semantic information loss even when the JSON layout
+changes. JSON Schema validation then checks that the final JSON has the shape
+our metadata model expects.
+
+Each input is checked through two routes:
+
+1. JSON-LD flattening followed by framing.
+    Valid example → flatten → add unrelated noise → frame → verify noise removal and RDF meaning → JSON Schema validation.
+2. JSON-LD -> RDF/N-Quads -> JSON-LD reconstruction followed by framing.
+    Valid example → RDF triples → reconstruct JSON-LD → flatten → add noise → frame → verify noise removal and RDF meaning → JSON Schema validation.
+
+Both routes receive an unrelated noise node. The framed primary entity must
+exclude that node, preserve the original canonical RDF graph, and pass the
+target JSON Schema through Biovalidator.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import json
+import logging
+import sys
+import uuid
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
+
+import requests
+
+try:
+    import pyld.jsonld as jsonld
+except ImportError as exc:
+    raise ImportError(
+        "PyLD is required for frame validation. Install it with: pip install pyld"
+    ) from exc
+
+try:
+    from fega_tools.biovalidator import (
+        DEFAULT_VALIDATOR_URL,
+        assert_validator_reachable,
+        classify_response,
+        post_to_validator,
+    )
+    from fega_tools.cli_utils import (
+        add_root_argument,
+        add_summary_arguments,
+        add_verbosity_argument,
+        emit_summary,
+        help_with_example,
+    )
+    from fega_tools.io import clone_json, load_json
+    from fega_tools.logging_utils import configure_logging, log_suite_status
+    from fega_tools.jsonld_utils import (
+        build_id_to_path_map,
+        find_invalid_context_type_mappings,
+        find_undefined_terms,
+        find_repo_root,
+        make_local_document_loader,
+        materialize_context,
+    )
+    from fega_tools.validation_common import (
+        DEFAULT_ROOT,
+        INVALID_STATUS,
+        REQUEST_ERROR_STATUS,
+        SCRIPT_ERROR_STATUS,
+        UNKNOWN_STATUS,
+        VALID_STATUS,
+        aggregate_validation_counts,
+        find_entity_dirs,
+        find_example_files,
+        summarize_validation_results,
+    )
+except ModuleNotFoundError as exc:
+    msg = (
+        "ERROR: The helper package 'fega_tools' is not importable.\n"
+        "Make sure you have installed the repo in editable mode first. Run this from the repository root:\n"
+        "    pip install -e ."
+    )
+    raise ModuleNotFoundError(msg) from exc
+
+
+LOGGER = logging.getLogger(Path(__file__).stem)
+
+
+SUMMARY_FILENAME = "frame_summary.json"
+TOTAL_STEPS = 10
+
+ROUTE_FLATTENED = "flattened_jsonld"
+ROUTE_RDF_GRAPH = "generated_rdf_graph"
+ROUTES = (ROUTE_FLATTENED, ROUTE_RDF_GRAPH)
+
+_NOISE_TYPE = "https://example.org/FEGATestNoiseEntity"
+_DROP = object()
+_DAC_ROLE_NAMES = {
+    "administrator",
+    "approver",
+    "main_contact",
+    "member",
+    "reviewer",
+}
+
+
+# ---------------------------------------------------------------------------
+# Basic IO and discovery
+# ---------------------------------------------------------------------------
+
+
+def find_frame_gaps(entity_dirs: Sequence[Path]) -> List[str]:
+    """Return entity directories missing frame.jsonld."""
+    return [
+        entity_dir.name
+        for entity_dir in entity_dirs
+        if not (entity_dir / "frame.jsonld").exists()
+    ]
+
+
+def _resolve_schema_ref(
+    ref: str,
+    current_schema: Path,
+    id_to_path_map: Dict[str, Path],
+) -> Path:
+    """Resolve a local or registered schema reference without its fragment."""
+    ref_path = ref.split("#", 1)[0]
+    if not ref_path:
+        return current_schema
+    if ref_path in id_to_path_map:
+        return id_to_path_map[ref_path]
+    if not ref_path.startswith(("http://", "https://")):
+        candidate = (current_schema.parent / ref_path).resolve()
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError(
+        f"Cannot resolve schema reference '{ref}' from '{current_schema}'"
+    )
+
+
+def _resolve_frame_path(
+    schema_path: Path,
+    id_to_path_map: Dict[str, Path],
+    seen: frozenset[Path] = frozenset(),
+) -> Path:
+    """Find the unique frame owned by a schema or one of its local allOf bases."""
+    resolved_schema = schema_path.resolve()
+    if resolved_schema in seen:
+        raise ValueError(f"Circular schema reference while resolving frame: '{schema_path}'")
+    direct_frame = resolved_schema.parent / "frame.jsonld"
+    if direct_frame.is_file():
+        return direct_frame
+    schema = load_json(resolved_schema)
+    if not isinstance(schema, dict):
+        raise ValueError(f"Schema must be an object: '{resolved_schema}'")
+    candidates: List[Path] = []
+    for branch in schema.get("allOf", []):
+        if not isinstance(branch, dict) or not isinstance(branch.get("$ref"), str):
+            continue
+        referenced_schema = _resolve_schema_ref(
+            branch["$ref"], resolved_schema, id_to_path_map
+        )
+        try:
+            candidate = _resolve_frame_path(
+                referenced_schema, id_to_path_map, seen | {resolved_schema}
+            )
+        except FileNotFoundError:
+            continue
+        if candidate not in candidates:
+            candidates.append(candidate)
+    if len(candidates) == 1:
+        return candidates[0]
+    if len(candidates) > 1:
+        raise ValueError(
+            f"Multiple frames found for schema '{resolved_schema}': {candidates}"
+        )
+    raise FileNotFoundError(f"Frame file not found for schema: '{resolved_schema}'")
+
+
+def resolve_file_entity(
+    path: Path,
+    root: Path,
+    id_to_path_map: Dict[str, Path],
+) -> Tuple[Path, Path]:
+    """Resolve a single input's entity directory and frame via schema.$ref."""
+    resolved_path = path.resolve()
+    if not resolved_path.is_file():
+        raise FileNotFoundError(f"Input file not found: {path}")
+    if resolved_path.suffix.lower() != ".json":
+        raise ValueError(f"Input file must be JSON: {path}")
+
+    try:
+        document = load_json(resolved_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Cannot load input file '{path}': {exc}") from exc
+
+    schema = document.get("schema") if isinstance(document, dict) else None
+    schema_ref = schema.get("$ref") if isinstance(schema, dict) else None
+    if not isinstance(schema_ref, str) or not schema_ref:
+        raise ValueError(f"Input file '{path}' is missing schema.$ref")
+
+    schema_path = id_to_path_map.get(schema_ref)
+    if schema_path is None:
+        raise FileNotFoundError(
+            f"Cannot map schema.$ref '{schema_ref}' from input file '{path}'"
+        )
+
+    entity_dir = schema_path.resolve().parent
+    try:
+        entity_dir.relative_to(root.resolve())
+    except ValueError as exc:
+        raise ValueError(
+            f"Input schema '{schema_path}' is not under entity root '{root}'"
+        ) from exc
+
+    frame_path = _resolve_frame_path(schema_path, id_to_path_map)
+    return entity_dir, frame_path
+
+
+def _discover_inputs(
+    root: Path,
+    entity: Optional[str],
+    input_file: Optional[Path],
+    id_to_path_map: Dict[str, Path],
+) -> Tuple[List[Path], List[Dict[str, Path]], List[str]]:
+    """Return selected entity dirs, file specifications, and frame gaps."""
+    if input_file is not None:
+        entity_dir, frame_path = resolve_file_entity(input_file, root, id_to_path_map)
+        return (
+            [entity_dir],
+            [
+                {
+                    "path": input_file.resolve(),
+                    "entity_dir": entity_dir,
+                    "frame_path": frame_path,
+                }
+            ],
+            [],
+        )
+
+    entity_dirs = find_entity_dirs(root, entity)
+    if not entity_dirs:
+        raise FileNotFoundError(f"No entity schema directories found under {root}")
+
+    frame_gaps = find_frame_gaps(entity_dirs)
+    specs: List[Dict[str, Path]] = []
+    for entity_dir in entity_dirs:
+        frame_path = entity_dir / "frame.jsonld"
+        if not frame_path.is_file():
+            continue
+        files = find_example_files(entity_dir, "valid")
+        specs.extend(
+            {
+                "path": path,
+                "entity_dir": entity_dir,
+                "frame_path": frame_path,
+            }
+            for path in files
+        )
+    return entity_dirs, specs, frame_gaps
+
+
+def _data_with_context(data: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """Copy data and replace its context with a materialized context."""
+    data_copy = clone_json(data)
+    data_copy["@context"] = context
+    return data_copy
+
+
+# ---------------------------------------------------------------------------
+# JSON-LD operations
+# ---------------------------------------------------------------------------
+
+
+def _as_graph_nodes(value: Any) -> List[Any]:
+    """Normalize a JSON-LD result into a list of graph nodes."""
+    if isinstance(value, dict) and isinstance(value.get("@graph"), list):
+        return value["@graph"]
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def _noise_entity(noise_id: str) -> Dict[str, Any]:
+    """Build an unrelated node that frames should exclude."""
+    return {
+        "@id": noise_id,
+        "@type": [_NOISE_TYPE],
+        "https://example.org/hasNoise": [{"@value": "noise-test"}],
+    }
+
+
+def _walk_contains_id(value: Any, target_id: str) -> bool:
+    """Return whether an id appears anywhere in a nested JSON value."""
+    if isinstance(value, dict):
+        if value.get("@id") == target_id:
+            return True
+        return any(_walk_contains_id(child, target_id) for child in value.values())
+    if isinstance(value, list):
+        return any(_walk_contains_id(item, target_id) for item in value)
+    return False
+
+
+def _extract_candidates(framed: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Extract possible primary entities from framed JSON-LD output."""
+    graph = framed.get("@graph")
+    if isinstance(graph, list):
+        return [item for item in graph if isinstance(item, dict)]
+    if isinstance(framed, dict):
+        return [{key: value for key, value in framed.items() if key != "@context"}]
+    return []
+
+
+def _value_as_strings(value: Any) -> List[str]:
+    """Return a string or list value as a clean list of strings."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _expand_node_identifier(value: str, context: Any) -> Optional[str]:
+    """Expand a compact or absolute JSON-LD node identifier to an absolute IRI."""
+    try:
+        expanded = jsonld.expand(
+            {
+                "@context": context,
+                "@id": value,
+                "https://example.org/jsonld-frame-probe": "probe",
+            }
+        )
+    except Exception:  # noqa: BLE001 - PyLD exposes several exception types
+        return None
+    for node in expanded:
+        if isinstance(node, dict) and isinstance(node.get("@id"), str):
+            return node["@id"]
+    return None
+
+
+def _select_primary_entity(
+    framed: Dict[str, Any],
+    original_id: Optional[str],
+    original_types: Sequence[str],
+    context: Any,
+) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    """Pick the one framed entity that matches the original @id or type."""
+    candidates = _extract_candidates(framed)
+    if not candidates:
+        return None, "Framed output did not contain any candidate entities"
+
+    if original_id:
+        original_expanded_id = _expand_node_identifier(original_id, context)
+        if original_expanded_id is None:
+            return None, f"Could not expand original @id '{original_id}'"
+        matches = [
+            item
+            for item in candidates
+            if original_expanded_id
+            in {
+                expanded_id
+                for candidate_id in _value_as_strings(item.get("@id"))
+                for expanded_id in [_expand_node_identifier(candidate_id, context)]
+                if expanded_id is not None
+            }
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if not matches:
+            return None, f"No framed entity matched original @id '{original_id}'"
+        return None, f"Multiple framed entities matched original @id '{original_id}'"
+
+    expected_types = set(original_types)
+    if not expected_types:
+        return None, "Rootless input did not provide any @type values for primary selection"
+
+    matches = [
+        item
+        for item in candidates
+        if expected_types & set(_value_as_strings(item.get("@type")))
+    ]
+    if len(matches) == 1:
+        return matches[0], None
+    if not matches:
+        return None, f"No framed entity matched expected @type values {sorted(expected_types)}"
+    return None, f"Multiple framed entities matched expected @type values {sorted(expected_types)}"
+
+
+def _select_graph_document(
+    framed: Any,
+    original_graph_ids: Set[str],
+) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    """Project graph entities from framed RDF without reading source fields.
+
+    A graph-wide frame may place inverse relationships (for example DAC
+    memberships and policy governance) beside, rather than inside, the entity
+    they describe.  Rebuild those schema-facing inverse properties from the
+    framed nodes only.  The original input contributes identifiers solely to
+    restrict the projection and exclude injected noise.
+    """
+    if not isinstance(framed, dict):
+        return None, "Framed graph output was not an object"
+    graph = framed.get("@graph")
+    if not isinstance(graph, list):
+        return None, "Framed graph output did not contain an @graph array"
+
+    graph_items_by_id: Dict[str, Dict[str, Any]] = {}
+    graph_item_scores: Dict[str, int] = {}
+    all_nodes: List[Dict[str, Any]] = []
+
+    def collect_entity_nodes(value: Any) -> None:
+        if isinstance(value, list):
+            for child in value:
+                collect_entity_nodes(child)
+            return
+        if not isinstance(value, dict):
+            return
+        all_nodes.append(value)
+        node_id = value.get("@id")
+        if (
+            isinstance(node_id, str)
+            and node_id in original_graph_ids
+            and any(
+                isinstance(type_value, str) and type_value.startswith("ega:")
+                for type_value in _value_as_strings(value.get("@type"))
+            )
+        ):
+            score = len(
+                [
+                    key
+                    for key in value
+                    if key not in {"@id", "@type", "@context"}
+                ]
+            )
+            if score > graph_item_scores.get(node_id, -1):
+                # The semantic equivalence check consumes the untouched raw
+                # frame later in the pipeline, so project into an independent
+                # copy before adding schema-facing inverse properties.
+                graph_items_by_id[node_id] = clone_json(value)
+                graph_item_scores[node_id] = score
+        for child in value.values():
+            collect_entity_nodes(child)
+
+    collect_entity_nodes(graph)
+    if set(graph_items_by_id) != original_graph_ids:
+        missing = sorted(original_graph_ids - set(graph_items_by_id))
+        return None, f"Framed graph output omitted entity ids: {missing}"
+
+    def as_node_list(value: Any) -> List[Dict[str, Any]]:
+        if isinstance(value, dict):
+            return [value]
+        if isinstance(value, list):
+            return [item for item in value if isinstance(item, dict)]
+        return []
+
+    def first_types(node_id: str) -> List[str]:
+        for node in all_nodes:
+            if node.get("@id") == node_id:
+                types = _value_as_strings(node.get("@type"))
+                if types:
+                    return types
+        return []
+
+    def append_unique(target: Dict[str, Any], key: str, value: Dict[str, Any]) -> None:
+        values = target.setdefault(key, [])
+        if not isinstance(values, list):
+            values = [values]
+            target[key] = values
+        signature = json.dumps(value, sort_keys=True)
+        if all(json.dumps(item, sort_keys=True) != signature for item in values):
+            values.append(value)
+
+    def compact_dac_membership(membership: Dict[str, Any]) -> Dict[str, Any]:
+        """Use the DAC context's schema field names for an RDF membership."""
+        if "org:member" in membership:
+            membership["agent"] = membership.pop("org:member")
+        agent = membership.get("agent")
+        if isinstance(agent, dict):
+            for compact_name, rdf_name in (
+                ("name", "foaf:name"),
+                ("email", "cv:email"),
+                ("telephone", "cv:telephone"),
+            ):
+                if compact_name not in agent and rdf_name in agent:
+                    agent[compact_name] = agent.pop(rdf_name)
+        if "org:role" in membership:
+            roles = membership.pop("org:role")
+            role_values = as_node_list(roles)
+            if role_values:
+                compact_roles: List[Any] = []
+                for role in role_values:
+                    role_id = role.get("@id")
+                    candidate = (
+                        role_id.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
+                        if isinstance(role_id, str)
+                        else None
+                    )
+                    compact_roles.append(
+                        candidate if candidate in _DAC_ROLE_NAMES else role
+                    )
+                membership["roles"] = compact_roles
+            else:
+                membership["roles"] = roles
+        return membership
+
+    # Restore inverse properties from the framed graph itself.  These are not
+    # copied from the source JSON; they are derived from the corresponding RDF
+    # predicates emitted by the contexts.
+    for node in all_nodes:
+        for organization in as_node_list(node.get("org:organization")):
+            dac_id = organization.get("@id")
+            if dac_id not in graph_items_by_id:
+                continue
+            membership = clone_json(node)
+            membership.pop("org:organization", None)
+            membership = compact_dac_membership(membership)
+            append_unique(graph_items_by_id[dac_id], "components", membership)
+
+        node_id = node.get("@id")
+        if not isinstance(node_id, str):
+            continue
+        for policy in as_node_list(node.get("governs")):
+            policy_id = policy.get("@id")
+            if policy_id not in graph_items_by_id:
+                continue
+            governed_by: Dict[str, Any] = {"@id": node_id}
+            types = _value_as_strings(node.get("@type"))
+            if types:
+                governed_by["@type"] = types[0] if len(types) == 1 else types
+            append_unique(graph_items_by_id[policy_id], "governedBy", governed_by)
+
+    def enrich_references(value: Any) -> None:
+        if isinstance(value, list):
+            for item in value:
+                enrich_references(item)
+            return
+        if not isinstance(value, dict):
+            return
+        node_id = value.get("@id")
+        if isinstance(node_id, str) and "@type" not in value:
+            types = first_types(node_id)
+            if types:
+                value["@type"] = types[0] if len(types) == 1 else types
+        for child in value.values():
+            enrich_references(child)
+
+    for item in graph_items_by_id.values():
+        enrich_references(item)
+        has_policy = item.get("hasPolicy")
+        if isinstance(has_policy, dict) and isinstance(has_policy.get("@id"), str):
+            # Dataset schemas deliberately model this JSON-LD @id value as an
+            # external identifier string rather than an embedded Policy object.
+            item["hasPolicy"] = has_policy["@id"]
+
+    selected = dict(framed)
+    selected["@graph"] = list(graph_items_by_id.values())
+    return selected, None
+
+
+def _canonicalize_jsonld(
+    data: Dict[str, Any],
+    inline_context: Any,
+    document_loader: Any,
+) -> str:
+    """Normalize JSON-LD into canonical N-Quads for RDF comparison."""
+    return jsonld.normalize(
+        _data_with_context(data, inline_context),
+        {
+            "algorithm": "URDNA2015",
+            "format": "application/n-quads",
+            "documentLoader": document_loader,
+        },
+    )
+
+
+def _summarize_nquads_difference(expected: str, actual: str) -> List[str]:
+    """Describe the first RDF triples missing or added after framing."""
+    expected_lines = set(expected.splitlines())
+    actual_lines = set(actual.splitlines())
+    missing = sorted(expected_lines - actual_lines)
+    extra = sorted(actual_lines - expected_lines)
+    errors = [
+        f"Canonical RDF differs: {len(missing)} missing triple(s), {len(extra)} extra triple(s)"
+    ]
+    errors.extend(f"missing: {line}" for line in missing[:10])
+    errors.extend(f"extra: {line}" for line in extra[:10])
+    return errors
+
+
+def _route_failure(
+    route: str,
+    status: str,
+    stage: str,
+    errors: Sequence[Any],
+) -> Dict[str, Any]:
+    """Create a consistent failure record for one route."""
+    return {
+        "route": route,
+        "status": status,
+        "failed_stage": stage,
+        "errors": list(errors),
+    }
+
+
+def _strip_internal_blank_ids(value: Any) -> Any:
+    """Remove generated blank-node identifiers from a schema-facing payload."""
+    if isinstance(value, list):
+        cleaned_items = []
+        for item in value:
+            cleaned = _strip_internal_blank_ids(item)
+            if cleaned is not _DROP:
+                cleaned_items.append(cleaned)
+        return cleaned_items if cleaned_items else _DROP
+
+    if not isinstance(value, dict):
+        return value
+
+    cleaned_object: Dict[str, Any] = {}
+    for key, child in value.items():
+        if key == "@id" and isinstance(child, str) and child.startswith("_:"):
+            continue
+        cleaned = _strip_internal_blank_ids(child)
+        if cleaned is not _DROP:
+            cleaned_object[key] = cleaned
+    return cleaned_object if cleaned_object else _DROP
+
+
+def _prepare_schema_payload(primary: Dict[str, Any], schema_ref: str) -> Dict[str, Any]:
+    """Convert framed JSON-LD into the JSON shape sent to Biovalidator."""
+    cleaned = _strip_internal_blank_ids(primary)
+    if cleaned is _DROP or not isinstance(cleaned, dict):
+        cleaned = {}
+
+    cleaned["@context"] = schema_ref
+    return cleaned
+
+
+# ---------------------------------------------------------------------------
+# Progress and debug output
+# ---------------------------------------------------------------------------
+
+
+def _log_step(step: int, message: str) -> None:
+    """Emit one concise suite-level progress line."""
+    LOGGER.info("Step %d/%d: %s", step, TOTAL_STEPS, message)
+
+
+def _debug_snapshot(
+    enabled: bool,
+    path: Path,
+    label: str,
+    value: Any,
+    route: Optional[str] = None,
+    raw: bool = False,
+) -> None:
+    """Print a complete labeled transformation snapshot to stdout."""
+    if not enabled:
+        return
+    route_text = f" [{route}]" if route else ""
+    sys.stdout.write(f"\n===== [DEBUG]{route_text} {path.name}: {label} =====\n")
+    if raw:
+        sys.stdout.write(str(value))
+        if not str(value).endswith("\n"):
+            sys.stdout.write("\n")
+    else:
+        json.dump(value, sys.stdout, indent=2, ensure_ascii=False)
+        sys.stdout.write("\n")
+
+
+def _first_error_text(errors: Sequence[Any]) -> str:
+    """Return a compact representation of a route's first error."""
+    if not errors:
+        return "unknown error"
+    first = errors[0]
+    if isinstance(first, str):
+        return first
+    return json.dumps(first, ensure_ascii=False, separators=(",", ":"))
+
+
+def _suppress_third_party_debug() -> None:
+    """Keep dependency connection chatter out of -vv output."""
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+
+
+# ---------------------------------------------------------------------------
+# Staged validation pipeline
+# ---------------------------------------------------------------------------
+
+
+def _set_file_failure(
+    state: Dict[str, Any],
+    status: str,
+    stage: str,
+    errors: Sequence[Any],
+) -> None:
+    """Record a file-level failure from loading or preflight."""
+    state["ready"] = False
+    state["result"].update(
+        {
+            "status": status,
+            "failed_stage": stage,
+            "errors": list(errors),
+        }
+    )
+    LOGGER.debug(
+        "Frame file failed: file='%s' stage=%s error=%s",
+        state["path"].name,
+        stage,
+        _first_error_text(errors),
+    )
+
+
+def _set_route_failure(
+    state: Dict[str, Any],
+    route: str,
+    status: str,
+    stage: str,
+    errors: Sequence[Any],
+) -> None:
+    """Record and log the first failure for one route."""
+    route_state = state["routes"][route]
+    if route_state.get("result") is not None:
+        return
+    route_state["result"] = _route_failure(route, status, stage, errors)
+    LOGGER.debug(
+        "Frame route failed: file='%s' route=%s stage=%s error=%s",
+        state["path"].name,
+        route,
+        stage,
+        _first_error_text(errors),
+    )
+
+
+def _route_active(state: Dict[str, Any], route: str) -> bool:
+    """Return whether a prepared route has not failed yet."""
+    return state.get("ready", False) and state["routes"][route].get("result") is None
+
+
+def _prepare_input(
+    spec: Dict[str, Path],
+    id_to_path_map: Dict[str, Path],
+    document_loader: Any,
+    debug_snapshots: bool,
+) -> Dict[str, Any]:
+    """Load and validate one file (input) for later batch stages."""
+    path = spec["path"]
+    frame_path = spec["frame_path"]
+    state: Dict[str, Any] = {
+        **spec,
+        "ready": True,
+        "result": {"file": str(path), "frame": str(frame_path)},
+        "routes": {route: {"result": None} for route in ROUTES},
+        "document_loader": document_loader,
+    }
+
+    try:
+        document = load_json(path)
+    except (OSError, json.JSONDecodeError) as exc:
+        _set_file_failure(state, SCRIPT_ERROR_STATUS, "load_file", [str(exc)])
+        return state
+
+    _debug_snapshot(debug_snapshots, path, "original input document", document)
+    if not isinstance(document, dict) or not {"data", "schema"}.issubset(document):
+        _set_file_failure(
+            state,
+            SCRIPT_ERROR_STATUS,
+            "wrapper_shape",
+            ["Expected a JSON object with 'data' and 'schema' keys"],
+        )
+        return state
+
+    data = document["data"]
+    schema = document["schema"]
+    if not isinstance(data, dict):
+        _set_file_failure(
+            state,
+            SCRIPT_ERROR_STATUS,
+            "wrapper_shape",
+            ["'data' must be a JSON object"],
+        )
+        return state
+
+    errors: List[str] = []
+    schema_ref = schema.get("$ref", "") if isinstance(schema, dict) else ""
+    if not schema_ref:
+        errors.append("Missing schema.$ref")
+    context = data.get("@context")
+    if context is None:
+        errors.append("Missing data.@context")
+    if "@type" not in data:
+        errors.append("Missing data.@type")
+    if errors:
+        _set_file_failure(state, SCRIPT_ERROR_STATUS, "wrapper_shape", errors)
+        return state
+
+    try:
+        inline_context = materialize_context(context, path, id_to_path_map)
+    except (FileNotFoundError, ValueError, OSError, json.JSONDecodeError) as exc:
+        _set_file_failure(
+            state,
+            SCRIPT_ERROR_STATUS,
+            "context_materialization",
+            [str(exc)],
+        )
+        return state
+
+    invalid_context_types = find_invalid_context_type_mappings(inline_context)
+    undefined_terms = find_undefined_terms(data, inline_context)
+    preflight_errors = []
+    if invalid_context_types:
+        preflight_errors.append(
+            "Invalid JSON-LD @type mappings: " + ", ".join(invalid_context_types)
+        )
+    if undefined_terms:
+        preflight_errors.append(
+            "Undefined JSON-LD terms in data: " + ", ".join(undefined_terms)
+        )
+    if preflight_errors:
+        _set_file_failure(
+            state,
+            INVALID_STATUS,
+            "context_preflight",
+            preflight_errors,
+        )
+        return state
+
+    try:
+        frame_doc = load_json(frame_path)
+        if not isinstance(frame_doc, dict):
+            raise ValueError("Frame must be a JSON object")
+        frame_context = frame_doc.get("@context")
+        frame_inline = dict(frame_doc)
+        if frame_context is not None:
+            frame_inline["@context"] = materialize_context(
+                frame_context,
+                frame_path,
+                id_to_path_map,
+            )
+    except (FileNotFoundError, ValueError, OSError, json.JSONDecodeError) as exc:
+        _set_file_failure(
+            state,
+            SCRIPT_ERROR_STATUS,
+            "frame_materialization",
+            [str(exc)],
+        )
+        return state
+
+    state.update(
+        {
+            "document": document,
+            "data": data,
+            "schema_ref": schema_ref,
+            "inline_context": inline_context,
+            "frame_inline": frame_inline,
+            "data_with_context": _data_with_context(data, inline_context),
+            "is_graph_document": isinstance(data.get("@graph"), list),
+            "original_id": data.get("@id") if isinstance(data.get("@id"), str) else None,
+            "original_types": _value_as_strings(data.get("@type")),
+        }
+    )
+    return state
+
+
+def _frame_route(
+    state: Dict[str, Any],
+    route: str,
+    debug_snapshots: bool,
+) -> None:
+    """Frame one prepared noisy graph and select its primary entity."""
+    if not _route_active(state, route):
+        return
+
+    route_state = state["routes"][route]
+    try:
+        framed = jsonld.frame(
+            route_state["framed_input"],
+            state["frame_inline"],
+            options={
+                "documentLoader": state["document_loader"],
+                "omitDefault": True,
+            },
+        )
+    except Exception as exc:  # noqa: BLE001 - PyLD raises diverse exceptions
+        _set_route_failure(
+            state,
+            route,
+            SCRIPT_ERROR_STATUS,
+            "framing",
+            [str(exc)],
+        )
+        return
+
+    route_state["framed"] = framed
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "framed output",
+        framed,
+        route=route,
+    )
+    if state.get("is_graph_document"):
+        original_graph_ids = {
+            item.get("@id")
+            for item in state["data"].get("@graph", [])
+            if isinstance(item, dict) and isinstance(item.get("@id"), str)
+        }
+        primary, selection_error = _select_graph_document(framed, original_graph_ids)
+    else:
+        primary, selection_error = _select_primary_entity(
+            framed,
+            state["original_id"],
+            state["original_types"],
+            state["inline_context"],
+        )
+    if primary is None:
+        _set_route_failure(
+            state,
+            route,
+            INVALID_STATUS,
+            "primary_selection",
+            [selection_error or "Could not select primary framed entity"],
+        )
+        return
+
+    route_state["primary"] = primary
+    if _walk_contains_id(primary, route_state["noise_id"]):
+        _set_route_failure(
+            state,
+            route,
+            INVALID_STATUS,
+            "noise_exclusion",
+            [f"Noise entity '{route_state['noise_id']}' appeared in selected primary entity"],
+        )
+        return
+
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "selected primary entity",
+        primary,
+        route=route,
+    )
+
+
+def _validate_route_output(
+    state: Dict[str, Any],
+    route: str,
+    validator_url: str,
+    debug_snapshots: bool,
+) -> None:
+    """Check semantic equality, sanitize, and schema-validate one route."""
+    if not _route_active(state, route):
+        return
+
+    route_state = state["routes"][route]
+    semantic_source = (
+        route_state["framed"] if state.get("is_graph_document") else route_state["primary"]
+    )
+    semantic_data = dict(semantic_source)
+    semantic_data["@context"] = state["schema_ref"]
+    route_state["semantic_data"] = semantic_data
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "semantic framed document before payload sanitization",
+        semantic_data,
+        route=route,
+    )
+
+    try:
+        framed_canonical = _canonicalize_jsonld(
+            semantic_data,
+            state["inline_context"],
+            state["document_loader"],
+        )
+    except Exception as exc:  # noqa: BLE001
+        _set_route_failure(
+            state,
+            route,
+            SCRIPT_ERROR_STATUS,
+            "canonicalize_framed",
+            [str(exc)],
+        )
+        return
+
+    route_state["framed_canonical"] = framed_canonical
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "canonical framed RDF/N-Quads",
+        framed_canonical,
+        route=route,
+        raw=True,
+    )
+    if framed_canonical != state["original_canonical"]:
+        _set_route_failure(
+            state,
+            route,
+            INVALID_STATUS,
+            "rdf_equivalence",
+            _summarize_nquads_difference(
+                state["original_canonical"],
+                framed_canonical,
+            ),
+        )
+        return
+
+    framed_data = _prepare_schema_payload(route_state["primary"], state["schema_ref"])
+    wrapper = {"schema": {"$ref": state["schema_ref"]}, "data": framed_data}
+    route_state["framed_data"] = framed_data
+    route_state["validator_request"] = wrapper
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "schema-facing framed payload",
+        framed_data,
+        route=route,
+    )
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "Biovalidator request",
+        wrapper,
+        route=route,
+    )
+
+    try:
+        validator_response = post_to_validator(wrapper, validator_url)
+    except requests.RequestException as exc:
+        _set_route_failure(
+            state,
+            route,
+            REQUEST_ERROR_STATUS,
+            "schema_validation_request",
+            [str(exc)],
+        )
+        return
+    except (json.JSONDecodeError, ValueError) as exc:
+        _set_route_failure(
+            state,
+            route,
+            UNKNOWN_STATUS,
+            "schema_validation_response",
+            [f"Malformed Biovalidator response: {exc}"],
+        )
+        return
+
+    route_state["validator_response"] = validator_response
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "Biovalidator response",
+        validator_response,
+        route=route,
+    )
+    validator_status = classify_response(validator_response)
+    if validator_status == VALID_STATUS:
+        route_state["result"] = {
+            "route": route,
+            "status": VALID_STATUS,
+            "failed_stage": None,
+            "canonical_nquads": len(state["original_canonical"].splitlines()),
+        }
+        return
+
+    errors = (
+        validator_response
+        if isinstance(validator_response, list)
+        else [validator_response]
+    )
+    _set_route_failure(
+        state,
+        route,
+        validator_status,
+        "schema_validation",
+        errors,
+    )
+
+
+def _aggregate_route_status(route_results: Sequence[Dict[str, Any]]) -> str:
+    """Collapse per-route statuses into one file-level status."""
+    statuses = [result.get("status") for result in route_results]
+    for status in (
+        SCRIPT_ERROR_STATUS,
+        REQUEST_ERROR_STATUS,
+        UNKNOWN_STATUS,
+        INVALID_STATUS,
+    ):
+        if status in statuses:
+            return status
+    return VALID_STATUS
+
+
+def _finalize_file_result(
+    state: Dict[str, Any],
+    debug_snapshots: bool,
+) -> Dict[str, Any]:
+    """Build the public result record for one pipeline state."""
+    if not state.get("ready", False):
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "final file result",
+            state["result"],
+        )
+        return state["result"]
+
+    route_results: List[Dict[str, Any]] = []
+    for route in ROUTES:
+        route_result = state["routes"][route].get("result")
+        if route_result is None:
+            route_result = _route_failure(
+                route,
+                SCRIPT_ERROR_STATUS,
+                "pipeline",
+                ["Route did not produce a result"],
+            )
+        route_results.append(route_result)
+
+    status = _aggregate_route_status(route_results)
+    state["result"].update(
+        {
+            "status": status,
+            "routes": route_results,
+            "canonical_nquads": len(state["original_canonical"].splitlines()),
+        }
+    )
+    if status != VALID_STATUS:
+        state["result"]["errors"] = [
+            f"{route_result['route']}:{route_result.get('failed_stage')}"
+            for route_result in route_results
+            if route_result.get("status") != VALID_STATUS
+        ]
+
+    LOGGER.debug(
+        "Frame-validated '%s' -> %s",
+        state["path"].name,
+        "passed" if status == VALID_STATUS else "failed",
+    )
+    _debug_snapshot(
+        debug_snapshots,
+        state["path"],
+        "final file result",
+        state["result"],
+    )
+    return state["result"]
+
+
+def _run_pipeline(
+    specs: Sequence[Dict[str, Path]],
+    id_to_path_map: Dict[str, Path],
+    validator_url: str,
+    debug_snapshots: bool,
+) -> List[Dict[str, Any]]:
+    """Run all files through ten real, suite-level transformation phases."""
+    total_files = len(specs)
+    document_loader = make_local_document_loader(id_to_path_map)
+
+    _log_step(1, f"Loading and validatiing {total_files} file(s) (inputs)")
+    states = [
+        _prepare_input(
+            spec,
+            id_to_path_map,
+            document_loader,
+            debug_snapshots,
+        )
+        for spec in specs
+    ]
+
+    _log_step(2, f"Converting {total_files} original JSON-LD file(s) into standardized RDF representation")
+    for state in states:
+        if not state.get("ready", False):
+            continue
+        try:
+            state["original_canonical"] = _canonicalize_jsonld(
+                state["data"],
+                state["inline_context"],
+                document_loader,
+            )
+        except Exception as exc:  # noqa: BLE001
+            _set_file_failure(
+                state,
+                SCRIPT_ERROR_STATUS,
+                "canonicalize_original",
+                [str(exc)],
+            )
+            continue
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "canonical original RDF/N-Quads",
+            state["original_canonical"],
+            raw=True,
+        )
+
+    _log_step(3, f"Flattening {total_files} file(s) through direct JSON-LD")
+    for state in states:
+        if not _route_active(state, ROUTE_FLATTENED):
+            continue
+        try:
+            flattened = jsonld.flatten(
+                state["data_with_context"],
+                options={"documentLoader": document_loader},
+            )
+            state["routes"][ROUTE_FLATTENED]["flat_nodes"] = _as_graph_nodes(
+                flattened
+            )
+        except Exception as exc:  # noqa: BLE001
+            _set_route_failure(
+                state,
+                ROUTE_FLATTENED,
+                SCRIPT_ERROR_STATUS,
+                "route_input",
+                [str(exc)],
+            )
+            continue
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "flattened graph",
+            flattened,
+            route=ROUTE_FLATTENED,
+        )
+
+    _log_step(4, f"Adding noise to {total_files} direct-route graph(s)")
+    for state in states:
+        if not _route_active(state, ROUTE_FLATTENED):
+            continue
+        route_state = state["routes"][ROUTE_FLATTENED]
+        route_state["noise_id"] = f"urn:uuid:{uuid.uuid4()}"
+        route_state["framed_input"] = {
+            "@graph": route_state["flat_nodes"]
+            + [_noise_entity(route_state["noise_id"])]
+        }
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "flattened graph with injected noise",
+            route_state["framed_input"],
+            route=ROUTE_FLATTENED,
+        )
+
+    _log_step(5, f"Framing and checking {total_files} direct-route graph(s)")
+    for state in states:
+        _frame_route(state, ROUTE_FLATTENED, debug_snapshots)
+
+    _log_step(6, f"Generating RDF/N-Quads for {total_files} file(s)")
+    for state in states:
+        if not _route_active(state, ROUTE_RDF_GRAPH):
+            continue
+        try:
+            nquads = jsonld.to_rdf(
+                state["data_with_context"],
+                options={
+                    "format": "application/n-quads",
+                    "documentLoader": document_loader,
+                },
+            )
+            state["routes"][ROUTE_RDF_GRAPH]["nquads"] = nquads
+        except Exception as exc:  # noqa: BLE001
+            _set_route_failure(
+                state,
+                ROUTE_RDF_GRAPH,
+                SCRIPT_ERROR_STATUS,
+                "rdf_generation",
+                [str(exc)],
+            )
+            continue
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "generated RDF/N-Quads",
+            nquads,
+            route=ROUTE_RDF_GRAPH,
+            raw=True,
+        )
+
+    _log_step(7, f"Reconstructing and flattening {total_files} RDF graph(s)")
+    for state in states:
+        if not _route_active(state, ROUTE_RDF_GRAPH):
+            continue
+        route_state = state["routes"][ROUTE_RDF_GRAPH]
+        try:
+            reconstructed = jsonld.from_rdf(
+                route_state["nquads"],
+                options={
+                    "format": "application/n-quads",
+                    "useNativeTypes": True,
+                },
+            )
+            flattened = jsonld.flatten(
+                reconstructed,
+                options={"documentLoader": document_loader},
+            )
+            route_state["reconstructed"] = reconstructed
+            route_state["flat_nodes"] = _as_graph_nodes(flattened)
+        except Exception as exc:  # noqa: BLE001
+            _set_route_failure(
+                state,
+                ROUTE_RDF_GRAPH,
+                SCRIPT_ERROR_STATUS,
+                "rdf_reconstruction",
+                [str(exc)],
+            )
+            continue
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "JSON-LD reconstructed from RDF",
+            reconstructed,
+            route=ROUTE_RDF_GRAPH,
+        )
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "flattened reconstructed RDF graph",
+            flattened,
+            route=ROUTE_RDF_GRAPH,
+        )
+
+    _log_step(
+        8,
+        f"Adding noise, framing, and checking {total_files} RDF-route graph(s)",
+    )
+    for state in states:
+        if not _route_active(state, ROUTE_RDF_GRAPH):
+            continue
+        route_state = state["routes"][ROUTE_RDF_GRAPH]
+        route_state["noise_id"] = f"urn:uuid:{uuid.uuid4()}"
+        route_state["framed_input"] = {
+            "@graph": route_state["flat_nodes"]
+            + [_noise_entity(route_state["noise_id"])]
+        }
+        _debug_snapshot(
+            debug_snapshots,
+            state["path"],
+            "reconstructed RDF graph with injected noise",
+            route_state["framed_input"],
+            route=ROUTE_RDF_GRAPH,
+        )
+        _frame_route(state, ROUTE_RDF_GRAPH, debug_snapshots)
+
+    _log_step(
+        9,
+        f"Checking RDF equivalence and validating {total_files} file(s) across 2 route(s)",
+    )
+    for state in states:
+        for route in ROUTES:
+            _validate_route_output(
+                state,
+                route,
+                validator_url,
+                debug_snapshots,
+            )
+
+    _log_step(10, f"Summarizing {total_files} file result(s)")
+    return [
+        _finalize_file_result(state, debug_snapshots)
+        for state in states
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Summarization
+# ---------------------------------------------------------------------------
+
+
+def _summarize_entity_results(
+    entity_dir: Path,
+    frame_path: Path,
+    results: Sequence[Dict[str, Any]],
+    input_path: Path,
+) -> Dict[str, Any]:
+    """Build one entity summary from completed file result records."""
+    summary = summarize_validation_results(results, VALID_STATUS)
+    summary.update(
+        {
+            "entity": entity_dir.name,
+            "frame": str(frame_path),
+            "input_path": str(input_path),
+        }
+    )
+    return summary
+
+
+# ---------------------------------------------------------------------------
+# Top-level orchestration
+# ---------------------------------------------------------------------------
+
+
+def validate_jsonld_frames(
+    root: Path,
+    entity: Optional[str],
+    validator_url: str,
+    repo_root: Optional[Path] = None,
+    input_file: Optional[Path] = None,
+    debug_snapshots: bool = False,
+) -> Dict[str, Any]:
+    """Run frame round-trip tests for a suite, entity, or single file."""
+    assert_validator_reachable(validator_url)
+
+    if repo_root is None:
+        repo_root = find_repo_root(root.resolve())
+
+    id_to_path_map = build_id_to_path_map(repo_root)
+    LOGGER.debug("Loaded %d entries in schema/context map", len(id_to_path_map))
+
+    entity_dirs, specs, frame_gaps = _discover_inputs(
+        root,
+        entity,
+        input_file,
+        id_to_path_map,
+    )
+    for gap in frame_gaps:
+        LOGGER.error("Missing frame.jsonld for entity '%s'", gap)
+
+    results = _run_pipeline(
+        specs,
+        id_to_path_map,
+        validator_url,
+        debug_snapshots,
+    )
+    results_by_path = {result["file"]: result for result in results}
+
+    entity_summaries: List[Dict[str, Any]] = []
+    for entity_dir in entity_dirs:
+        frame_path = entity_dir / "frame.jsonld"
+        if not frame_path.is_file():
+            continue
+        entity_specs = [
+            spec for spec in specs if spec["entity_dir"].resolve() == entity_dir.resolve()
+        ]
+        entity_results = [
+            results_by_path[str(spec["path"])]
+            for spec in entity_specs
+            if str(spec["path"]) in results_by_path
+        ]
+        input_path = (
+            input_file.resolve()
+            if input_file is not None
+            else entity_dir / "examples" / "valid"
+        )
+        entity_summaries.append(
+            _summarize_entity_results(
+                entity_dir,
+                frame_path,
+                entity_results,
+                input_path,
+            )
+        )
+
+    totals = aggregate_validation_counts(entity_summaries)
+    overall_passed = (
+        bool(entity_summaries)
+        and all(summary["passed"] for summary in entity_summaries)
+        and not frame_gaps
+    )
+    mode = "file" if input_file is not None else "entity" if entity else "suite"
+    resolved_entity = entity_dirs[0].name if input_file is not None else entity
+    summary = {
+        "timestamp": _dt.datetime.now(tz=_dt.timezone.utc).isoformat(
+            timespec="seconds"
+        ),
+        "root": str(root),
+        "mode": mode,
+        "input_file": str(input_file.resolve()) if input_file is not None else None,
+        "passed": overall_passed,
+        "entity": resolved_entity,
+        "entity_names": [path.name for path in entity_dirs],
+        "routes": list(ROUTES),
+        "frame_gaps": frame_gaps,
+        **totals,
+        "files": entity_summaries,
+    }
+    if debug_snapshots and input_file is not None:
+        _debug_snapshot(
+            True,
+            input_file.resolve(),
+            "final run summary",
+            summary,
+        )
+    return summary
+
+
+# ---------------------------------------------------------------------------
+# Logging / output helpers
+# ---------------------------------------------------------------------------
+
+
+def _log_results(summary: Dict[str, Any]) -> None:
+    """Write a short human-readable result summary to the logger."""
+    frame_gaps = summary.get("frame_gaps", [])
+    if frame_gaps:
+        LOGGER.info(
+            "Missing frame.jsonld for %d entity/entities: %s",
+            len(frame_gaps),
+            frame_gaps,
+        )
+
+    LOGGER.info(
+        "%d / %d valid files passed frame round-trip checks",
+        summary.get("validation_passed", 0),
+        summary.get("total_files", 0),
+    )
+    log_suite_status(LOGGER, summary["passed"])
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+
+def make_arg_parser() -> argparse.ArgumentParser:
+    """Build the command-line parser for frame validation."""
+    parser = argparse.ArgumentParser(
+        prog="validate_jsonld_frames",
+        description=(
+            "Validate JSON-LD frame round-trips for FEGA valid examples.\n"
+            "Requires a running Biovalidator endpoint (see --url)."
+        ),
+        epilog=(
+            "Examples:\n"
+            "  validate_jsonld_frames --entity cohort -v\n"
+            "  validate_jsonld_frames --file path/to/example.json -vv\n"
+            "  validate_jsonld_frames --root schemas/entities "
+            "--url http://localhost:3020/validate --summary-dir . -v"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    add_root_argument(parser, default=DEFAULT_ROOT)
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument(
+        "--entity",
+        help=help_with_example("Validate one entity by directory name", "--entity cohort"),
+    )
+    selection.add_argument(
+        "--file",
+        type=Path,
+        dest="input_file",
+        help=help_with_example("Validate one wrapped JSON example", "--file example.json"),
+    )
+    parser.add_argument(
+        "--url",
+        default=DEFAULT_VALIDATOR_URL,
+        help=help_with_example(f"Biovalidator endpoint URL (default: {DEFAULT_VALIDATOR_URL})", "--url http://localhost:3020/validate"),
+    )
+    add_summary_arguments(parser, SUMMARY_FILENAME)
+    add_verbosity_argument(parser)
+    return parser
+
+
+def main(argv: Optional[Sequence[str]] = None) -> None:
+    """Parse CLI arguments, run validation, and exit with the suite status."""
+    parser = make_arg_parser()
+    args = parser.parse_args(argv)
+    debug_snapshots = args.input_file is not None and args.verbosity >= 2
+    if debug_snapshots and args.print_summary:
+        parser.error("--print-summary cannot be combined with --file -vv")
+
+    configure_logging(args.verbosity)
+    _suppress_third_party_debug()
+
+    try:
+        summary = validate_jsonld_frames(
+            args.root,
+            args.entity,
+            args.url,
+            input_file=args.input_file,
+            debug_snapshots=debug_snapshots,
+        )
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        LOGGER.error(str(exc))
+        sys.exit(2)
+
+    _log_results(summary)
+    emit_summary(
+        summary,
+        summary_dir=args.summary_dir,
+        summary_filename=SUMMARY_FILENAME,
+        print_summary=args.print_summary,
+    )
+
+    sys.exit(0 if summary["passed"] else 1)
+
+
+if __name__ == "__main__":
+    main()

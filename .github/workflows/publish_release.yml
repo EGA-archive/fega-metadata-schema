@@ -1,0 +1,93 @@
+name: Publish release
+# Rechecks a merged release candidate, creates its immutable tag and publishes assets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request:
+        description: Merged release pull-request number
+        required: true
+        type: number
+      expected_tag:
+        description: Optional expected tag/version confirmation (for example v2.0.0-draft.1)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out protected main
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {ref: main, fetch-depth: 0, fetch-tags: true}
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
+      - name: Install release tooling
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Resolve merged release PR and candidate chain
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pull_request }}
+          EXPECTED_TAG: ${{ inputs.expected_tag }}
+        run: |
+          args=(resolve --repository "$GITHUB_REPOSITORY" --pull-request "$PR_NUMBER")
+          if [ -n "$EXPECTED_TAG" ]; then args+=(--expected-tag "$EXPECTED_TAG"); fi
+          python scripts/py/release_workflow.py "${args[@]}"
+      - name: Verify exact R1 and normalised R2
+        env:
+          R1: ${{ steps.release.outputs.r1 }}
+          R2: ${{ steps.release.outputs.r2 }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: python scripts/py/release_workflow.py verify-candidate --r1 "$R1" --r2 "$R2" --tag "$TAG" --repository "$GITHUB_REPOSITORY"
+      - name: Build deterministic source archive, manifest, and notes
+        env:
+          R1: ${{ steps.release.outputs.r1 }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: python scripts/py/release_workflow.py assets --r1 "$R1" --version "$VERSION" --output-dir release-assets
+      - name: Create immutable tag without force
+        if: steps.release.outputs.tag_exists == 'false'
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          R1: ${{ steps.release.outputs.r1 }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git tag -a "$TAG" "$R1" -m "Release $TAG"
+          git push origin "refs/tags/$TAG"
+      - name: Create draft release and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if [ "${{ steps.release.outputs.release_exists }}" = false ]; then
+            gh release create "$TAG" --verify-tag --draft --title "$TAG" --notes-file release-assets/release-notes.md
+          fi
+          gh release upload "$TAG" "release-assets/fega-metadata-schema-$VERSION.zip" build/release_manifest.json release-assets/SHA256SUMS --clobber
+      - name: Verify remote tag and archive
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: python scripts/py/verify_remote_release.py --tag "$TAG" --repository "$GITHUB_REPOSITORY" --manifest build/release_manifest.json
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          if [[ "$TAG" == *-* ]]; then
+            gh release edit "$TAG" --draft=false --prerelease --latest=false
+          else
+            gh release edit "$TAG" --draft=false --prerelease=false --latest
+          fi

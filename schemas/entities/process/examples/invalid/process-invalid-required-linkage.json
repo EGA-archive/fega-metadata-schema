@@ -1,0 +1,20 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@type": [
+      "ega:process",
+      "prov:Activity"
+    ],
+    "title": "DNA extraction run",
+    "hadProtocolCollection": {
+      "@id": "ega:EGAL00000000001",
+      "@type": "ega:protocolCollection"
+    }
+  }
+}

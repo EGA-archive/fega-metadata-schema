@@ -1,0 +1,17 @@
+{
+  "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@id": "ega:EGAB00000000106",
+    "@type": "ega:submission",
+    "title": "Submission with owner missing access level",
+    "status": "draft",
+    "components": [
+      {
+        "@type": "entityDoc:/$defs/component",
+        "agent": {"@id": "ega:EGAW00000000108", "@type": "prov:Agent"},
+        "roles": ["creator", "owner"]
+      }
+    ]
+  }
+}

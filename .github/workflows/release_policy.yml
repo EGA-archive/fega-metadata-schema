@@ -1,0 +1,47 @@
+name: Release policy
+# Prevents ordinary pull requests from changing generated release records by hand. It keeps manifests and other release outputs automation-owned.
+
+on:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-policy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Release policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Explain non-ordinary event
+        if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'release/v')
+        run: echo 'Ordinary-PR release policy is not applicable to this event.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Check out ordinary pull-request snapshot
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release/v')
+        with: {ref: '${{ github.event.pull_request.head.sha || github.sha }}', fetch-depth: 0}
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release/v')
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-lock.txt}
+      - name: Install release tooling
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release/v')
+        run: python -m pip install -r requirements-lock.txt && python -m pip install --no-deps -e .
+      - name: Protect generated release records
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release/v')
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          base=$(mktemp -d)
+          git archive "$BASE_SHA" | tar -x -C "$base"
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/release-policy-changed-files.txt
+          python scripts/py/release.py policy \
+            --base "$base" \
+            --head . \
+            --changed-file /tmp/release-policy-changed-files.txt

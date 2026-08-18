@@ -1,0 +1,83 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+    "@id": "ega:EGAB00000000002",
+    "@type": ["ega:submission", "prov:Collection"],
+    "title": "Northern Health longitudinal cohort submission",
+    "description": "Administrative container for the studies, samples, processes, files and access-control records in the Northern Health longitudinal cohort project.",
+    "status": "submitted",
+    "components": [
+      {
+        "@id": "ega:EGAB00000000002#component-creator",
+        "@type": "entityDoc:/$defs/component",
+        "agent": {
+          "@id": "ega:EGAW00000000002",
+          "@type": ["prov:Agent", "prov:Person"],
+          "name": "Original Submitter"
+        },
+        "roles": ["creator"],
+        "accessLevel": "none"
+      },
+      {
+        "@id": "ega:EGAB00000000002#component-owner",
+        "@type": "entityDoc:/$defs/component",
+        "agent": {
+          "@id": "ega:EGAW00000000003",
+          "@type": "prov:Agent"
+        },
+        "roles": ["owner"],
+        "accessLevel": "write"
+      },
+      {
+        "@id": "ega:EGAB00000000002#component-reader",
+        "@type": "entityDoc:/$defs/component",
+        "agent": {
+          "@id": "ega:EGAW00000000004",
+          "@type": "prov:Agent"
+        },
+        "roles": ["collaborator"],
+        "accessLevel": "read"
+      },
+      {
+        "@id": "ega:EGAB00000000002#component-writer",
+        "@type": "entityDoc:/$defs/component",
+        "agent": {
+          "@id": "ega:EGAW00000000005",
+          "@type": "prov:Agent"
+        },
+        "roles": ["collaborator"],
+        "accessLevel": "write"
+      }
+    ],
+    "hasEntities": [
+      {
+        "@id": "ega:EGAS00000000001",
+        "@type": "ega:study"
+      },
+      {
+        "@id": "ega:EGAN00000000001",
+        "@type": "ega:biomaterial"
+      },
+      {
+        "@id": "ega:EGAA00000000001",
+        "@type": "ega:process"
+      },
+      {
+        "@id": "ega:EGAF00000000001",
+        "@type": "ega:datafile"
+      },
+      {
+        "@id": "ega:EGAD00000000001",
+        "@type": "ega:dataset"
+      }
+    ],
+    "sameAs": [
+      {
+        "@id": "https://registry.example.org/submissions/northern-health"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+name: Set up Biovalidator
+description: Install and start Biovalidator from its main branch.
+
+inputs:
+  port:
+    description: Local port on which Biovalidator listens.
+    required: false
+    default: '3020'
+  pid_file:
+    description: File in which to record the background process identifier.
+    required: false
+    default: biovalidator.pid
+  log_file:
+    description: File to which Biovalidator output is written.
+    required: false
+    default: biovalidator.log
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: '24'
+    - name: Install Biovalidator from main
+      shell: bash
+      run: npm install -g "github:EbiEga/biovalidator#main"
+    - name: Start Biovalidator
+      shell: bash
+      env:
+        BIOVALIDATOR_PORT: ${{ inputs.port }}
+        BIOVALIDATOR_PID_FILE: ${{ inputs.pid_file }}
+        BIOVALIDATOR_LOG_FILE: ${{ inputs.log_file }}
+      run: |
+        node "$(npm root -g)/biovalidator/src/biovalidator.js" \
+          --port "$BIOVALIDATOR_PORT" \
+          --ref './schemas/**/schema.json' \
+          --ref './schemas/**/*.schema.json' \
+          --ref './standards/json-schema/**/*.json' \
+          > "$BIOVALIDATOR_LOG_FILE" 2>&1 &
+        validator_pid=$!
+        printf '%s\n' "$validator_pid" > "$BIOVALIDATOR_PID_FILE"
+        for attempt in {1..20}; do
+          if curl --fail --silent --head "http://localhost:${BIOVALIDATOR_PORT}/validate"; then
+            exit 0
+          fi
+          sleep 2
+        done
+        cat "$BIOVALIDATOR_LOG_FILE"
+        kill "$validator_pid" 2>/dev/null || true
+        exit 1

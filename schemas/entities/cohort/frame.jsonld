@@ -1,0 +1,35 @@
+{
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+  "@type": "ega:cohort",
+  "@embed": "@always",
+  "@explicit": false,
+  
+  "name": {},
+  "description": {},
+  "cohortDataTypes": {},
+  "cohortDesign": {},
+  "cohortSize": {},
+  "cohortType": {},
+  "inclusionCriteria": {},
+  "exclusionCriteria": {},
+  "collectionEvents": {},
+  
+  "sameAs": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "isPartOf": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "hadMember": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "inSubmission": {
+    "@embed": "@always"
+  }
+}

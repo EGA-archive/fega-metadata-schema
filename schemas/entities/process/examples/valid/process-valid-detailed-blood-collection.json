@@ -1,0 +1,142 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
+    "@id": "ega:EGAA00000000001",
+    "@type": [
+      "ega:process",
+      "prov:Activity"
+    ],
+    "title": "Peripheral blood collection (venipuncture) - subject PT-0001",
+    "description": "Whole blood collected by venipuncture into a K2EDTA lavender-top tube from subject PT-0001 for downstream WGS. Subject fasted 8h prior to draw.",
+    "hadProtocolCollection": {
+      "@id": "ega:EGAL00000000001",
+      "@type": [
+        "ega:protocolCollection",
+        "prov:Collection",
+        "prov:Plan"
+      ],
+      "label": "Clinical biospecimen collection protocols (venipuncture, EDTA)"
+    },
+    "startedAtTime": "2025-08-01T09:15:00Z",
+    "endedAtTime": "2025-08-01T09:20:00Z",
+    "atLocation": {
+      "id": "GAZ:00002637",
+      "label": "United Kingdom"
+    },
+    "wasAssociatedWith": [
+      {
+        "@id": "urn:uuid:person-jane-doe",
+        "@type": [
+          "prov:Agent",
+          "prov:Person"
+        ],
+        "name": "Jane Doe"
+      },
+      {
+        "@type": [
+          "prov:Agent",
+          "prov:Organization"
+        ],
+        "@id": "https://ror.org/055vbxf86",
+        "name": "Addenbrooke's Hospital"
+      }
+    ],
+    "qualifiedAssociation": [
+      {
+        "agent": {
+          "@id": "urn:uuid:person-jane-doe",
+          "@type": [
+            "prov:Agent",
+            "prov:Person"
+          ],
+          "name": "Jane Doe"
+        },
+        "hadRole": [
+          {
+            "id": "CREDIT:00000010",
+            "label": "supervision role"
+          }
+        ]
+      },
+      {
+        "agent": {
+          "@type": [
+            "prov:Agent",
+            "prov:Organization"
+          ],
+          "@id": "https://ror.org/055vbxf86",
+          "name": "Addenbrooke's Hospital"
+        },
+        "hadRole": [
+          {
+            "id": "CREDIT:00000008",
+            "label": "resources role"
+          }
+        ],
+        "hadPlan": [
+          {
+            "@id": "ega:EGAT00001000621",
+            "@type": "ega:protocol",
+            "label": "Provision of patient samples"
+          }
+        ]
+      }
+    ],
+    "used": [
+      {
+        "@id": "ega:EGAN00090000001",
+        "@type": [
+          "ega:biomaterial",
+          "prov:Person"
+        ],
+        "label": "Participant PT-0001 (organism)"
+      }
+    ],
+    "generated": [
+      {
+        "@id": "ega:EGAN00090000002",
+        "@type": "ega:biomaterial",
+        "label": "Whole blood (EDTA), PT-0001"
+      }
+    ],
+    "parameters": [
+      {
+        "parameterReference": {
+          "@id": "ega:EGAT00000000001#trizol-to-blood-ratio"
+        },
+        "value": 1,
+        "unit": {
+          "id": "UO:0010006",
+          "label": "ratio"
+        }
+      },
+      {
+        "parameterReference": {
+          "@id": "ega:EGAT00000000001#sample-volume"
+        },
+        "value": 150,
+        "unit": {
+          "id": "UO:0000101",
+          "label": "microliter"
+        }
+      },
+      {
+        "parameterReference": {
+          "@id": "ega:EGAT00000000001#centrifugation-speed"
+        },
+        "value": 266,
+        "unit": {
+          "id": "UO:0000079",
+          "label": "radian per second"
+        }
+      }
+    ],
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    }
+  }
+}

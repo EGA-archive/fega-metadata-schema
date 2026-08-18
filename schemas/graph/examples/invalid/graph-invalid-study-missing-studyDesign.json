@@ -1,0 +1,22 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG-invalid-study",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study",
+        "title": "Minimal case-control genomics study",
+        "description": "Minimal study metadata record for a case-control genomics investigation.",
+        "inSubmission": {
+          "@id": "ega:EGAB00000000001",
+          "@type": "ega:submission"
+        }
+      }
+    ]
+  }
+}

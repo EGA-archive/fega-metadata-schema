@@ -1,0 +1,39 @@
+# Ignore Python cache
+__pycache__/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+venv/
+.env/
+.venv/
+*.egg-info/
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore temporary files
+*.tmp
+*.temp
+tmp/
+
+# Summary artifact files from validation tests
+*summary*.json
+
+# Ignore server PID files from biovalidator
+server.pid
+
+# Ignore pytest cache
+.pytest_cache/
+
+package-lock.json
+
+build/lib/
+build/bdist*/
+
+validation-summaries/

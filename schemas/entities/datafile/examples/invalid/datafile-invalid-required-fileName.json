@@ -1,0 +1,35 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/datafile/schema.json"
+  },
+  "data": {
+    "inSubmission": {
+      "@id": "ega:EGAB00000000001",
+      "@type": "ega:submission"
+    },
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/datafile/schema.json",
+    "@id": "ega:EGAF00000000001",
+    "@type": "ega:datafile",
+    "fileFormat": {
+      "id": "EDAM:format_1930",
+      "label": "FASTQ"
+    },
+    "dataContent": {
+      "id": "EDAM:data_2977",
+      "label": "Nucleic acid sequence"
+    },
+    "checksums": [
+      {
+        "algorithm": "MD5",
+        "value": "d41d8cd98f00b204e9800998ecf8427e",
+        "appliesTo": "submitted"
+      }
+    ],
+    "isPartOf": [
+      {
+        "@id": "ega:EGAD00000000002",
+        "@type": "ega:dataset"
+      }
+    ]
+  }
+}
