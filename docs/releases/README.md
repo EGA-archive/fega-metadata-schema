@@ -7,7 +7,7 @@ This guide describes the repository-discovered, PR-derived release process for m
 Maintainers provide exactly three release inputs: 
 1. Structured `## Release notes` and exceptional `## Compatibility review` sections in ordinary PR bodies.
 2. Top-level `meta:version` in each changed component schema.
-3. A bundle version supplied when [**Prepare release**](../.github/workflows/prepare-release.yml) is dispatched. 
+3. A bundle version supplied when [**Prepare release**](../../.github/workflows/prepare_release.yml) is dispatched. 
 
 The manifest, changelog entry, citation version, URI rewrites, checksums, dependencies, and reports are generated and asserted.
 
@@ -21,11 +21,11 @@ The manifest, changelog entry, citation version, URI rewrites, checksums, depend
 | R2 | Second candidate commit, restoring development URIs without changing release records. | `/main/` |
 | `vX.Y.Z` | Immutable tag created only after the release PR is merged and publication is manually dispatched. | `/vX.Y.Z/` |
 
-R1 contains the generated manifest, changelog entry, citation version, component versions, dependencies, URI rewrites, and immutable checksums. R2 is reconstructed from R1 and is required to be byte-for-byte deterministic. The release PR must be merged with a merge commit so R1 remains addressable.
+R1 contains the generated manifest, changelog entry, citation version, component versions, dependencies, URI rewrites, and immutable checksums. R2 is reconstructed from R1 and is required to be byte-for-byte deterministic (i.e., no extra or missing edits). The release PR must be merged with a merge commit so R1 remains addressable.
 
 ## Git history example
 
-The tag (for example, `v2.0.0`) placeholder is created at R1, with its exact tag-URI snapshot in the graph below. The _real_ tag (taking R1 commit) is created only after R2 restores `/main/` URIs, the release PR is merged, and a maintainer manually dispatches publication.
+The tag (e.g., `v2.0.0`) placeholder is created at R1, with its exact tag-URI snapshot in the graph below. The _real_ tag (taking R1 commit) is created only after R2 restores `/main/` URIs, the release PR is merged, and a maintainer manually dispatches publication.
 
 ```mermaid
 gitGraph
@@ -46,7 +46,7 @@ gitGraph
 
 ## End-to-end process
 
-The diagram uses <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#f4d35e; color:#111827;">yellow</span> for maintainer actions, <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#bfdbfe; color:#111827;">blue</span> for automation, <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#ddd6fe; color:#111827;">purple</span> for decisions, <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#e5e7eb; color:#111827;">neutral grey</span> for repository state, <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#c7d2fe; color:#111827;">indigo</span> for generated artefacts, <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#bbf7d0; color:#111827;">green</span> for a completed release, and <span style="display:inline-block; padding:0 0.35em; border-radius:0.3em; background-color:#fca5a5; color:#111827;">red</span> for recovery. Happy-path arrows are animated.
+The diagram uses yellow 🟡 for maintainer actions, blue 🔵 for automation, purple 🟣 for decisions, neutral grey ⚪ for repository state, indigo 🔷 for generated artefacts, green 🟢 for a completed release, and red 🔴 for recovery. Happy-path arrows are animated.
 
 ```mermaid
 flowchart TB
@@ -168,7 +168,7 @@ Maintainer(s) only need to supply the three inputs [above](#process-at-a-glance)
 
 The **release manifest** is an immutable inventory of the bundle: repository and source metadata, every active component with its schema version, identity, dependencies, schema/context/frame checksums, and one deterministic checksum per immediate standards group such as Beacon or Bioschemas. It does **not** record removed components, descriptions, or previous versions: absence in a newer inventory establishes removal, while PR and changelog history explains it.
 
-Repository identity comes from an explicit argument, GitHub's `${{ github.repository }}`, or Git origin. First-party `$id`, `$ref`, context and frame URLs are rewritten for the repository performing the release, including forks and renamed repositories. This helps other developers or groups to fork the repository, and not need to edit the upstream-owner configuration file or code, as the information is inferred.
+Repository identity comes from an explicit argument, GitHub's `${{ github.repository }}`, or Git origin. First-party `$id`, `$ref`, context and frame URLs are rewritten for the repository performing the release, including forks and renamed repositories. This helps other developers or groups (e.g., FEGA nodes) to fork the repository, and not need to edit the upstream-owner configuration file or code, as the information is inferred.
 
 ## Version and compatibility policy
 
@@ -184,60 +184,60 @@ The first intended published test release is the genuine prerelease `v2.0.0-draf
 
 Run commands from the repository root with the pinned environment. The CLIs below are implemented and are useful for focused checks.
 
-Discover components in the repository:
+**Discover components** in the repository:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py discover -v
+python3 scripts/py/release.py discover -v
 ```
 
-Analyze semantic versioning for schema changes. The first form compares two explicit JSON files and is the debugging example for an isolated change:
+Analyze **semantic versioning for schema changes**. The first form compares two explicit JSON files and is the debugging example for an isolated change:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py semver path/to/before.schema.json path/to/after.schema.json -v
+python3 scripts/py/release.py semver path/to/before.schema.json path/to/after.schema.json -v
 ```
 
 Select one discovered component with `--component`, or report all components with `--all`. Supply the prior tag (or branch name) with `--previous-ref` for analysis:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py semver --component process --previous-ref v1.2.3 -v
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py semver --all --previous-ref v1.2.3 -v
+python3 scripts/py/release.py semver --component process --previous-ref v1.2.3 -v
+python3 scripts/py/release.py semver --all --previous-ref v1.2.3 -v
 ```
 
-Collect pull request metadata for release notes generation:
+**Collect pull request metadata** for release notes generation:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release_notes.py collect --repository OWNER/REPOSITORY --previous-ref v1.2.3 --source-sha COMMIT_SHA --output prs.json -v
+python3 scripts/py/release_notes.py collect --repository OWNER/REPOSITORY --previous-ref v1.2.3 --source-sha COMMIT_SHA --output prs.json -v
 ```
 
-Generate changelog entries. Use `--dry-run` to preview output without writing; `-v` adds a verbose summary:
+**Generate changelog entries**. Use `--dry-run` to preview output without writing:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release_notes.py changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --prs-json prs.json --dry-run -v
+python3 scripts/py/release_notes.py changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --prs-json prs.json --dry-run -v
 ```
 
-Bootstrap a new changelog file:
+Start from scratch (i.e., bootstrap) with a new changelog file:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release_notes.py bootstrap-changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --output /tmp/CHANGELOG.next.md
+python3 scripts/py/release_notes.py bootstrap-changelog --bundle-version 2.0.0-draft.1 --release-date 2026-08-06 --output /tmp/CHANGELOG.next.md
 ```
 
-Generate a release manifest with `--dry-run` to preview; JSON is printed by default or written with `-o`:
+**Generate a release manifest** with `--dry-run` to preview:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py manifest --bundle-version 2.0.0-draft.1 --source-commit COMMIT_SHA --dry-run -o manifest.json
+python3 scripts/py/release.py manifest --bundle-version 2.0.0-draft.1 --source-commit COMMIT_SHA --dry-run -o manifest.json
 ```
 
-Verify schema and release configuration in development mode:
+**Verify schema and release** configuration in development mode:
 
 ```console
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py verify --mode development -v
+python3 scripts/py/release.py verify --mode development -v
 ```
 
 The release-notes CLI also provides `validate-pr`, `render`, and `collect`; inspect `--help` for their required inputs before using them.
 
 The independent required status checks are **Python tests**, **Schema compatibility**, **Schema examples**, **JSON-LD contexts**, **JSON-LD coverage**, **JSON-LD frames**, **RDF SHACL**, **PR release notes**, **Release policy**, and **Release consistency**. Release policy protects generated records on ordinary PRs; release consistency proves R1/R2 on `release/v…` PRs and reports not-applicable otherwise.
 
-Validation workflows can also be **started manually** from GitHub Actions, so you can run these checks on different branches. `merge_group` ensures that required checks are reported for GitHub's temporary merge-queue commit as well as for the original pull request.
+Validation workflows can also be **started manually** from GitHub Actions (e.g., click on [`Run workflow`](https://github.com/EGA-archive/fega-metadata-schema/actions/workflows/schema_examples.yml)), so you can run these checks on different branches. `merge_group` ensures that required checks are reported for GitHub's temporary merge-queue commit as well as for the original pull request.
 
 ## Human maintainer runbook
 
@@ -248,8 +248,8 @@ Validation workflows can also be **started manually** from GitHub Actions, so yo
 3. Fill the PR template's strict `## Release notes` section. When compatibility is `unknown`, add a concrete `## Compatibility review` rationale.
 4. Run a focused check such as:
 ````
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py discover -v
-env PYTHONPATH=src .venv/bin/python scripts/py/release.py verify --mode development -v
+python3 scripts/py/release.py discover -v
+python3 scripts/py/release.py verify --mode development -v
 ````
 
 > [!IMPORTANT]
@@ -337,7 +337,7 @@ After publication, inspect the immutable tag and GitHub Release, including the p
 ```console
 gh release view v2.0.0-draft.1 --json tagName,isDraft,isPrerelease,assets,url
 git ls-remote --tags origin refs/tags/v2.0.0-draft.1
-env PYTHONPATH=src .venv/bin/python scripts/py/verify_remote_release.py --tag v2.0.0-draft.1 --repository OWNER/REPOSITORY --manifest build/release_manifest.json
+python3 scripts/py/verify_remote_release.py --tag v2.0.0-draft.1 --repository OWNER/REPOSITORY --manifest build/release_manifest.json
 ```
 
 > [!CAUTION]
