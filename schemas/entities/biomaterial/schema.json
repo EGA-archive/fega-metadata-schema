@@ -32,6 +32,18 @@
     {
         "title": "Entity type restriction",
         "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"
+    },
+    {
+      "title": "Biomaterial category requirement",
+      "description": "A biomaterial must declare at least one biomaterial category.",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "type": "array",
+          "contains": { "$ref": "#/$defs/biomaterialCategory" },
+          "minContains": 1
+        }
+      }
     }
   ],
   "properties": {
