@@ -82,6 +82,21 @@ def test_permanent_template_comments_are_ignored() -> None:
     assert parsed.bullets == ("A real user-visible change.",)
 
 
+@pytest.mark.parametrize("closing", ["--!>", "--->"])
+def test_parser_handles_browser_compatible_comment_endings(closing: str) -> None:
+    body = f"## Release notes\n\n<!-- Template guidance {closing}\nCategory: Added\n\n- A real user-visible change.\n"
+    parsed = parse_pr_body(body)
+    assert parsed.valid
+    assert parsed.category == "Added"
+    assert parsed.bullets == ("A real user-visible change.",)
+
+
+def test_unterminated_comment_fails_closed() -> None:
+    body = "## Release notes\n\n<!-- Template guidance\nCategory: Added\n\n- This must not be accepted.\n"
+    diagnostics = validate_pr_body(body)
+    assert any(item.code == "missing-category" for item in diagnostics)
+
+
 def test_render_categories_and_none_are_deterministic() -> None:
     entry = render_changelog_entry("2.0.0-draft.1", date(2026, 8, 6), [_pr(2, "Fixed"), _pr(1, "Added"), _pr(3, "None")])
     assert entry.index("### Added") < entry.index("### Fixed")

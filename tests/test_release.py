@@ -68,6 +68,44 @@ def test_repository_identity_cli_environment_and_failure(tmp_path: Path, monkeyp
         repository_identity(tmp_path)
 
 
+@pytest.mark.parametrize(
+    "remote",
+    [
+        "https://github.com/owner/repository.git",
+        "ssh://git@github.com/owner/repository.git",
+        "git@github.com:owner/repository.git",
+        "https://GITHUB.com/owner/repository",
+    ],
+)
+def test_repository_identity_accepts_supported_github_remotes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, remote: str) -> None:
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
+    monkeypatch.setattr("fega_tools.release.subprocess.check_output", lambda *args, **kwargs: remote)
+    assert repository_identity(tmp_path) == REPOSITORY
+
+
+@pytest.mark.parametrize(
+    "remote",
+    [
+        "https://evil.example/github.com/owner/repository.git",
+        "https://github.com.evil/owner/repository.git",
+        "https://github.com@evil.example/owner/repository.git",
+        "https://git@github.com/owner/repository.git",
+        "https://github.com/owner/repository/extra",
+        "https://github.com//owner/repository",
+        "https://github.com/owner/repository//",
+        "https://github.com/owner/repository?redirect=evil",
+        "https://github.com:invalid-port/owner/repository",
+        "github.com/owner/repository",
+        "not a repository URL",
+    ],
+)
+def test_repository_identity_rejects_lookalike_or_malformed_remotes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, remote: str) -> None:
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
+    monkeypatch.setattr("fega_tools.release.subprocess.check_output", lambda *args, **kwargs: remote)
+    with pytest.raises(ValueError, match="Cannot resolve repository"):
+        repository_identity(tmp_path)
+
+
 def test_discovery_and_standard_group_hashes(tmp_path: Path) -> None:
     _repo(tmp_path)
     components = discover_components(tmp_path)

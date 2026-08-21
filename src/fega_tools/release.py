@@ -37,6 +37,9 @@ SEMVER_RE = re.compile(
 TEXT_EXTENSIONS = {".json", ".jsonld", ".ttl", ".jsonldc", ".yaml", ".yml", ".md"}
 TOP_LEVEL_CITATION_VERSION_RE = re.compile(r"(?m)^version\s*:\s*([^\r\n#]+?)\s*(?:#.*)?$")
 HEX64_RE = re.compile(r"^[a-f0-9]{64}$")
+_REPOSITORY_RE = re.compile(r"^[^/\\\s]+/[^/\\\s]+$")
+_GITHUB_SCP_RE = re.compile(r"^git@github\.com:(?P<path>[^?#\s]+)$", re.IGNORECASE)
+_GITHUB_URL_SCHEMES = {"http", "https", "ssh", "git", "git+ssh"}
 
 
 @functools.total_ordering
@@ -140,8 +143,53 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False, sort_keys=False) + "\n", encoding="utf-8")
 
 
+def _repository_path(path: str) -> str | None:
+    """Return a validated ``owner/repository`` path, if present."""
+    value = path
+    if value.startswith("/"):
+        value = value[1:]
+    if value.endswith("/"):
+        value = value[:-1]
+    if value.startswith("/") or value.endswith("/"):
+        return None
+    if value.endswith(".git"):
+        value = value[:-4]
+    return value if _REPOSITORY_RE.fullmatch(value) else None
+
+
+def _repository_candidate(value: str) -> str | None:
+    """Parse a repository name or GitHub remote without substring matching."""
+    scp = _GITHUB_SCP_RE.fullmatch(value)
+    if scp:
+        return _repository_path(scp.group("path"))
+
+    direct = _repository_path(value)
+    if direct is not None:
+        return direct
+
+    try:
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        port = parsed.port
+    except ValueError:
+        return None
+    scheme = parsed.scheme.casefold()
+    if scheme not in _GITHUB_URL_SCHEMES:
+        return None
+    if hostname is None or hostname.casefold() != "github.com":
+        return None
+    if scheme in {"ssh", "git+ssh"}:
+        if parsed.username not in {None, "git"} or parsed.password is not None:
+            return None
+    elif parsed.username is not None or parsed.password is not None:
+        return None
+    if port is not None or parsed.query or parsed.fragment:
+        return None
+    return _repository_path(parsed.path)
+
+
 def repository_identity(root: Path | None = None, repository: str | None = None) -> str:
-    """Resolve ``owner/repository`` from CLI, environment, then git origin."""
+    """Resolve ``owner/repository`` from CLI, environment, then Git origin."""
     candidate = repository or os.environ.get("GITHUB_REPOSITORY")
     if candidate is None and root is not None:
         try:
@@ -149,15 +197,8 @@ def repository_identity(root: Path | None = None, repository: str | None = None)
         except (OSError, subprocess.CalledProcessError):
             candidate = None
     if candidate:
-        value = candidate.strip()
-        if value.startswith("git@github.com:"):
-            value = value.split(":", 1)[1]
-        elif value.startswith("ssh://git@github.com/"):
-            value = value.rsplit("/", 1)[-1] if value.count("/") == 3 else value.split("github.com/", 1)[1]
-        elif "github.com/" in value:
-            value = value.split("github.com/", 1)[1]
-        value = value.removesuffix(".git").strip("/")
-        if re.fullmatch(r"[^/\\\s]+/[^/\\\s]+", value):
+        value = _repository_candidate(candidate.strip())
+        if value is not None:
             return value
     raise ValueError("Cannot resolve repository identity; pass --repository owner/repo or set GITHUB_REPOSITORY")
 
