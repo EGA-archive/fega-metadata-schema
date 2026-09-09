@@ -2392,7 +2392,7 @@
                     "$ref": "../common/schema.json#/$defs/@id",
                     "examples": [
                         "urn:uuid:bd08aa08-47ac-412d-b978-68660c23928e",
-                        "ega:EGAB00000000001#component-1"
+                        "ega:EGA00000000001#component-1"
                     ]
                 },
                 "agent": {
@@ -4394,11 +4394,11 @@
             ],
             "examples": [
                 {
-                    "@id": "ega:EGAB00000000001",
+                    "@id": "ega:EGA00000000001",
                     "@type": "ega:submission"
                 },
                 {
-                    "@id": "ega:EGAB00001000002",
+                    "@id": "ega:EGA00001000002",
                     "@type": ["ega:submission", "prov:Collection"]
                 }
             ]
@@ -4572,14 +4572,14 @@
             "title": "Stable identifier for an EGA entity",
             "description": "A stable identifier for an EGA entity",
             "type": "string",
-            "pattern": "^ega:EGA[A-Z][0-9]{11}$",
+            "pattern": "^ega:EGA(?:[A-Z])?[0-9]{11}$",
             "examples": [
                 "ega:EGAS00000000001",
                 "ega:EGAC00001000002",
                 "ega:EGAP00000000001",
                 "ega:EGAN00001000002",
                 "ega:EGAD00000000001",
-                "ega:EGAB00001000002",
+                "ega:EGA00000000001",
                 "ega:EGAF00000000001",
                 "ega:EGAA00001000002",
                 "ega:EGAT00000000001",
@@ -4670,12 +4670,12 @@
             "allOf": [
                 { "$ref": "../common/schema.json#/$defs/egaStableIdentifierCurie" },
                 {
-                    "pattern": "^ega:EGAB"
+                    "pattern": "^ega:EGA[0-9]{11}$"
                 }
             ],
             "examples": [
-                "ega:EGAB00000000001",
-                "ega:EGAB00001000002"
+                "ega:EGA00000000001",
+                "ega:EGA00001000002"
             ]
         },
 

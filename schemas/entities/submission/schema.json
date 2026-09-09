@@ -23,8 +23,8 @@
     "@id": {
       "$ref": "../../common/schema.json#/$defs/@id",
       "examples": [
-        "ega:EGAB00000000001",
-        "ega:EGAB00001000002"
+        "ega:EGA00000000001",
+        "ega:EGA00001000002"
       ]
     },
 

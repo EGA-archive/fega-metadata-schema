@@ -13,7 +13,7 @@
         "title": "Minimal case-control genomics study",
         "description": "Minimal study metadata record for a case-control genomics investigation.",
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       }

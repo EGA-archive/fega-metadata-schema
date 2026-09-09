@@ -4,7 +4,7 @@
   },
   "data": {
     "inSubmission": {
-      "@id": "ega:EGAB00000000001",
+      "@id": "ega:EGA00000000001",
       "@type": "ega:submission"
     },
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",

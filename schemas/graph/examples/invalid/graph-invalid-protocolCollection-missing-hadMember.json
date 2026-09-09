@@ -17,7 +17,7 @@
         "title": "DNA extraction plan",
         "version": "1.0.0",
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       }

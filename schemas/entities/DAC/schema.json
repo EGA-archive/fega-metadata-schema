@@ -15,8 +15,7 @@
     "description",
     "status",
     "contactPoint",
-    "components",
-    "inSubmission"
+    "components"
   ],
   "meta:sssomMappings": [
     {
@@ -113,10 +112,6 @@
         "Committee responsible for reviewing and deciding controlled-access requests for the MyStartUp Genomics programme.",
         "Institutional committee overseeing data-access decisions for approved secondary-use studies."
       ]
-    },
-
-    "inSubmission": {
-      "$ref": "../../common/schema.json#/$defs/inSubmission"
     },
 
     "status": {

@@ -4,7 +4,7 @@
   },
   "data": {
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
-    "@id": "ega:EGAB00000000001",
+    "@id": "ega:EGA00000000001",
     "@type": "ega:submission",
     "title": "Example Genomics submission",
     "status": "draft",

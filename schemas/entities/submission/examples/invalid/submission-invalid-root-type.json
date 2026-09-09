@@ -2,7 +2,7 @@
   "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
   "data": {
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
-    "@id": "ega:EGAB00000000112",
+    "@id": "ega:EGA00000000112",
     "@type": "ega:study",
     "title": "Submission with study type",
     "status": "draft",
