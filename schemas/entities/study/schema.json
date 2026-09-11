@@ -695,9 +695,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction": {
                         "ontologies": ["obo:efo"],
-                        "classes": ["EFO:0001426"],
-                        "relations": ["rdfs:subClassOf"],
-                        "direct": false,
+                        "allChildrenOf": ["EFO:0001426"],
                         "includeSelf": false
                     },
                     "examples": [ "EFO:0001427", "EFO:0001779" ]
@@ -707,9 +705,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction": {
                         "ontologies": ["obo:efo"],
-                        "classes": ["EFO:0001426"],
-                        "relations": ["rdfs:subClassOf"],
-                        "direct": false,
+                        "allChildrenOf": ["EFO:0001426"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },

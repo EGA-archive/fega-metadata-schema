@@ -296,8 +296,7 @@
                   "$comment": "#! To be done: add the codes for the uncertainty elements as well. Either through HL7, NCIT, or similar.",
                   "graphRestriction": {
                     "ontologies": ["obo:efo"],
-                    "classes": ["PATO:0001894"],
-                    "relations": ["rdfs:subClassOf"],
+                    "allChildrenOf": ["PATO:0001894"],
                     "includeSelf": false
                   },
                   "examples": [ "PATO:0000383", "PATO:0000384" ]
@@ -310,8 +309,7 @@
                       "graphRestriction": {
                         "$comment": "This statement keeps our 'enum' always aligned with the ontology labels",
                         "ontologies": ["obo:efo"],
-                        "classes": ["PATO:0001894"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["PATO:0001894"],
                         "queryFields": [ "label" ],
                         "includeSelf": false
                       }
@@ -520,8 +518,7 @@
               "title": "Ontology constraints for this specific term id",
               "graphRestriction": {
                 "ontologies": ["obo:hancestro"],
-                "classes": ["HANCESTRO:0601"],
-                "relations": ["rdfs:subClassOf"],
+                "allChildrenOf": ["HANCESTRO:0601"],
                 "includeSelf": false
               }      
             },
@@ -530,8 +527,7 @@
               "title": "Ontology constraints for this specific term label",
               "graphRestriction": {
                 "ontologies": ["obo:hancestro"],
-                "classes": ["HANCESTRO:0601"],
-                "relations": ["rdfs:subClassOf"],
+                "allChildrenOf": ["HANCESTRO:0601"],
                 "queryFields": [ "label" ],
                 "includeSelf": false
               }
@@ -808,8 +804,7 @@
               "title": "Ontology constraints for this specific term id",
               "graphRestriction": {
                 "ontologies": ["obo:efo"],
-                "classes": ["COB:0000022"],
-                "relations": ["rdfs:subClassOf"],
+                "allChildrenOf": ["COB:0000022"],
                 "includeSelf": false
               },
               "examples": [ "NCBITaxon:9606", "NCBITaxon:10090", "NCBITaxon:562" ]
@@ -819,8 +814,7 @@
               "title": "Ontology constraints for this specific term label",
               "graphRestriction": {
                 "ontologies": [ "obo:efo" ],
-                "classes": [ "COB:0000022" ],
-                "relations": ["rdfs:subClassOf"],
+                "allChildrenOf": [ "COB:0000022" ],
                 "queryFields": [ "label" ],
                 "includeSelf": false
               },
