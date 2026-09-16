@@ -87,6 +87,10 @@
         "@id": "schema:step",
         "@container": "@set",
         "@context": {
+          "entityDoc": {
+            "@id": "entities:protocol/schema.json#",
+            "@prefix": true
+          },
           "performTime": {
             "@id": "entityDoc:performTime",
             "@type": "xsd:duration"

@@ -17,6 +17,10 @@
         "@id": "spdx:checksum",
         "@container": "@set",
         "@context": {
+          "entityDoc": {
+            "@id": "entities:datafile/schema.json#",
+            "@prefix": true
+          },
           "algorithm": "spdx:algorithm",
           "value": "spdx:checksumValue",
           "appliesTo": "entityDoc:appliesTo"
