@@ -100,7 +100,6 @@ ROUTE_RDF_GRAPH = "generated_rdf_graph"
 ROUTES = (ROUTE_FLATTENED, ROUTE_RDF_GRAPH)
 
 _NOISE_TYPE = "https://example.org/FEGATestNoiseEntity"
-_DROP = object()
 _DAC_ROLE_NAMES = {
     "administrator",
     "approver",
@@ -558,6 +557,22 @@ def _select_graph_document(
             # external identifier string rather than an embedded Policy object.
             item["hasPolicy"] = has_policy["@id"]
 
+    def reference_top_level_nodes(value: Any) -> Any:
+        if isinstance(value, list):
+            return [reference_top_level_nodes(child) for child in value]
+        if not isinstance(value, dict):
+            return value
+        if value.get("@id") in graph_items_by_id:
+            # Full descriptions already occur once at graph level. Repeating
+            # them would duplicate their anonymous children when IDs are pruned.
+            return {key: value[key] for key in ("@id", "@type") if key in value}
+        return {key: reference_top_level_nodes(child) for key, child in value.items()}
+
+    for item in graph_items_by_id.values():
+        for key in list(item):
+            if key not in {"@id", "@type", "@context"}:
+                item[key] = reference_top_level_nodes(item[key])
+
     selected = dict(framed)
     selected["@graph"] = list(graph_items_by_id.values())
     return selected, None
@@ -608,35 +623,41 @@ def _route_failure(
     }
 
 
-def _strip_internal_blank_ids(value: Any) -> Any:
-    """Remove generated blank-node identifiers from a schema-facing payload."""
+def _strip_internal_blank_ids(value: Any, shared_ids: Optional[Set[str]] = None) -> Any:
+    """Remove redundant blank IDs while preserving anonymous nodes and identity."""
+    if shared_ids is None:
+        counts: Dict[str, int] = {}
+
+        def count(node: Any) -> None:
+            if isinstance(node, list):
+                for child in node:
+                    count(child)
+            elif isinstance(node, dict):
+                identifier = node.get("@id")
+                if isinstance(identifier, str) and identifier.startswith("_:"):
+                    counts[identifier] = counts.get(identifier, 0) + 1
+                for child in node.values():
+                    count(child)
+
+        count(value)
+        shared_ids = {identifier for identifier, count in counts.items() if count > 1}
     if isinstance(value, list):
-        cleaned_items = []
-        for item in value:
-            cleaned = _strip_internal_blank_ids(item)
-            if cleaned is not _DROP:
-                cleaned_items.append(cleaned)
-        return cleaned_items if cleaned_items else _DROP
+        return [_strip_internal_blank_ids(item, shared_ids) for item in value]
 
     if not isinstance(value, dict):
         return value
 
     cleaned_object: Dict[str, Any] = {}
     for key, child in value.items():
-        if key == "@id" and isinstance(child, str) and child.startswith("_:"):
+        if key == "@id" and isinstance(child, str) and child.startswith("_:") and child not in shared_ids:
             continue
-        cleaned = _strip_internal_blank_ids(child)
-        if cleaned is not _DROP:
-            cleaned_object[key] = cleaned
-    return cleaned_object if cleaned_object else _DROP
+        cleaned_object[key] = _strip_internal_blank_ids(child, shared_ids)
+    return cleaned_object
 
 
 def _prepare_schema_payload(primary: Dict[str, Any], schema_ref: str) -> Dict[str, Any]:
     """Convert framed JSON-LD into the JSON shape sent to Biovalidator."""
     cleaned = _strip_internal_blank_ids(primary)
-    if cleaned is _DROP or not isinstance(cleaned, dict):
-        cleaned = {}
-
     cleaned["@context"] = schema_ref
     return cleaned
 
@@ -812,7 +833,11 @@ def _prepare_input(
         return state
 
     invalid_context_types = find_invalid_context_type_mappings(inline_context)
-    undefined_terms = find_undefined_terms(data, inline_context)
+    try:
+        undefined_terms = find_undefined_terms(data, inline_context)
+    except Exception as exc:  # noqa: BLE001
+        _set_file_failure(state, SCRIPT_ERROR_STATUS, "context_preflight", [str(exc)])
+        return state
     preflight_errors = []
     if invalid_context_types:
         preflight_errors.append(
@@ -1013,6 +1038,22 @@ def _validate_route_output(
         return
 
     framed_data = _prepare_schema_payload(route_state["primary"], state["schema_ref"])
+    # Compare the exact payload, resolving its actual context with the local
+    # loader. Projection and cleanup must not silently change RDF meaning.
+    try:
+        payload_canonical = jsonld.normalize(framed_data, {
+            "algorithm": "URDNA2015",
+            "format": "application/n-quads",
+            "documentLoader": state["document_loader"],
+        })
+    except Exception as exc:  # noqa: BLE001
+        _set_route_failure(state, route, SCRIPT_ERROR_STATUS,
+                           "payload_rdf_equivalence", [str(exc)])
+        return
+    if payload_canonical != state["original_canonical"]:
+        _set_route_failure(state, route, INVALID_STATUS, "payload_rdf_equivalence",
+                           _summarize_nquads_difference(state["original_canonical"], payload_canonical))
+        return
     wrapper = {"schema": {"$ref": state["schema_ref"]}, "data": framed_data}
     route_state["framed_data"] = framed_data
     route_state["validator_request"] = wrapper

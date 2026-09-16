@@ -32,7 +32,7 @@ BIVALIDATOR_COUNT_KEYS = (
     "unknown_responses",
     "script_errors",
 )
-VALIDATION_COUNT_KEYS = BIVALIDATOR_COUNT_KEYS
+VALIDATION_COUNT_KEYS = (*BIVALIDATOR_COUNT_KEYS, "expectation_errors")
 RESULT_STATUSES = (
     VALID_STATUS,
     INVALID_STATUS,
@@ -174,7 +174,7 @@ def summarize_validation_results(
     expectation_failed_files = [
         result.get("file", "")
         for result in results
-        if result.get("status") != expected_status
+        if result.get("status") != expected_status or result.get("expectation_errors")
     ]
     summary: Dict[str, Any] = {
         **empty_counts(VALIDATION_COUNT_KEYS),
@@ -194,6 +194,7 @@ def summarize_validation_results(
             "request_errors": status_counts[REQUEST_ERROR_STATUS],
             "unknown_responses": status_counts[UNKNOWN_STATUS],
             "script_errors": status_counts[SCRIPT_ERROR_STATUS],
+            "expectation_errors": sum(bool(result.get("expectation_errors")) for result in results),
         }
     )
     summary["passed"] = _validation_results_passed(summary, expected_status)
@@ -216,6 +217,7 @@ def _validation_results_passed(summary: Dict[str, Any], expected_status: str) ->
         and summary["request_errors"] == 0
         and summary["unknown_responses"] == 0
         and summary["script_errors"] == 0
+        and not summary.get("expectation_errors")
         and not summary.get("coverage_gaps")
     )
 

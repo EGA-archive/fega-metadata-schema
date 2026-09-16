@@ -305,8 +305,14 @@ def _compare(old: Any, new: Any, path: str, result: SchemaDiff) -> None:
                 result.add(child_path, Severity.PATCH, "annotation removed", old=old[key])
             elif key == "required":
                 _compare_set_keyword(key, old[key], [], child_path, result)
+            elif key == "minContains" and "contains" in new:
+                _compare_bound(key, old[key], 1, child_path, result)
+            elif key in {"additionalProperties", "unevaluatedProperties", "additionalItems", "unevaluatedItems"} and old[key] is False:
+                result.add(child_path, Severity.MINOR, f"{key} closure removed", old=False)
+            elif key in (LOWER_BOUND_KEYS | UPPER_BOUND_KEYS | {"type", "enum", "const", "pattern", "format", "multipleOf", "uniqueItems", "dependentRequired"}) and not (set(old) | set(new)) & {"unevaluatedProperties", "unevaluatedItems"}:
+                result.add(child_path, Severity.MINOR, f"constraint '{key}' removed", old=old[key])
             else:
-                result.add(child_path, Severity.MINOR, f"constraint or keyword '{key}' removed", old=old[key])
+                result.add(child_path, Severity.UNKNOWN, f"keyword '{key}' removed; compatibility requires review", old=old[key])
             continue
 
         old_value = old[key]

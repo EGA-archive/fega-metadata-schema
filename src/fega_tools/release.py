@@ -536,7 +536,14 @@ def _component_by_identity(components: list[Component], identifier: str) -> Comp
 def _changed_file(old: Path | None, new: Path | None) -> bool:
     if old is None or new is None:
         return old != new
-    return old.read_bytes() != new.read_bytes()
+    # JSON object order and release URL bookkeeping do not change an asset.
+    def normalize_asset(path: Path) -> str:
+        return transform_raw_github_uris(
+            json.dumps(load_json(path), sort_keys=True),
+            lambda uri: uri.render(ref="{release-ref}", preserve_prefix=False),
+        )[0]
+
+    return normalize_asset(old) != normalize_asset(new)
 
 
 def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap: bool = False, approved_rationales: Mapping[str, str] | None = None, repository: str | None = None, requested_version: str | None = None) -> dict[str, Any]:
@@ -584,11 +591,11 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
                 required = max(required, Severity.MAJOR)
                 details.insert(0, {"path": old.schema.as_posix(), "severity": "major", "message": "component schema relocated"})
             if _changed_file(previous_root / old.context if previous_root and old.context else None, root / component.context if component.context else None):
-                required = max(required, Severity.PATCH)
-                details.append({"path": (component.context or old.context or Path("context.jsonld")).as_posix(), "severity": "patch", "message": "context changed"})
+                required = max(required, Severity.UNKNOWN)
+                details.append({"path": (component.context or old.context or Path("context.jsonld")).as_posix(), "severity": "unknown", "message": "context changed; RDF compatibility requires review"})
             if _changed_file(previous_root / old.frame if previous_root and old.frame else None, root / component.frame if component.frame else None):
-                required = max(required, Severity.PATCH)
-                details.append({"path": (component.frame or old.frame or Path("frame.jsonld")).as_posix(), "severity": "patch", "message": "frame changed"})
+                required = max(required, Severity.UNKNOWN)
+                details.append({"path": (component.frame or old.frame or Path("frame.jsonld")).as_posix(), "severity": "unknown", "message": "frame changed; output compatibility requires review"})
             for dependency in dependencies.get(component.name, []):
                 if dependency.startswith("standard:"):
                     group_path = dependency.removeprefix("standard:")
