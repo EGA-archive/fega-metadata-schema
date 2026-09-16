@@ -1,0 +1,23 @@
+{
+  "process-invalid-dependency-qualifiedAssociation.json": [
+    "/qualifiedAssociation"
+  ],
+  "process-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "process-invalid-parameter-missing-reference.json": [
+    "/parameters/0/parameterReference"
+  ],
+  "process-invalid-parameter-numeric-without-unit.json": [
+    "/parameters/0/unit"
+  ],
+  "process-invalid-required-hadProtocolCollection.json": [
+    "/hadProtocolCollection"
+  ],
+  "process-invalid-required-linkage.json": [
+    "/used"
+  ],
+  "process-invalid-type-used.json": [
+    "/used/0/@type"
+  ]
+}

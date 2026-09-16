@@ -1,0 +1,35 @@
+{
+  "protocolCollection-invalid-cardinality-duplicate-hadMember.json": [
+    "/hadMember"
+  ],
+  "protocolCollection-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "protocolCollection-invalid-required-atId.json": [
+    "/@id"
+  ],
+  "protocolCollection-invalid-required-atType.json": [
+    "/@type"
+  ],
+  "protocolCollection-invalid-required-hadMember.json": [
+    "/hadMember"
+  ],
+  "protocolCollection-invalid-required-title.json": [
+    "/title"
+  ],
+  "protocolCollection-invalid-required-version.json": [
+    "/version"
+  ],
+  "protocolCollection-invalid-type-atType-missing-plan.json": [
+    "/@type"
+  ],
+  "protocolCollection-invalid-type-hadMember.json": [
+    "/hadMember/0/@type"
+  ],
+  "protocolCollection-invalid-value-atId.json": [
+    "/@id"
+  ],
+  "protocolCollection-invalid-value-empty-hadMember.json": [
+    "/hadMember"
+  ]
+}

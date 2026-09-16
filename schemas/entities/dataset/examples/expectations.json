@@ -1,0 +1,20 @@
+{
+  "dataset-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "dataset-invalid-required-hasPart.json": [
+    "/hasPart"
+  ],
+  "dataset-invalid-required-title.json": [
+    "/title"
+  ],
+  "dataset-invalid-type-atType.json": [
+    "/@type"
+  ],
+  "dataset-invalid-type-hasPart.json": [
+    "/hasPart/0/@type"
+  ],
+  "dataset-invalid-value-datasetType.json": [
+    "/datasetType/0"
+  ]
+}

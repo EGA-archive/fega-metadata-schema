@@ -1,0 +1,14 @@
+{
+  "study-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "study-invalid-required-studyDesign.json": [
+    "/studyDesign"
+  ],
+  "study-invalid-type-hasProtocolCollection.json": [
+    "/hasProtocolCollection/0/@type"
+  ],
+  "study-invalid-type-studyDesign.json": [
+    "/studyDesign"
+  ]
+}

@@ -77,8 +77,21 @@ def summarize_category(
     files = find_example_files(entity_dir, category)
     expected_status = expected_status_for(category)
     results = []
+    expectations = {}
+    if category == "invalid":
+        manifest = entity_dir / "examples" / "expectations.json"
+        expectations = json.loads(manifest.read_text(encoding="utf-8"))
+        if set(expectations) != {path.name for path in files}:
+            raise ValueError(f"Negative expectation coverage differs from fixtures: {manifest}")
     for path in files:
         result = validate_file(path, validator_url)
+        if category == "invalid":
+            expected_paths = expectations[path.name]
+            if not isinstance(expected_paths, list) or not expected_paths or not all(isinstance(p, str) and p.startswith('/') for p in expected_paths):
+                raise ValueError(f"Expected nonempty dataPath list for {path}")
+            actual_paths = {error.get("dataPath") for error in result.get("errors", []) if isinstance(error, dict)}
+            result["expected_data_paths"] = expected_paths
+            result["expectation_errors"] = [f"Missing expected validation error at {p}" for p in expected_paths if p not in actual_paths]
         results.append(result)
         outcome = "passed" if result["status"] == expected_status else "failed"
         LOGGER.debug("Validated '%s' [expected: %s] -> %s", path.name, category, outcome)
