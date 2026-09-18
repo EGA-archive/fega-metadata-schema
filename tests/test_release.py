@@ -59,6 +59,122 @@ def test_semver_prerelease_precedence_and_bumps() -> None:
         Version.parse("1.2")
 
 
+@pytest.mark.parametrize(
+    ("version", "expected"),
+    [
+        ("1.0.0-draft.0", True),
+        ("1.0.0-draft.1", True),
+        ("1.0.1-draft.1", False),
+        ("1.0.0-rc.1", False),
+        ("1.0.0-draft.1+build", False),
+    ],
+)
+def test_placeholder_draft_version_detection(version: str, expected: bool) -> None:
+    assert Version.parse(version).is_placeholder_draft is expected
+
+
+def test_placeholder_draft_major_change_defers_automatic_minimum(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.1")
+    _repo(current, "1.0.0-draft.2")
+    schema_path = current / "schemas/widget/schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["required"] = ["name"]
+    _write(schema_path, schema)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    component = report["components"][0]
+    assert report["errors"] == []
+    assert component["required_change"] == "major"
+    assert component["automatic_required_change"] == "major"
+    assert component["version_policy"] == "draft-deferred"
+
+
+def test_placeholder_draft_change_requires_a_new_draft_number(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.1")
+    _repo(current, "1.0.0-draft.1")
+    schema_path = current / "schemas/widget/schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["required"] = ["name"]
+    _write(schema_path, schema)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert report["errors"] == ["Component 'widget' changed but meta:version is unchanged"]
+
+
+def test_placeholder_draft_version_cannot_move_backwards(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.2")
+    _repo(current, "1.0.0-draft.1")
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert report["errors"] == ["Component 'widget' draft version 1.0.0-draft.1 is below previous 1.0.0-draft.2"]
+
+
+def test_stable_promotion_from_placeholder_draft_is_allowed_without_changes(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.3")
+    _repo(current, "1.0.0")
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert report["errors"] == []
+    assert report["components"][0]["version_policy"] == "semver-enforced"
+
+
+def test_breaking_change_after_placeholder_draft_requires_major_version(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.3")
+    _repo(current, "1.0.0")
+    schema_path = current / "schemas/widget/schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["required"] = ["name"]
+    _write(schema_path, schema)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert any("below automatic minimum 2.0.0" in error for error in report["errors"])
+
+
+@pytest.mark.parametrize("current_version", ["1.0.1-draft.1", "1.0.0-rc.1"])
+def test_non_placeholder_prerelease_keeps_automatic_minimum(tmp_path: Path, current_version: str) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.1")
+    _repo(current, current_version)
+    schema_path = current / "schemas/widget/schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["required"] = ["name"]
+    _write(schema_path, schema)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert any("below automatic minimum 2.0.0" in error for error in report["errors"])
+
+
+def test_draft_bundle_version_must_advance(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    _repo(previous, "1.0.0-draft.1")
+    _repo(current, "1.0.0-draft.2")
+    _write(previous / "build/release_manifest.json", {"bundle_version": "1.0.0-draft.1"})
+
+    passing = analyse_release(current, previous, repository=REPOSITORY, requested_version="1.0.0-draft.2")
+    failing = analyse_release(current, previous, repository=REPOSITORY, requested_version="1.0.0-draft.1")
+
+    assert passing["errors"] == []
+    assert any("must be greater than previous release 1.0.0-draft.1" in error for error in failing["errors"])
+
+
 def test_repository_identity_cli_environment_and_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert repository_identity(tmp_path, REPOSITORY) == REPOSITORY
     monkeypatch.setenv("GITHUB_REPOSITORY", "fork/schema")
@@ -200,6 +316,32 @@ def test_common_context_change_propagates_through_schema_dependencies(tmp_path):
     assert "common" in components["widget"]["dependencies"]
 
 
+def test_inherited_placeholder_change_requires_each_component_draft_counter(tmp_path: Path) -> None:
+    previous = tmp_path / "previous"
+    current = tmp_path / "current"
+    for root in (previous, current):
+        _repo(root, "1.0.0-draft.1")
+        _write(root / "schemas/common/schema.json", {
+            "$id": f"https://raw.githubusercontent.com/{REPOSITORY}/main/schemas/common/schema.json",
+            "meta:version": "1.0.0-draft.1",
+            "type": "object",
+        })
+        widget_path = root / "schemas/widget/schema.json"
+        widget = json.loads(widget_path.read_text(encoding="utf-8"))
+        widget["allOf"] = [{"$ref": "../common/schema.json"}]
+        _write(widget_path, widget)
+
+    common_path = current / "schemas/common/schema.json"
+    common = json.loads(common_path.read_text(encoding="utf-8"))
+    common["required"] = ["name"]
+    _write(common_path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+
+    assert "Component 'common' changed but meta:version is unchanged" in report["errors"]
+    assert "Component 'widget' changed but meta:version is unchanged" in report["errors"]
+
+
 def test_context_version_term_is_not_ignored_as_schema_metadata(tmp_path):
     old, new = tmp_path / "old", tmp_path / "new"
     _repo(old)
@@ -210,13 +352,13 @@ def test_context_version_term_is_not_ignored_as_schema_metadata(tmp_path):
     assert report["components"][0]["required_change"] == "unknown"
 
 
-def test_initial_prerelease_component_reset_is_allowed_without_manifest(tmp_path: Path) -> None:
+def test_prerelease_component_reset_is_rejected_without_manifest(tmp_path: Path) -> None:
     previous = tmp_path / "previous"
     current = tmp_path / "current"
     _repo(previous, "2.0.0-draft.1")
     _repo(current, "1.0.0-draft.1")
     report = analyse_release(current, previous, repository=REPOSITORY)
-    assert report["errors"] == []
+    assert any("below automatic minimum 2.0.0-draft.1" in error for error in report["errors"])
 
 
 def test_prerelease_component_reset_is_rejected_after_first_release(tmp_path: Path) -> None:

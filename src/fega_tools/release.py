@@ -106,6 +106,19 @@ class Version:
             return Version(self.major, self.minor, self.patch + 1)
         return self
 
+    @property
+    def is_placeholder_draft(self) -> bool:
+        """Whether this is the temporary ``1.0.0-draft.N`` series."""
+        return (
+            self.major == 1
+            and self.minor == 0
+            and self.patch == 0
+            and len(self.prerelease) == 2
+            and self.prerelease[0] == "draft"
+            and isinstance(self.prerelease[1], int)
+            and not self.build
+        )
+
     def __str__(self) -> str:
         value = f"{self.major}.{self.minor}.{self.patch}"
         if self.prerelease:
@@ -565,9 +578,6 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
     rationales = approved_rationales or {}
     current_groups = {item["name"]: item for item in discover_standard_groups(root)}
     previous_groups = {item["name"]: item for item in discover_standard_groups(previous_root.resolve())} if previous_root and previous else {}
-    previous_has_release_manifest = bool(
-        previous_root and (previous_root.resolve() / "build/release_manifest.json").is_file()
-    )
     required_by_name: dict[str, Severity] = {}
     detail_by_name: dict[str, list[dict[str, Any]]] = {}
     old_by_name: dict[str, Component | None] = {}
@@ -625,20 +635,17 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
             required = Severity.PATCH
             required_by_name[component.name] = required
         if old is not None:
-            if component.version == old.version and details:
+            effective_change = bool(details) or required != Severity.SAME
+            draft_deferred = old.version.is_placeholder_draft and component.version.is_placeholder_draft
+            if component.version == old.version and effective_change:
                 errors.append(f"Component '{component.name}' changed but meta:version is unchanged")
             minimum = old.version.bump(required if required != Severity.UNKNOWN else Severity.MAJOR)
-            allow_initial_prerelease_reset = (
-                not previous_has_release_manifest
-                and not details
-                and required == Severity.SAME
-                and bool(old.version.prerelease)
-                and bool(component.version.prerelease)
-                and component.version < old.version
-            )
-            if component.version < minimum and not allow_initial_prerelease_reset:
+            if draft_deferred and component.version < old.version:
+                errors.append(f"Component '{component.name}' draft version {component.version} is below previous {old.version}")
+            elif component.version < minimum and not draft_deferred:
                 errors.append(f"Component '{component.name}' declares {component.version}, below automatic minimum {minimum}")
-        records.append({"name": component.name, "schema": component.schema.as_posix(), "id": component.identifier, "version": str(component.version), "previous_version": str(old.version) if old else None, "required_change": required.label(), "dependencies": dependencies.get(component.name, []), "checksums": _asset_hashes(root, component), "details": details, "compatibility_exception": exception or {"used": False}, "automatic_required_change": original_required.label()})
+        version_policy = "draft-deferred" if old is not None and old.version.is_placeholder_draft and component.version.is_placeholder_draft else "semver-enforced"
+        records.append({"name": component.name, "schema": component.schema.as_posix(), "id": component.identifier, "version": str(component.version), "previous_version": str(old.version) if old else None, "required_change": required.label(), "dependencies": dependencies.get(component.name, []), "checksums": _asset_hashes(root, component), "details": details, "compatibility_exception": exception or {"used": False}, "automatic_required_change": original_required.label(), "version_policy": version_policy})
     current_ids = {_normalise_uri(item.identifier) for item in current}
     removed = [{"name": item.name, "schema": item.schema.as_posix(), "previous_version": str(item.version), "change": "major"} for item in previous if _normalise_uri(item.identifier) not in current_ids]
     bundle_change = Severity.MAJOR if removed else max((required_by_name.get(item.name, Severity.SAME) for item in current), default=Severity.SAME)

@@ -62,7 +62,6 @@ runs:
           --ref './standards/json-schema/**/*.json' \
           > "$BIOVALIDATOR_LOG_FILE" 2>&1 &
         validator_pid=$!
-        # Biovalidator creates BIOVALIDATOR_PID_PATH exclusively; do not pre-create it.
         for attempt in {1..20}; do
           kill -0 "$validator_pid" 2>/dev/null || break
           if curl --fail --silent --head "http://localhost:${BIOVALIDATOR_PORT}/validate"; then
