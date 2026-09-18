@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import signal
 import subprocess
+import sys
 import textwrap
 
 import pytest
@@ -14,9 +15,24 @@ def test_startup_retains_only_a_ready_process_and_cleans_failures(tmp_path, read
     script = textwrap.dedent(action.read_text().split("      run: |\n")[-1])
     executables = {
         "npm": '#!/bin/bash\nif [[ "$1" == root ]]; then echo /fake/modules; else echo biovalidator@main; fi\n',
-        "node": '#!/bin/bash\nif [[ "$1" == --version ]]; then echo v24; exit; fi\nprintf "%s" "$$" > "$TEST_PID"\nexec /bin/sleep 60\n',
-        "curl": '#!/bin/bash\nexit ' + ('0' if ready else '1') + '\n',
-        "sleep": '#!/bin/bash\nexit 0\n',
+        "node": f"#!{sys.executable}\n" + textwrap.dedent('''\
+            import os
+            from pathlib import Path
+            import sys
+            import time
+
+            if sys.argv[1] == "--version":
+                print("v24")
+                sys.exit(0)
+            # Match npid's exclusive creation: a shell-written file must fail startup.
+            time.sleep(0.05)
+            with open(os.environ["BIOVALIDATOR_PID_PATH"], "x") as pid_file:
+                pid_file.write(str(os.getpid()))
+            Path(os.environ["TEST_PID"]).write_text(str(os.getpid()))
+            time.sleep(60)
+            '''),
+        "curl": '#!/bin/bash\n[[ -f "$TEST_PID" ]] || exit 1\nexit ' + ('0' if ready else '1') + '\n',
+        "sleep": '#!/bin/bash\nexec /bin/sleep 0.05\n',
     }
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
@@ -27,6 +43,7 @@ def test_startup_retains_only_a_ready_process_and_cleans_failures(tmp_path, read
     env = dict(os.environ, PATH=str(bin_dir) + os.pathsep + os.environ["PATH"],
                BIOVALIDATOR_RATE_LIMIT_MAX="5000", BIOVALIDATOR_PORT="3020",
                BIOVALIDATOR_LOG_FILE=str(tmp_path / "server.log"),
+               BIOVALIDATOR_PID_PATH=str(tmp_path / "server.pid"),
                BIOVALIDATOR_PID_FILE=str(tmp_path / "server.pid"), TEST_PID=str(tmp_path / "child.pid"))
     child = None
     try:

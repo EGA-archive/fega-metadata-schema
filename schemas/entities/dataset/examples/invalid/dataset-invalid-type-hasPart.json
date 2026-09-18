@@ -16,7 +16,7 @@
     ],
     "hasPart": [
       {
-        "@id": "ega:EGAN00000000006",
+        "@id": "ega:EGAF00000000006",
         "@type": "ega:biomaterial"
       }
     ],
