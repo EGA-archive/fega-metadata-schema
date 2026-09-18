@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
-import hashlib
 import json
 import logging
 import sys
@@ -63,6 +62,7 @@ LOGGER = logging.getLogger(Path(__file__).stem)
 
 
 SUMMARY_FILENAME = "shacl_summary.json"
+RDF_CATEGORIES = ("valid", "invalid")
 
 
 def materialize_data_context(
@@ -349,7 +349,7 @@ def summarize_entity(
                 coverage_gaps,
                 required_root_type,
             )
-            for category in ("valid",)
+            for category in RDF_CATEGORIES
         },
     }
 
@@ -363,11 +363,7 @@ def validate_rdf_shacl(
     include_shacl_reports: bool = False,
     required_root_type: str | None = None,
 ) -> Dict[str, Any]:
-    """Validate positive FEGA examples against explicitly supplied shapes.
-
-    JSON Schema negatives have no implied SHACL expectation. Named profiles
-    supply separate, rule-specific RDF negative cases.
-    """
+    """Validate valid and invalid FEGA examples against supplied shapes."""
     entity_dirs = find_entity_dirs(
         root,
         entity,
@@ -381,7 +377,7 @@ def validate_rdf_shacl(
     id_to_path_map = build_id_to_path_map(repo_root)
     shape_files, _shape_graphs, merged_shapes, expected_types = load_shapes(shapes_paths)
 
-    coverage_gaps = find_example_coverage_gaps(entity_dirs, ("valid",))
+    coverage_gaps = find_example_coverage_gaps(entity_dirs, RDF_CATEGORIES)
     for gap in coverage_gaps:
         LOGGER.warning(
             "Coverage gap for %s: %s", gap["entity"], format_coverage_gap(gap)
@@ -398,13 +394,14 @@ def validate_rdf_shacl(
         )
         for entity_dir in entity_dirs
     ]
-    totals = aggregate_category_summaries(file_summaries, ("valid",))
+    totals = aggregate_category_summaries(file_summaries, RDF_CATEGORIES)
     category_totals = totals.pop("category_totals")
     valid_examples_passed = category_totals["valid"]["passed"]
+    invalid_examples_passed = category_totals["invalid"]["passed"]
     input_paths = [
         entity_summary["categories"][category]["input_path"]
         for entity_summary in file_summaries
-        for category in ("valid",)
+        for category in RDF_CATEGORIES
     ]
 
     summary: Dict[str, Any] = {
@@ -414,11 +411,12 @@ def validate_rdf_shacl(
         "entity_names": [path.name for path in entity_dirs],
         "shapes_paths": [str(path) for path in shapes_paths],
         "shape_files": [str(path) for path in shape_files],
-        "passed": valid_examples_passed,
+        "passed": valid_examples_passed and invalid_examples_passed,
         "total_valid_files": category_totals["valid"]["total_files"],
-        "total_invalid_files": 0,
+        "total_invalid_files": category_totals["invalid"]["total_files"],
         **totals,
         "valid_examples_passed": valid_examples_passed,
+        "invalid_examples_passed": invalid_examples_passed,
         "input_paths": input_paths,
         "category_totals": category_totals,
         "coverage_gaps": coverage_gaps,
@@ -427,81 +425,23 @@ def validate_rdf_shacl(
 
     if not include_shacl_reports:
         for entity_summary in summary["files"]:
-            for category in ("valid",):
+            for category in RDF_CATEGORIES:
                 for result in entity_summary["categories"][category]["files"]:
                     result.pop("shacl_report", None)
 
     return summary
 
 
-def validate_profile(repo_root: Path, profile_path: Path) -> Dict[str, Any]:
-    """Run a local shape profile with layer-specific mutation expectations."""
-    profile = json.loads(profile_path.read_text(encoding="utf-8"))
-    required_type = profile["required_root_type"]
-    if not required_type or not profile["shapes"] or not profile["cases"]:
-        raise ValueError("Profile requires shapes, a root type and test cases")
-    case_ids = [case["id"] for case in profile["cases"]]
-    if len(set(case_ids)) != len(case_ids):
-        raise ValueError("Profile case identifiers must be unique")
-    positives = {repo_root / case["example"] for case in profile["cases"] if not case.get("remove")}
-    discovered = {path for folder in {p.parent for p in positives} for path in folder.glob("*.json")}
-    if not positives or positives != discovered:
-        raise ValueError("Profile must cover every positive example in its fixture directories")
-    paths, _, shapes, targets = load_shapes([repo_root / p for p in profile["shapes"]])
-    if required_type not in targets:
-        raise ValueError(f"Profile has no shape targeting {required_type}")
-    id_map = build_id_to_path_map(repo_root / "schemas")
-    results = []
-    for case in profile["cases"]:
-        path = repo_root / case["example"]
-        document = load_wrapped_example(path)
-        for pointer in case.get("remove", []):
-            if not isinstance(pointer, str) or not pointer.startswith('/'):
-                raise ValueError(f"Invalid removal pointer in case {case['id']}: {pointer}")
-            parts = [part.replace('~1', '/').replace('~0', '~') for part in pointer[1:].split('/')]
-            node = document["data"]
-            for part in parts[:-1]:
-                node = node[int(part)] if isinstance(node, list) else node[part]
-            del node[int(parts[-1]) if isinstance(node, list) else parts[-1]]
-        result = validate_file_shacl(path, shapes, id_map, required_type, document)
-        expected = case.get("violations", [])
-        for wanted in expected:
-            if not {"resultPath", "constraint_type", "severity"} <= wanted.keys():
-                raise ValueError(f"Incomplete SHACL expectation in case {case['id']}")
-        expected_status = INVALID_STATUS if expected else VALID_STATUS
-        actual = result.get("violations", [])
-        result.update({"case": case["id"], "expected_violations": expected})
-        result["expectation_errors"] = [
-            f"Expected SHACL result not found: {wanted}"
-            for wanted in expected
-            if not any(all(v.get(k) == value for k, value in wanted.items()) for v in actual)
-        ]
-        result["passed"] = result["status"] == expected_status and not result["expectation_errors"]
-        result.pop("shacl_report", None)
-        results.append(result)
-    return {
-        "profile": profile["name"], "scope": profile["scope"],
-        "shape_files": [{"path": str(p.relative_to(repo_root)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths],
-        "required_root_type": required_type, "target_classes": sorted(targets),
-        "severity_policy": "All results, including Warning and Info, block conformance.",
-        "owl_imports": False, "meta_shacl": True,
-        "passed": all(r["passed"] for r in results), "total_files": len(results),
-        "files": results,
-    }
-
-
 def _log_results(summary: Dict[str, Any]) -> None:
     """Emit INFO-level result lines for the validation run."""
-    if "profile" in summary:
-        LOGGER.info("Profile %s: %d / %d cases passed", summary["profile"],
-                    sum(r["passed"] for r in summary["files"]), summary["total_files"])
-        log_suite_status(LOGGER, summary["passed"])
-        return
     category_totals = summary["category_totals"]
     valid_passed = category_totals["valid"]["validation_passed"]
     valid_total = category_totals["valid"]["total_files"]
+    invalid_passed = category_totals["invalid"]["validation_failed"]
+    invalid_total = category_totals["invalid"]["total_files"]
 
     LOGGER.info("%d / %d valid files passed SHACL validation", valid_passed, valid_total)
+    LOGGER.info("%d / %d invalid files rejected by SHACL validation", invalid_passed, invalid_total)
 
     log_suite_status(LOGGER, summary["passed"])
 
@@ -510,13 +450,12 @@ def make_arg_parser() -> argparse.ArgumentParser:
     """Build the command-line parser for RDF/SHACL suite validation."""
     parser = argparse.ArgumentParser(
         prog="validate_rdf_shacl",
-        description="Validate positive RDF examples or rule-specific SHACL profile cases.",
+        description="Validate valid and invalid RDF examples against SHACL shapes.",
         epilog=(
             "Examples:\n"
             "  validate_rdf_shacl --root schemas/entities --entity dataset "
-            "--shapes standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl -v\n"
-            "  validate_rdf_shacl --root schemas/entities --all-entities "
-            "--shapes standards/rdf/healthdcat-ap"
+            "--shapes standards/rdf/dcatap/release-3.0.0/shapes.ttl "
+            "standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl -v\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -531,14 +470,12 @@ def make_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=help_with_example("Validate every entity directory under --root", "--all-entities"),
     )
-    inputs = parser.add_mutually_exclusive_group(required=True)
-    inputs.add_argument("--profile", type=Path, help=help_with_example(
-        "Local JSON shape profile and test cases", "--profile tests/fixtures/rdf/healthdcat-ap-6.json"))
-    inputs.add_argument(
+    parser.add_argument(
         "--shapes",
         "-s",
         dest="shapes",
         nargs="+",
+        required=True,
         type=Path,
         help=help_with_example("SHACL shape files or directories", "--shapes standards/rdf"),
     )
@@ -563,17 +500,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     configure_logging(args.verbosity)
 
     try:
-        if args.profile:
-            summary = validate_profile(find_repo_root(args.profile.resolve()), args.profile)
-        else:
-            summary = validate_rdf_shacl(
-                args.root,
-                args.entity,
-                args.shapes,
-                all_entities=args.all_entities,
-                include_shacl_reports=args.shacl_report,
-                required_root_type=args.required_root_type,
-            )
+        summary = validate_rdf_shacl(
+            args.root,
+            args.entity,
+            args.shapes,
+            all_entities=args.all_entities,
+            include_shacl_reports=args.shacl_report,
+            required_root_type=args.required_root_type,
+        )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         LOGGER.error(str(exc))
         sys.exit(2)

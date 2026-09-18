@@ -3,28 +3,27 @@
     "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json"
   },
   "data": {
-    "inSubmission": {
-      "@id": "ega:EGA00000000001",
-      "@type": "ega:submission"
-    },
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
     "@id": "ega:EGAD00000000007",
     "@type": [
       "ega:dataset",
       "dcat:Dataset"
     ],
-    "id": "ega:EGAD00000000007",
-    "title": "Cardiometabolic genome sequencing dataset",
-    "description": "Controlled-access genome dataset from a cardiometabolic sequencing study.",
+    "title": "Minimal controlled-access genome dataset",
+    "description": "Small controlled-access dataset containing one aligned genome data file.",
     "datasetType": [
       "environmental energy measurements"
     ],
     "hasPart": [
       {
-        "@id": "ega:EGAF00000000007",
+        "@id": "ega:EGAF00000000001",
         "@type": "ega:datafile"
       }
     ],
-    "hasPolicy": "ega:EGAP00000000007"
+    "hasPolicy": "ega:EGAP00000000007",
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    }
   }
 }

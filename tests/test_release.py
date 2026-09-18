@@ -147,6 +147,69 @@ def test_version_assertion_and_rationale_hook(tmp_path: Path) -> None:
     assert report["errors"] == []
 
 
+@pytest.mark.parametrize("asset,change", [
+    ("context.jsonld", {"@context": {"name": "https://example.org/wrong"}}),
+    ("frame.jsonld", {"@explicit": True}),
+])
+def test_rdf_asset_changes_require_review_or_major(tmp_path, asset, change):
+    old, new = tmp_path / "old", tmp_path / "new"
+    _repo(old)
+    _repo(new, "1.0.1")
+    _write(new / "schemas/widget" / asset, change)
+    report = analyse_release(new, old, repository=REPOSITORY)
+    assert report["components"][0]["required_change"] == "unknown"
+    assert report["errors"]
+    report = analyse_release(new, old, repository=REPOSITORY,
+                             approved_rationales={"widget": "PR #1: reviewed RDF compatibility"})
+    component = report["components"][0]
+    assert report["errors"] == []
+    assert component["automatic_required_change"] == "unknown"
+    assert component["required_change"] == "patch"
+    assert component["compatibility_exception"]["used"]
+
+
+def test_rdf_asset_formatting_and_release_urls_are_not_semantic_changes(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    _repo(old)
+    _repo(new)
+    for asset in ("context.jsonld", "frame.jsonld"):
+        path = new / "schemas/widget" / asset
+        data = json.loads(path.read_text().replace("/main/", "/v1.0.0/"))
+        path.write_text(json.dumps(data, indent=4))
+    report = analyse_release(new, old, repository=REPOSITORY)
+    assert report["components"][0]["required_change"] == "same"
+    assert not report["errors"]
+
+
+def test_common_context_change_propagates_through_schema_dependencies(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    for root in (old, new):
+        _repo(root, "1.0.0")
+        _write(root / "schemas/common/schema.json", {
+            "$id": f"https://raw.githubusercontent.com/{REPOSITORY}/main/schemas/common/schema.json",
+            "meta:version": "1.0.0", "type": "object"})
+        _write(root / "schemas/common/context.jsonld", {"@context": {"name": "https://example.org/name"}})
+        path = root / "schemas/widget/schema.json"
+        schema = json.loads(path.read_text())
+        schema["allOf"] = [{"$ref": "../common/schema.json"}]
+        _write(path, schema)
+    _write(new / "schemas/common/context.jsonld", {"@context": {"name": "https://example.org/changed"}})
+    report = analyse_release(new, old, repository=REPOSITORY)
+    components = {c["name"]: c for c in report["components"]}
+    assert components["widget"]["required_change"] == "unknown"
+    assert "common" in components["widget"]["dependencies"]
+
+
+def test_context_version_term_is_not_ignored_as_schema_metadata(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    _repo(old)
+    _repo(new)
+    _write(old / "schemas/widget/context.jsonld", {"@context": {"meta:version": "https://example.org/old"}})
+    _write(new / "schemas/widget/context.jsonld", {"@context": {"meta:version": "https://example.org/new"}})
+    report = analyse_release(new, old, repository=REPOSITORY)
+    assert report["components"][0]["required_change"] == "unknown"
+
+
 def test_initial_prerelease_component_reset_is_allowed_without_manifest(tmp_path: Path) -> None:
     previous = tmp_path / "previous"
     current = tmp_path / "current"

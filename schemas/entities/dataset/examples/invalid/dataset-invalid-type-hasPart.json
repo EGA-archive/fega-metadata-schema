@@ -3,19 +3,14 @@
     "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json"
   },
   "data": {
-    "inSubmission": {
-      "@id": "ega:EGA00000000001",
-      "@type": "ega:submission"
-    },
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
     "@id": "ega:EGAD00000000006",
     "@type": [
       "ega:dataset",
       "dcat:Dataset"
     ],
-    "id": "ega:EGAD00000000006",
-    "title": "Cardiometabolic genome sequencing dataset",
-    "description": "Controlled-access genome dataset from a cardiometabolic sequencing study.",
+    "title": "Minimal controlled-access genome dataset",
+    "description": "Small controlled-access dataset containing one aligned genome data file.",
     "datasetType": [
       "whole genome sequencing"
     ],
@@ -25,6 +20,10 @@
         "@type": "ega:biomaterial"
       }
     ],
-    "hasPolicy": "ega:EGAP00000000006"
+    "hasPolicy": "ega:EGAP00000000006",
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    }
   }
 }
