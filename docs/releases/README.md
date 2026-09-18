@@ -174,6 +174,8 @@ Repository identity comes from an explicit argument, GitHub's `${{ github.reposi
 
 Bundle versions are strict SemVer, including prereleases such as `2.0.0-draft.1`. A declared bundle version may exceed the calculated minimum (e.g., `v2.3.0` when `v2.2.1` was enough), never fall below it. Component versions cover each schema and its sibling context/frame as one unit.
 
+Before the first stable schema release, components may use the exact placeholder series `1.0.0-draft.N`. The compatibility analyser still calculates and reports the normal required change, but defers the automatic stable lower bound while both the previous and current component versions are in this series. A component whose effective schema changes must still advance its draft number, and draft versions may not move backwards. Any other version, including `1.0.1-draft.N`, `1.0.0-rc.N`, a stable version, or a version with build metadata, uses the normal SemVer lower-bound checks. Moving from the placeholder series to a stable version re-enables those checks automatically.
+
 Compatibility is an accepted-input lower bound, not proof that all data remains semantically compatible. Major changes can invalidate previously valid input; minor changes expand accepted input; patch changes preserve validation behaviour. Composition, `$ref`, pattern/format, context or frame changes may be `unknown`. For a removed property declaration, removal from an explicitly closed object (e.g., `"additionalProperties": false`) is breaking/major, removal from a default-open object is non-breaking/minor, and ambiguous composition or schema-valued closure is unknown. 
 
 Without an applicable rationale, `unknown` requires a major bump. A concrete rationale from a PR that changed the component or a reachable dependency permits a reviewed lower bump but still requires at least a version change. Examples do not prove compatibility.
@@ -273,7 +275,7 @@ Validation workflows can also be **started manually** from GitHub Actions (e.g.,
 ### 1. Before opening an ordinary PR
 
 1. Edit the schema, sibling context/frame, examples or documentation as required.
-2. Update top-level `meta:version` in each affected component schema. Do **not** edit generated manifests, changelog release sections, citation version or URI snapshots.
+2. Update top-level `meta:version` in each affected component schema. During the placeholder phase, advance affected components from `1.0.0-draft.N` to a higher draft number; once a component leaves that series, use the normal calculated SemVer minimum. Do **not** edit generated manifests, changelog release sections, citation version or URI snapshots.
 3. Fill the PR template's strict `## Release notes` section. When compatibility is `unknown`, add a concrete `## Compatibility review` rationale.
 4. Run a focused check such as:
 ````

@@ -1,0 +1,14 @@
+{
+  "cohort-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "cohort-invalid-type-hadMember.json": [
+    "/hadMember/0/@type"
+  ],
+  "cohort-invalid-type-isPartOf.json": [
+    "/isPartOf/0/@type"
+  ],
+  "cohort-invalid-type-sameAs.json": [
+    "/sameAs/0/@type"
+  ]
+}

@@ -183,7 +183,7 @@ def extract_violations_from_graph(results_graph: Graph) -> List[Dict[str, Any]]:
             violation_info["sourceShape"] = str(prop_shape)
             
         # Get the severity
-        for severity in results_graph.objects(subject=result, predicate=SH.severity):
+        for severity in results_graph.objects(subject=result, predicate=SH.resultSeverity):
             violation_info["severity"] = str(severity)
             
         # Get the message - try result message first, then source shape message

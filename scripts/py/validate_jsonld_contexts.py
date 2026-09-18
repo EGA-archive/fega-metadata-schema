@@ -33,6 +33,7 @@ try:
         find_repo_root,
         build_id_to_path_map,
         materialize_context,
+        find_undefined_terms,
         resolve_ref,
     )
     from fega_tools.validation_common import (
@@ -157,6 +158,10 @@ def validate_file_jsonld(
     data_copy["@context"] = materialized_ctx
 
     try:
+        dropped = find_undefined_terms(data_copy, materialized_ctx)
+        if dropped:
+            result.update({"status": INVALID_STATUS, "errors": ["Dropped JSON-LD properties: " + ", ".join(dropped)]})
+            return result
         graph = rdflib.Dataset()
         # RDFLib's JSON-LD parser still calls the deprecated
         # ``Dataset.default_context`` property and constructs its deprecated

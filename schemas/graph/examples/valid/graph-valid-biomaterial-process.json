@@ -16,7 +16,7 @@
         ],
         "label": "SUBJECT-0001",
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -44,7 +44,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -65,7 +65,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -93,12 +93,12 @@
           "name": "European Genome-phenome Archive"
         },
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
       {
-        "@id": "ega:EGAB00000000001",
+        "@id": "ega:EGA00000000001",
         "@type": "ega:submission",
         "title": "Example Genomics submission",
         "status": "draft",

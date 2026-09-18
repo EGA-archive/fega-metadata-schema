@@ -50,6 +50,7 @@
             },
             "otherIdentifier": {
                 "@id": "adms:identifier",
+                "@type": "@id",
                 "@container": "@set"
             },
             "populationCoverage": {

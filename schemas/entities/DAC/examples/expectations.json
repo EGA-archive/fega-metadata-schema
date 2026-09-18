@@ -1,0 +1,14 @@
+{
+  "dac-invalid-contact-missing-email.json": [
+    "/contactPoint/0/email"
+  ],
+  "dac-invalid-missing-required-roles.json": [
+    "/components"
+  ],
+  "dac-invalid-root-accession.json": [
+    "/@id"
+  ],
+  "dac-invalid-status.json": [
+    "/status"
+  ]
+}

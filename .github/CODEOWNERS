@@ -5,3 +5,8 @@
 /standards/   @m-casado
 /src/     @m-casado
 /scripts/   @m-casado
+
+# We need to protect the release process because it has write permissions
+/.github/workflows/        @m-casado
+/.github/actions/          @m-casado
+/CODEOWNERS                @m-casado

@@ -12,6 +12,7 @@ import re
 import subprocess
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Mapping, Protocol, Sequence
 from urllib.parse import quote, urlsplit, urlunsplit
@@ -23,8 +24,6 @@ RENDER_CATEGORIES = ("Added", "Changed", "Fixed", "Removed", "Security")
 _H2_RE = re.compile(r"^##\s+(.+?)\s*$")
 _CATEGORY_RE = re.compile(r"^Category:\s*(\S.*?)\s*$")
 _BULLET_RE = re.compile(r"^\s*[-*+]\s*(.*?)\s*$")
-_COMMENT_RE = re.compile(r"<!--.*?-->")
-_COMMENT_BLOCK_RE = re.compile(r"<!--.*?-->", re.S)
 _PLACEHOLDER_RE = re.compile(
     r"\b(?:tbd|todo|your\s+(?:summary|description)|placeholder|"
     r"describe\s+the\s+user-visible\s+change|"
@@ -144,6 +143,92 @@ class GitHubClient(Protocol):
     """
 
 
+class _HtmlCommentParser(HTMLParser):
+    """Collect HTML comment spans without interpreting note content as HTML.
+
+    ``HTMLParser`` follows the browser-compatible comment tokenisation rules,
+    including malformed endings such as ``--!>``.  The source is only masked
+    after parsing so all non-comment text remains byte-for-byte unchanged and
+    line numbers remain stable for diagnostics.
+    """
+
+    def __init__(self, source: str) -> None:
+        super().__init__(convert_charrefs=False)
+        self._source = source
+        self._line_offsets = [0]
+        for line in source.splitlines(keepends=True):
+            self._line_offsets.append(self._line_offsets[-1] + len(line))
+        self.spans: list[tuple[int, int]] = []
+        self._comment_start: int | None = None
+
+    def _offset(self) -> int:
+        line, column = self.getpos()
+        if line <= 0 or line > len(self._line_offsets):
+            return len(self._source)
+        return min(self._line_offsets[line - 1] + column, len(self._source))
+
+    def _event(self) -> None:
+        if self._comment_start is not None:
+            self.spans.append((self._comment_start, self._offset()))
+            self._comment_start = None
+
+    def finish(self) -> None:
+        """Close a final comment at end-of-input, including an unterminated one."""
+        if self._comment_start is not None:
+            self.spans.append((self._comment_start, len(self._source)))
+            self._comment_start = None
+
+    def handle_comment(self, data: str) -> None:
+        self._event()
+        self._comment_start = self._offset()
+
+    # Every other token callback marks the end of a preceding comment.  The
+    # callbacks retain no parsed HTML; this helper only uses the parser to
+    # identify comment spans.
+    def handle_data(self, data: str) -> None:
+        self._event()
+
+    def handle_entityref(self, name: str) -> None:
+        self._event()
+
+    def handle_charref(self, name: str) -> None:
+        self._event()
+
+    def handle_decl(self, decl: str) -> None:
+        self._event()
+
+    def handle_pi(self, data: str) -> None:
+        self._event()
+
+    def unknown_decl(self, data: str) -> None:
+        self._event()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self._event()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self._event()
+
+    def handle_endtag(self, tag: str) -> None:
+        self._event()
+
+
+def _strip_html_comments(value: str) -> str:
+    """Mask HTML comments while preserving all non-comment text and newlines."""
+    parser = _HtmlCommentParser(value)
+    parser.feed(value)
+    parser.close()
+    parser.finish()
+    if not parser.spans:
+        return value
+    chars = list(value)
+    for start, end in parser.spans:
+        for index in range(start, end):
+            if chars[index] not in "\r\n":
+                chars[index] = " "
+    return "".join(chars)
+
+
 def _section_ranges(body: str) -> tuple[list[tuple[str, int, int]], list[Diagnostic]]:
     lines = body.splitlines()
     headings: list[tuple[str, int]] = []
@@ -184,11 +269,9 @@ def parse_pr_body(body: str) -> ParsedReleaseNotes:
         # Permanent HTML guidance comments in the repository template are not
         # contributor content. Remove complete (including multi-line) comment
         # blocks before applying the strict release-note grammar.
-        content = _COMMENT_BLOCK_RE.sub("", "\n".join(lines[start + 1:end])).splitlines()
+        content = _strip_html_comments("\n".join(lines[start + 1:end])).splitlines()
         category_lines: list[tuple[int, str]] = []
         for offset, line in enumerate(content, start=start + 2):
-            if _COMMENT_RE.search(line):
-                continue
             match = _CATEGORY_RE.match(line)
             if match:
                 category_lines.append((offset, match.group(1).strip()))
@@ -226,10 +309,8 @@ def parse_pr_body(body: str) -> ParsedReleaseNotes:
     if compatibility is not None:
         _, start, end = compatibility
         values: list[str] = []
-        content = _COMMENT_BLOCK_RE.sub("", "\n".join(lines[start + 1:end])).splitlines()
+        content = _strip_html_comments("\n".join(lines[start + 1:end])).splitlines()
         for offset, line in enumerate(content, start=start + 2):
-            if _COMMENT_RE.search(line):
-                continue
             if line.lstrip().startswith("#"):
                 diagnostics.append(Diagnostic("unknown-heading", "Compatibility review must contain prose or Not applicable", offset, "Compatibility review"))
                 continue

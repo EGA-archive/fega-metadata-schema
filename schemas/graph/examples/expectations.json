@@ -1,0 +1,80 @@
+{
+  "graph-invalid-DAC-missing-title.json": [
+    "/@graph/0/title"
+  ],
+  "graph-invalid-biomaterial-missing-inSubmission.json": [
+    "/@graph/0/inSubmission"
+  ],
+  "graph-invalid-cohort-missing-inSubmission.json": [
+    "/@graph/0/inSubmission"
+  ],
+  "graph-invalid-datafile-missing-fileName.json": [
+    "/@graph/0/fileName"
+  ],
+  "graph-invalid-dataset-missing-title.json": [
+    "/@graph/0/title"
+  ],
+  "graph-invalid-duplicate-entity-type.json": [
+    "/@graph/3/@type"
+  ],
+  "graph-invalid-empty-graph.json": [
+    "/@graph"
+  ],
+  "graph-invalid-missing-context.json": [
+    "/@context"
+  ],
+  "graph-invalid-mixed-one-invalid-item.json": [
+    "/@graph/1/fileName"
+  ],
+  "graph-invalid-multiple-ega-types.json": [
+    "/@graph/0/@type"
+  ],
+  "graph-invalid-policy-missing-title.json": [
+    "/@graph/0/title"
+  ],
+  "graph-invalid-process-missing-hadProtocolCollection.json": [
+    "/@graph/0/hadProtocolCollection"
+  ],
+  "graph-invalid-profile-biomaterial-and-process-missing-biomaterial.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-biomaterial-and-process-missing-process.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-dataset-and-datafile-missing-datafile.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-dataset-and-datafile-missing-dataset.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-organism-lab-data-missing-datafile.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-organism-lab-data-missing-dataset.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-organism-lab-data-missing-lab-protocol.json": [
+    "/@graph"
+  ],
+  "graph-invalid-profile-organism-lab-data-missing-organism.json": [
+    "/@graph"
+  ],
+  "graph-invalid-protocol-missing-inSubmission.json": [
+    "/@graph/0/inSubmission"
+  ],
+  "graph-invalid-protocolCollection-missing-hadMember.json": [
+    "/@graph/0/hadMember"
+  ],
+  "graph-invalid-study-missing-studyDesign.json": [
+    "/@graph/0/studyDesign"
+  ],
+  "graph-invalid-submission-missing-components.json": [
+    "/@graph/0/components"
+  ],
+  "graph-invalid-unsupported-entity-type.json": [
+    "/@graph/0/@type"
+  ],
+  "graph-invalid-wrong-type.json": [
+    "/@type"
+  ]
+}

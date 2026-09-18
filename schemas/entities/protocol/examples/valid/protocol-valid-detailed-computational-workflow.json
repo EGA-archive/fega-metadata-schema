@@ -18,7 +18,7 @@
       "nextflow"
     ],
     "inSubmission": {
-      "@id": "ega:EGAB00000000001",
+      "@id": "ega:EGA00000000001",
       "@type": "ega:submission"
     },
     "version": "1.2.0",

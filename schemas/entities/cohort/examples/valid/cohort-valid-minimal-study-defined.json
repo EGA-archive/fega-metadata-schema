@@ -10,7 +10,7 @@
     "name": "Barcelona adult genomics cohort",
     "cohortType": "study-defined",
     "inSubmission": {
-      "@id": "ega:EGAB00000000001",
+      "@id": "ega:EGA00000000001",
       "@type": "ega:submission"
     }
   }

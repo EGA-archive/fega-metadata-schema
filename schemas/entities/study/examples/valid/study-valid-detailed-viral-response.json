@@ -146,7 +146,7 @@
       }
     ],
     "inSubmission": {
-      "@id": "ega:EGAB00000000001",
+      "@id": "ega:EGA00000000001",
       "@type": "ega:submission"
     },
     "ethicsApproval": "https://example.org/ethics/approval/REC-2026-001"

@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
   "type": "object",
   "title": "EGA Submission metadata schema",
-  "meta:version": "1.0.0-draft.1",
+    "meta:version": "1.0.0-draft.2",
   "$async": true,
   "description": "Administrative metadata for an EGA Submission, the authoritative container that owns EGA entities and records who may view or edit them.",
   "@context": "./context.jsonld",
@@ -23,8 +23,8 @@
     "@id": {
       "$ref": "../../common/schema.json#/$defs/@id",
       "examples": [
-        "ega:EGAB00000000001",
-        "ega:EGAB00001000002"
+        "ega:EGA00000000001",
+        "ega:EGA00001000002"
       ]
     },
 

@@ -37,6 +37,9 @@ SEMVER_RE = re.compile(
 TEXT_EXTENSIONS = {".json", ".jsonld", ".ttl", ".jsonldc", ".yaml", ".yml", ".md"}
 TOP_LEVEL_CITATION_VERSION_RE = re.compile(r"(?m)^version\s*:\s*([^\r\n#]+?)\s*(?:#.*)?$")
 HEX64_RE = re.compile(r"^[a-f0-9]{64}$")
+_REPOSITORY_RE = re.compile(r"^[^/\\\s]+/[^/\\\s]+$")
+_GITHUB_SCP_RE = re.compile(r"^git@github\.com:(?P<path>[^?#\s]+)$", re.IGNORECASE)
+_GITHUB_URL_SCHEMES = {"http", "https", "ssh", "git", "git+ssh"}
 
 
 @functools.total_ordering
@@ -103,6 +106,19 @@ class Version:
             return Version(self.major, self.minor, self.patch + 1)
         return self
 
+    @property
+    def is_placeholder_draft(self) -> bool:
+        """Whether this is the temporary ``1.0.0-draft.N`` series."""
+        return (
+            self.major == 1
+            and self.minor == 0
+            and self.patch == 0
+            and len(self.prerelease) == 2
+            and self.prerelease[0] == "draft"
+            and isinstance(self.prerelease[1], int)
+            and not self.build
+        )
+
     def __str__(self) -> str:
         value = f"{self.major}.{self.minor}.{self.patch}"
         if self.prerelease:
@@ -140,8 +156,53 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False, sort_keys=False) + "\n", encoding="utf-8")
 
 
+def _repository_path(path: str) -> str | None:
+    """Return a validated ``owner/repository`` path, if present."""
+    value = path
+    if value.startswith("/"):
+        value = value[1:]
+    if value.endswith("/"):
+        value = value[:-1]
+    if value.startswith("/") or value.endswith("/"):
+        return None
+    if value.endswith(".git"):
+        value = value[:-4]
+    return value if _REPOSITORY_RE.fullmatch(value) else None
+
+
+def _repository_candidate(value: str) -> str | None:
+    """Parse a repository name or GitHub remote without substring matching."""
+    scp = _GITHUB_SCP_RE.fullmatch(value)
+    if scp:
+        return _repository_path(scp.group("path"))
+
+    direct = _repository_path(value)
+    if direct is not None:
+        return direct
+
+    try:
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        port = parsed.port
+    except ValueError:
+        return None
+    scheme = parsed.scheme.casefold()
+    if scheme not in _GITHUB_URL_SCHEMES:
+        return None
+    if hostname is None or hostname.casefold() != "github.com":
+        return None
+    if scheme in {"ssh", "git+ssh"}:
+        if parsed.username not in {None, "git"} or parsed.password is not None:
+            return None
+    elif parsed.username is not None or parsed.password is not None:
+        return None
+    if port is not None or parsed.query or parsed.fragment:
+        return None
+    return _repository_path(parsed.path)
+
+
 def repository_identity(root: Path | None = None, repository: str | None = None) -> str:
-    """Resolve ``owner/repository`` from CLI, environment, then git origin."""
+    """Resolve ``owner/repository`` from CLI, environment, then Git origin."""
     candidate = repository or os.environ.get("GITHUB_REPOSITORY")
     if candidate is None and root is not None:
         try:
@@ -149,15 +210,8 @@ def repository_identity(root: Path | None = None, repository: str | None = None)
         except (OSError, subprocess.CalledProcessError):
             candidate = None
     if candidate:
-        value = candidate.strip()
-        if value.startswith("git@github.com:"):
-            value = value.split(":", 1)[1]
-        elif value.startswith("ssh://git@github.com/"):
-            value = value.rsplit("/", 1)[-1] if value.count("/") == 3 else value.split("github.com/", 1)[1]
-        elif "github.com/" in value:
-            value = value.split("github.com/", 1)[1]
-        value = value.removesuffix(".git").strip("/")
-        if re.fullmatch(r"[^/\\\s]+/[^/\\\s]+", value):
+        value = _repository_candidate(candidate.strip())
+        if value is not None:
             return value
     raise ValueError("Cannot resolve repository identity; pass --repository owner/repo or set GITHUB_REPOSITORY")
 
@@ -495,7 +549,14 @@ def _component_by_identity(components: list[Component], identifier: str) -> Comp
 def _changed_file(old: Path | None, new: Path | None) -> bool:
     if old is None or new is None:
         return old != new
-    return old.read_bytes() != new.read_bytes()
+    # JSON object order and release URL bookkeeping do not change an asset.
+    def normalize_asset(path: Path) -> str:
+        return transform_raw_github_uris(
+            json.dumps(load_json(path), sort_keys=True),
+            lambda uri: uri.render(ref="{release-ref}", preserve_prefix=False),
+        )[0]
+
+    return normalize_asset(old) != normalize_asset(new)
 
 
 def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap: bool = False, approved_rationales: Mapping[str, str] | None = None, repository: str | None = None, requested_version: str | None = None) -> dict[str, Any]:
@@ -517,9 +578,6 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
     rationales = approved_rationales or {}
     current_groups = {item["name"]: item for item in discover_standard_groups(root)}
     previous_groups = {item["name"]: item for item in discover_standard_groups(previous_root.resolve())} if previous_root and previous else {}
-    previous_has_release_manifest = bool(
-        previous_root and (previous_root.resolve() / "build/release_manifest.json").is_file()
-    )
     required_by_name: dict[str, Severity] = {}
     detail_by_name: dict[str, list[dict[str, Any]]] = {}
     old_by_name: dict[str, Component | None] = {}
@@ -543,11 +601,11 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
                 required = max(required, Severity.MAJOR)
                 details.insert(0, {"path": old.schema.as_posix(), "severity": "major", "message": "component schema relocated"})
             if _changed_file(previous_root / old.context if previous_root and old.context else None, root / component.context if component.context else None):
-                required = max(required, Severity.PATCH)
-                details.append({"path": (component.context or old.context or Path("context.jsonld")).as_posix(), "severity": "patch", "message": "context changed"})
+                required = max(required, Severity.UNKNOWN)
+                details.append({"path": (component.context or old.context or Path("context.jsonld")).as_posix(), "severity": "unknown", "message": "context changed; RDF compatibility requires review"})
             if _changed_file(previous_root / old.frame if previous_root and old.frame else None, root / component.frame if component.frame else None):
-                required = max(required, Severity.PATCH)
-                details.append({"path": (component.frame or old.frame or Path("frame.jsonld")).as_posix(), "severity": "patch", "message": "frame changed"})
+                required = max(required, Severity.UNKNOWN)
+                details.append({"path": (component.frame or old.frame or Path("frame.jsonld")).as_posix(), "severity": "unknown", "message": "frame changed; output compatibility requires review"})
             for dependency in dependencies.get(component.name, []):
                 if dependency.startswith("standard:"):
                     group_path = dependency.removeprefix("standard:")
@@ -577,20 +635,17 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
             required = Severity.PATCH
             required_by_name[component.name] = required
         if old is not None:
-            if component.version == old.version and details:
+            effective_change = bool(details) or required != Severity.SAME
+            draft_deferred = old.version.is_placeholder_draft and component.version.is_placeholder_draft
+            if component.version == old.version and effective_change:
                 errors.append(f"Component '{component.name}' changed but meta:version is unchanged")
             minimum = old.version.bump(required if required != Severity.UNKNOWN else Severity.MAJOR)
-            allow_initial_prerelease_reset = (
-                not previous_has_release_manifest
-                and not details
-                and required == Severity.SAME
-                and bool(old.version.prerelease)
-                and bool(component.version.prerelease)
-                and component.version < old.version
-            )
-            if component.version < minimum and not allow_initial_prerelease_reset:
+            if draft_deferred and component.version < old.version:
+                errors.append(f"Component '{component.name}' draft version {component.version} is below previous {old.version}")
+            elif component.version < minimum and not draft_deferred:
                 errors.append(f"Component '{component.name}' declares {component.version}, below automatic minimum {minimum}")
-        records.append({"name": component.name, "schema": component.schema.as_posix(), "id": component.identifier, "version": str(component.version), "previous_version": str(old.version) if old else None, "required_change": required.label(), "dependencies": dependencies.get(component.name, []), "checksums": _asset_hashes(root, component), "details": details, "compatibility_exception": exception or {"used": False}, "automatic_required_change": original_required.label()})
+        version_policy = "draft-deferred" if old is not None and old.version.is_placeholder_draft and component.version.is_placeholder_draft else "semver-enforced"
+        records.append({"name": component.name, "schema": component.schema.as_posix(), "id": component.identifier, "version": str(component.version), "previous_version": str(old.version) if old else None, "required_change": required.label(), "dependencies": dependencies.get(component.name, []), "checksums": _asset_hashes(root, component), "details": details, "compatibility_exception": exception or {"used": False}, "automatic_required_change": original_required.label(), "version_policy": version_policy})
     current_ids = {_normalise_uri(item.identifier) for item in current}
     removed = [{"name": item.name, "schema": item.schema.as_posix(), "previous_version": str(item.version), "change": "major"} for item in previous if _normalise_uri(item.identifier) not in current_ids]
     bundle_change = Severity.MAJOR if removed else max((required_by_name.get(item.name, Severity.SAME) for item in current), default=Severity.SAME)

@@ -152,12 +152,13 @@ python scripts/py/validate_jsonld_frames.py --help
 
 Validate wrapped JSON-LD examples against RDF/SHACL shapes. This does not require Biovalidator.
 
-The test scope (i.e., which entities we are validating in each run) is explicit, since for now we only have the HealthDCAT-AP SHACL shapes that apply to Datasets only. For example:
+The test scope (i.e., which entities we are validating in each run) is explicit, since for now the available DCAT-AP and HealthDCAT-AP SHACL shapes apply to Datasets only. For example:
 
 ```bash
 python scripts/py/validate_rdf_shacl.py \
   --entity dataset \
-  --shapes standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl \
+  --shapes standards/rdf/dcatap/release-3.0.0/shapes.ttl \
+    standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl \
   -v
 ```
 

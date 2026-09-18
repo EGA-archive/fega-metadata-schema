@@ -39,7 +39,8 @@ jobs:
           python scripts/py/validate_rdf_shacl.py \
             --root schemas/entities \
             --entity dataset \
-            --shapes standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl \
+            --shapes standards/rdf/dcatap/release-3.0.0/shapes.ttl \
+              standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl \
             --required-root-type http://www.w3.org/ns/dcat#Dataset \
             --summary-dir validation-summaries \
             -v

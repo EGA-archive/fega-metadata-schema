@@ -1,0 +1,17 @@
+{
+  "protocol-invalid-cardinality-sameAs.json": [
+    "/sameAs"
+  ],
+  "protocol-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "protocol-invalid-required-atType.json": [
+    "/@type"
+  ],
+  "protocol-invalid-required-isBasedOn-id.json": [
+    "/isBasedOn/0/@id"
+  ],
+  "protocol-invalid-type-atType.json": [
+    "/@type"
+  ]
+}

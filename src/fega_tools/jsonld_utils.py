@@ -341,13 +341,53 @@ def is_known_jsonld_key(key: str, terms: Set[str], prefixes: Set[str]) -> bool:
 
 
 def find_undefined_terms(data: Dict[str, Any], context: Any) -> List[str]:
-    """Return JSON key paths that JSON-LD would ignore as undefined terms."""
-    terms, prefixes = context_terms_and_prefixes(context)
-    return [
-        path
-        for path, key in walk_object_keys(data)
-        if not is_known_jsonld_key(key, terms, prefixes)
-    ]
+    """Report properties actually dropped by the JSON-LD expansion processor.
+
+    PyLD applies property and type scopes, null definitions, @vocab and @json.
+    The small observer adds source paths to PyLD's dropped-property callback;
+    expansion and scope handling remain entirely with the pinned processor.
+    """
+    from pyld import jsonld
+
+    dropped: List[str] = []
+    document = dict(data)
+    document["@context"] = context
+    class LossObserver(jsonld.JsonLdProcessor):
+        paths: Dict[int, str]
+
+        def _expand(self, active_ctx, active_property, element, *args, **kwargs):
+            if not hasattr(self, "paths"):
+                self.paths = {}
+
+                def index(value, path=""):
+                    if isinstance(value, (dict, list)):
+                        self.paths[id(value)] = path
+                        items = value.items() if isinstance(value, dict) else enumerate(value)
+                        for key, child in items:
+                            index(child, path + "/" + str(key).replace("~", "~0").replace("/", "~1"))
+
+                index(element)
+            return super()._expand(active_ctx, active_property, element, *args, **kwargs)
+
+        def _expand_object(self, active_ctx, active_property, expanded_active_property,
+                           element, *args, **kwargs):
+            previous = self.on_property_dropped
+
+            def record(expanded_key):
+                for key in element:
+                    if key != "@context" and self._expand_iri(active_ctx, key, vocab=True) == expanded_key:
+                        escaped = key.replace("~", "~0").replace("/", "~1")
+                        dropped.append(self.paths.get(id(element), "<expanded object>") + "/" + escaped)
+
+            self.on_property_dropped = record
+            try:
+                return super()._expand_object(active_ctx, active_property, expanded_active_property,
+                                              element, *args, **kwargs)
+            finally:
+                self.on_property_dropped = previous
+
+    LossObserver().expand(document, {"documentLoader": make_local_document_loader({})})
+    return sorted(set(dropped))
 
 
 def find_invalid_context_type_mappings(context: Any) -> List[str]:

@@ -7,6 +7,10 @@
       "sex": {
         "@id": "entityDoc:sex",
         "@context": {
+          "entityDoc": {
+            "@id": "entities:biomaterial/schema.json#",
+            "@prefix": true
+          },
           "phenotypicSex": "entityDoc:phenotypicSex",
           "id": "schema:identifier",
           "label": "rdfs:label"

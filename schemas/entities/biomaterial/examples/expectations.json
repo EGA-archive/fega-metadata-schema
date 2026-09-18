@@ -1,0 +1,26 @@
+{
+  "biomaterial-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "biomaterial-invalid-multiple-biomaterial-categories.json": [
+    "/@type"
+  ],
+  "biomaterial-invalid-multiple-ega-types.json": [
+    "/@type"
+  ],
+  "biomaterial-invalid-property-samplingSource.json": [
+    "/samplingSource"
+  ],
+  "biomaterial-invalid-required-biomaterial-category.json": [
+    "/@type"
+  ],
+  "biomaterial-invalid-required-checklist-type.json": [
+    "/@type"
+  ],
+  "biomaterial-invalid-required-sex.json": [
+    "/sex"
+  ],
+  "biomaterial-invalid-type-atType.json": [
+    "/@type"
+  ]
+}

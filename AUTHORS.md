@@ -18,7 +18,6 @@
 | FEGA Canada ([Canada's Michael Smith Genome Sciences Centre](https://ror.org/0333j0897)) | Member | Young Cheng | [0000-0002-3484-4493](https://orcid.org/0000-0002-3484-4493) | | ycheng [at] bcgsc.ca |
 | FEGA Canada ([Canada's Michael Smith Genome Sciences Centre](https://ror.org/0333j0897)) | Member | Grant McNair  | [0009-0006-1362-0681](https://orcid.org/0009-0006-1362-0681) | | gmcnair [at] bcgsc.ca |
 | CEGA ([European Bioinformatics Institute](https://ror.org/02catss52)) | Member | Gabriele Rinck | [0000-0001-6428-3431](https://orcid.org/0000-0001-6428-3431) | [GabiRinck](https://github.com/GabiRinck) | rinck [at] ebi.ac.uk |
-| FEGA Portugal ([BioData.pt](https://ror.org/02q7abn51)) | Member | Miguel Cisneiros e Faria Lourenço | [0000-0002-6681-8564](https://orcid.org/0000-0002-6681-8564) | [mcisneiros](https://github.com/mcisneiros) | mcisneiros [at] @biodata.pt |
 | FEGA France ([Institut Français de Bioinformatique](https://ror.org/045f7pv37)) | Member | Alban Gaignard | [0000-0002-3597-8557](https://orcid.org/0000-0002-3597-8557) | [albangaignard](https://github.com/albangaignard) | alban.gaignard [at] univ-nantes.fr |
 | FEGA Greece ([Biomedical Sciences Research Center Alexander Fleming](https://ror.org/013x0ky90)) | Member | Alexandros Dimopoulos | [0000-0002-4602-2040](https://orcid.org/0000-0002-4602-2040) | | dimopoulos [at] fleming.gr |
 | FEGA France ([Institut Français de Bioinformatique](https://ror.org/045f7pv37)) | Member | David Salgado | [0000-0002-5905-3591](https://orcid.org/0000-0002-5905-3591) | [d-salgado](https://github.com/d-salgado) | david.salgado [at] france-bioinformatique.fr |
@@ -28,6 +27,7 @@
 | FEGA Germany (GHGA) ([German Center for Neurodegenerative Diseases](https://ror.org/043j0f473)) | Member | Karoline Mauer | [0000-0002-9454-7941](https://orcid.org/0000-0002-9454-7941) | [mauerk](https://github.com/mauerk) | karoline.mauer [at] dzne.de |
 | FEGA Czech Republic  ([Masaryk University](https://ror.org/02j46qs45)) | Member | Helge Hecht | [0000-0001-6744-996X](https://orcid.org/0000-0001-6744-996X) | [hechth](https://github.com/hechth) | helge.hecht [at] recetox.muni.cz |
 | CEGA ([Centre for Genomic Regulation](https://ror.org/03wyzt892)) | Member | Aldar Cabrelles Muñoz | [0000-0002-1131-3139](https://orcid.org/0000-0002-1131-3139) | [acabrelles](https://github.com/acabrelles) | aldar.cabrelles [at] crg.eu |
+| FEGA Switzerland ([SIB Swiss Institute of Bioinformatics](https://ror.org/002n09z45)) | Member | Orlin Topalov | [0009-0009-2548-7947](https://orcid.org/0009-0009-2548-7947) | [orryn](https://github.com/orryn) | orlin.topalov [at] sib.swiss |
 
 
 #### Former members
@@ -37,15 +37,5 @@
 | CEGA ([Centre for Genomic Regulation](https://ror.org/03wyzt892)) | Member | Marta Huertas | [0000-0003-2665-0899](https://orcid.org/0000-0003-2665-0899) | [m-huertasp](https://github.com/m-huertasp) |  |
 | FEGA Germany (GHGA) ([European Molecular Biology Laboratory](https://ror.org/03mstc592)) | MWG Co-chair | Anandhi lyappan | [0000-0002-5571-4962](https://orcid.org/0000-0002-5571-4962) | [anandhi-iyappan](https://github.com/anandhi-iyappan) | anandhi.iyappan [at] embl.de |
 | FEGA Poland ([University of Lodz](https://ror.org/05cq64r17)) | Member | Błażej Marciniak | [0000-0003-1571-1473](https://orcid.org/0000-0003-1571-1473) | [blazejmarciniak](https://github.com/blazejmarciniak) | blazej.marciniak [at] biol.uni.lodz.pl |
+| FEGA Portugal ([BioData.pt](https://ror.org/02q7abn51)) | Member | Miguel Cisneiros e Faria Lourenço | [0000-0002-6681-8564](https://orcid.org/0000-0002-6681-8564) | [mcisneiros](https://github.com/mcisneiros) | mcisneiros [at] @biodata.pt |
 
-## Repository contributors and authors
-
-| Name | GitHub tag | ORCID | Contribution to | First commit |
-|------|------------|-------|-----------------|--------------|
-| Marcos Casado Barbero | [M-casado](https://github.com/M-casado) | [0000-0002-1234-5678](https://orcid.org/0000-0002-7747-6256) | [schemas](./schemas/), [standards](./standards/), [scripts](./scripts/), [docs](./docs/), [build](./build/), [.github](.github/), [src](./src/), [Technical report](./docs/FEGA-metadata-technical-report.md), root documentation | ``2024-11-13`` |
-| Anandhi Iyappan | [anandhi-iyappan](https://github.com/anandhi-iyappan) | [0000-0002-5571-4962](https://orcid.org/0000-0002-5571-4962) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |
-| Silvia Bahena |  | [0000-0002-2734-0449](https://orcid.org/0000-0002-2734-0449) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |
-| Amy Curwin |  | [0000-0003-1086-2483](https://orcid.org/0000-0003-1086-2483) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |
-| Coline Thomas |  | [0000-0003-2253-1171](https://orcid.org/0000-0003-2253-1171) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |
-| Jorge Oliveira |  | [0000-0001-6425-2176](https://orcid.org/0000-0001-6425-2176) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |
-| Miguel Cisneiros e Faria Lourenço | [mcisneiros](https://github.com/mcisneiros) | [0000-0002-6681-8564](https://orcid.org/0000-0002-6681-8564) | [Technical report](./docs/FEGA-metadata-technical-report.md) |  |

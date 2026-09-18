@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
   "type": "object",
   "title": "EGA policy metadata schema",
-  "meta:version": "1.0.0-draft.1",
+    "meta:version": "1.0.0-draft.2",
   "$async": true,
   "description": "Data access policy, governing how data is processed, protected, and shared.",
   "@context": "./context.jsonld",
@@ -56,7 +56,7 @@
       "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionPolicy"
     }
   ],
-  "required": [ "@id", "@type", "title", "description", "status", "governedBy", "inSubmission" ],
+  "required": [ "@id", "@type", "title", "description", "status", "governedBy" ],
   "anyOf": [
     { "required": ["policyText"] },
     { "required": ["policyDocument"] }
@@ -421,10 +421,6 @@
       "allOf": [
         { "$ref": "../../common/schema.json#/$defs/sameAs" }
       ]
-    },
-    
-    "inSubmission": {
-      "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
   }
 }

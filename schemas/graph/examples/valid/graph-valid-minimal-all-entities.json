@@ -35,11 +35,7 @@
               "administrator"
             ]
           }
-        ],
-        "inSubmission": {
-          "@id": "ega:EGAB00000000001",
-          "@type": "ega:submission"
-        }
+        ]
       },
       {
         "@id": "ega:EGAN00000000001",
@@ -50,7 +46,7 @@
         ],
         "label": "SUBJECT-0001",
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -61,7 +57,7 @@
         "name": "Barcelona adult genomics cohort",
         "cohortType": "study-defined",
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -94,7 +90,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -189,7 +185,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -208,10 +204,6 @@
             "@type": "ega:DAC"
           }
         ],
-        "inSubmission": {
-          "@id": "ega:EGAB00000000001",
-          "@type": "ega:submission"
-        },
         "policyText": "Use of the dataset is limited to the approved research purpose ... . Users must protect confidentiality, must not attempt re-identification, and must report suspected misuse to the governing DAC."
       },
       {
@@ -238,7 +230,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -266,7 +258,7 @@
           "name": "European Genome-phenome Archive"
         },
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -287,7 +279,7 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
@@ -303,12 +295,12 @@
           }
         ],
         "inSubmission": {
-          "@id": "ega:EGAB00000000001",
+          "@id": "ega:EGA00000000001",
           "@type": "ega:submission"
         }
       },
       {
-        "@id": "ega:EGAB00000000001",
+        "@id": "ega:EGA00000000001",
         "@type": "ega:submission",
         "title": "Example Genomics submission",
         "status": "draft",

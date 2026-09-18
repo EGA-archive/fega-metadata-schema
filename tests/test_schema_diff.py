@@ -105,3 +105,27 @@ def test_meta_enum_keys_must_match_enum() -> None:
     assert len(errors) == 1
     assert "missing=['b']" in errors[0]
     assert "extra=['c']" in errors[0]
+
+
+def test_removing_zero_min_contains_tightens_accepted_arrays():
+    from jsonschema import Draft202012Validator
+
+    old = {"type": "array", "contains": {"type": "integer"}, "minContains": 0}
+    new = {"type": "array", "contains": {"type": "integer"}}
+    assert Draft202012Validator(old).is_valid([])
+    assert not Draft202012Validator(new).is_valid([])
+    assert compare_schemas(old, new).severity == Severity.MAJOR
+
+
+@pytest.mark.parametrize("keyword,value", [
+    ("if", {"type": "string"}), ("then", False), ("else", False),
+    ("not", {"type": "integer"}), ("contains", {"type": "integer"}),
+    ("prefixItems", [{"type": "integer"}]), ("customAssertion", True),
+])
+def test_removed_ambiguous_keywords_require_review(keyword, value):
+    assert compare_schemas({keyword: value}, {}).severity == Severity.UNKNOWN
+
+
+@pytest.mark.parametrize("keyword,value", [("minimum", 2), ("maxItems", 3), ("enum", ["a"]), ("type", "integer")])
+def test_removed_independent_constraints_are_relaxations(keyword, value):
+    assert compare_schemas({keyword: value}, {}).severity == Severity.MINOR

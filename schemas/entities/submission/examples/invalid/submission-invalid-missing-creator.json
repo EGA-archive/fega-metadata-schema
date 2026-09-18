@@ -2,7 +2,7 @@
   "schema": {"$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json"},
   "data": {
     "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
-    "@id": "ega:EGAB00000000103",
+    "@id": "ega:EGA00000000103",
     "@type": "ega:submission",
     "title": "Submission without creator",
     "status": "draft",

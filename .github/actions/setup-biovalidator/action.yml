@@ -7,13 +7,17 @@ inputs:
     required: false
     default: '3020'
   pid_file:
-    description: File in which to record the background process identifier.
+    description: PID file created and managed by Biovalidator.
     required: false
     default: biovalidator.pid
   log_file:
     description: File to which Biovalidator output is written.
     required: false
     default: biovalidator.log
+  rate_limit_max:
+    description: Requests allowed per minute for this isolated CI validator.
+    required: false
+    default: '5000'
 
 runs:
   using: composite
@@ -31,7 +35,26 @@ runs:
         BIOVALIDATOR_PORT: ${{ inputs.port }}
         BIOVALIDATOR_PID_FILE: ${{ inputs.pid_file }}
         BIOVALIDATOR_LOG_FILE: ${{ inputs.log_file }}
+        BIOVALIDATOR_PID_PATH: ${{ inputs.pid_file }}
+        BIOVALIDATOR_LOG_DIR: ${{ runner.temp }}/biovalidator-logs
+        BIOVALIDATOR_RATE_LIMIT_ENABLED: 'true'
+        BIOVALIDATOR_RATE_LIMIT_MAX: ${{ inputs.rate_limit_max }}
+        BIOVALIDATOR_RATE_LIMIT_WINDOW_MS: '60000'
       run: |
+        [[ "$BIOVALIDATOR_RATE_LIMIT_MAX" =~ ^[1-9][0-9]*$ ]] || exit 1
+        node --version
+        npm ls -g biovalidator --depth=0
+        printf 'CI rate allowance: %s requests per 60000 ms\n' "$BIOVALIDATOR_RATE_LIMIT_MAX"
+        printf 'Schema inputs: schemas/**/schema.json, schemas/**/*.schema.json, standards/json-schema/**/*.json\n'
+        cleanup_failed_start() {
+          cat "$BIOVALIDATOR_LOG_FILE" 2>/dev/null || true
+          if [[ -n "${validator_pid:-}" ]]; then
+            kill "$validator_pid" 2>/dev/null || true
+            wait "$validator_pid" 2>/dev/null || true
+          fi
+          rm -f "$BIOVALIDATOR_PID_FILE"
+        }
+        trap cleanup_failed_start EXIT
         node "$(npm root -g)/biovalidator/src/biovalidator.js" \
           --port "$BIOVALIDATOR_PORT" \
           --ref './schemas/**/schema.json' \
@@ -39,13 +62,13 @@ runs:
           --ref './standards/json-schema/**/*.json' \
           > "$BIOVALIDATOR_LOG_FILE" 2>&1 &
         validator_pid=$!
-        printf '%s\n' "$validator_pid" > "$BIOVALIDATOR_PID_FILE"
         for attempt in {1..20}; do
+          kill -0 "$validator_pid" 2>/dev/null || break
           if curl --fail --silent --head "http://localhost:${BIOVALIDATOR_PORT}/validate"; then
+            printf 'Biovalidator ready on port %s (PID %s)\n' "$BIOVALIDATOR_PORT" "$validator_pid"
+            trap - EXIT
             exit 0
           fi
           sleep 2
         done
-        cat "$BIOVALIDATOR_LOG_FILE"
-        kill "$validator_pid" 2>/dev/null || true
         exit 1

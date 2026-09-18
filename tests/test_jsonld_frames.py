@@ -16,6 +16,63 @@ from validate_jsonld_frames import (
 )
 from fega_tools.jsonld_utils import build_id_to_path_map
 
+import pytest
+from pyld import jsonld
+import validate_jsonld_frames as frames
+
+
+def _payload_state(route, data, *, actual_context=None, graph=False):
+    context = {"link": "https://example.org/link", "other": "https://example.org/other",
+               "items": {"@id": "https://example.org/items", "@container": "@list"}}
+    canonical = jsonld.normalize({"@context": context, **data}, {"algorithm": "URDNA2015", "format": "application/n-quads"})
+
+    def loader(url, options=None):
+        return {"contentType": "application/ld+json", "contextUrl": None,
+                "documentUrl": url, "document": {"@context": actual_context or context}}
+
+    return {"ready": True, "path": Path("case.json"), "schema_ref": "https://example.org/schema",
+            "inline_context": context, "document_loader": loader,
+            "is_graph_document": graph, "original_canonical": canonical,
+            "routes": {route: {"result": None, "primary": data, "framed": data}}}
+
+
+@pytest.mark.parametrize("route", frames.ROUTES)
+@pytest.mark.parametrize("properties", [
+    {"link": {"@id": "_:anonymous"}},
+    {"link": {"@id": "_:shared"}, "other": {"@id": "_:shared"}},
+    {"items": []},
+    {"link": {"@value": "text", "@language": "en"}},
+])
+def test_final_payload_preserves_anonymous_links_lists_and_literals(monkeypatch, route, properties):
+    state = _payload_state(route, {"@id": "https://example.org/root", **properties})
+    sent = []
+    monkeypatch.setattr(frames, "post_to_validator", lambda doc, url: sent.append(doc) or [])
+    frames._validate_route_output(state, route, "unused", False)
+    assert state["routes"][route]["result"]["status"] == "validation_passed"
+    assert len(sent) == 1
+    normalized = jsonld.normalize(sent[0]["data"], {
+        "algorithm": "URDNA2015", "format": "application/n-quads", "documentLoader": state["document_loader"]})
+    assert normalized == state["original_canonical"]
+
+
+@pytest.mark.parametrize("route", frames.ROUTES)
+def test_final_payload_uses_its_actual_context(monkeypatch, route):
+    state = _payload_state(route, {"@id": "https://example.org/root", "link": "value"},
+                           actual_context={"link": "https://example.org/wrong"})
+    monkeypatch.setattr(frames, "post_to_validator", lambda *args: pytest.fail("Corrupt RDF reached schema validation"))
+    frames._validate_route_output(state, route, "unused", False)
+    assert state["routes"][route]["result"]["failed_stage"] == "payload_rdf_equivalence"
+
+
+@pytest.mark.parametrize("route", frames.ROUTES)
+def test_corrupt_graph_projection_fails_even_when_raw_frame_matches(monkeypatch, route):
+    data = {"@id": "https://example.org/graph", "@graph": [{"@id": "https://example.org/node", "link": "kept"}]}
+    state = _payload_state(route, data, graph=True)
+    state["routes"][route]["primary"] = {"@id": data["@id"], "@graph": []}
+    monkeypatch.setattr(frames, "post_to_validator", lambda *args: pytest.fail("Corrupt projection reached schema validation"))
+    frames._validate_route_output(state, route, "unused", False)
+    assert state["routes"][route]["result"]["failed_stage"] == "payload_rdf_equivalence"
+
 
 def test_primary_selection_matches_equivalent_compact_and_absolute_ids() -> None:
     """Framing must compare node identifiers by JSON-LD value, not spelling."""

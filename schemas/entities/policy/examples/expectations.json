@@ -1,0 +1,17 @@
+{
+  "policy-invalid-empty-policyText.json": [
+    "/policyText"
+  ],
+  "policy-invalid-required-governedBy.json": [
+    "/governedBy"
+  ],
+  "policy-invalid-required-title.json": [
+    "/title"
+  ],
+  "policy-invalid-root-accession.json": [
+    "/@id"
+  ],
+  "policy-invalid-status.json": [
+    "/status"
+  ]
+}

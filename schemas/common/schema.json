@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
     "type": "object",
     "title": "EGA common metadata definitions",
-    "meta:version": "1.0.0-draft.1",
+    "meta:version": "1.0.0-draft.2",
     "$async": true,
     "description": "Metadata schema for common definitions inherited by other EGA metadata schemas.",
     "@context": "./context.jsonld",
@@ -301,9 +301,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction": {
                         "ontologies": ["obo:efo"],
-                        "classes": ["EFO:0004446"],
-                        "relations": ["rdfs:subClassOf"],
-                        "direct": false,
+                        "allChildrenOf": ["EFO:0004446"],
                         "includeSelf": false
                     },
                     "examples": [ "CHEBI:33697", "EFO:0008479" ]
@@ -313,9 +311,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction": {
                         "ontologies": ["obo:efo"],
-                        "classes": ["EFO:0004446"],
-                        "relations": ["rdfs:subClassOf"],
-                        "direct": false,
+                        "allChildrenOf": ["EFO:0004446"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -946,8 +942,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:efo"],
-                        "classes": ["EFO:0000408"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EFO:0000408"],
                         "includeSelf": false
                     },
                     "examples": [ "MONDO:0003982", "EFO:0009483", "MONDO:0016523" ]
@@ -956,8 +951,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:efo"],
-                        "classes": ["EFO:0000408"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EFO:0000408"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -978,8 +972,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:ordo"],
-                        "classes": ["ORDO:377788"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["ORDO:377788"],
                         "includeSelf": false
                     },
                     "examples": [ "ORDO:86849", "ORDO:86852", "ORDO:98842" ]
@@ -988,8 +981,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:ordo"],
-                        "classes": ["ORDO:377788"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["ORDO:377788"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1010,8 +1002,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:mondo"],
-                        "classes": ["MONDO:0700096"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["MONDO:0700096"],
                         "includeSelf": false
                     },
                     "examples": [ "MONDO:0013662", "MONDO:0009303", "MONDO:0003687" ]
@@ -1020,8 +1011,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:mondo"],
-                        "classes": ["MONDO:0700096"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["MONDO:0700096"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1042,8 +1032,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:hp"],
-                        "classes": ["HP:0000118"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["HP:0000118"],
                         "includeSelf": false
                     },
                     "examples": [ "HP:0008929", "HP:0012541", "HP:0025421" ]
@@ -1052,8 +1041,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:hp"],
-                        "classes": ["HP:0000118"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["HP:0000118"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1074,8 +1062,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:doid"],
-                        "classes": ["DOID:4"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DOID:4"],
                         "includeSelf": false
                     },
                     "examples": [ "DOID:11665", "DOID:6088", "DOID:1307" ]
@@ -1084,8 +1071,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:doid"],
-                        "classes": ["DOID:4"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DOID:4"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1107,8 +1093,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:snomed"],
-                        "classes": ["SNOMED:64572001"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["SNOMED:64572001"],
                         "includeSelf": false
                     },
                     "examples": [ "SNOMED:229629003", "SNOMED:87144001", "SNOMED:361268000" ]
@@ -1117,8 +1102,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:snomed"],
-                        "classes": ["SNOMED:64572001"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["SNOMED:64572001"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1620,8 +1604,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:uberon"],
-                        "classes": ["UBERON:0001062"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["UBERON:0001062"],
                         "includeSelf": false
                     },
                     "examples": [ "UBERON:0001264", "UBERON:0003622", "UBERON:0005035" ]
@@ -1630,8 +1613,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:uberon"],
-                        "classes": ["UBERON:0001062"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["UBERON:0001062"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1752,8 +1734,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:edam"],
-                        "classes": ["EDAM:format_1915"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EDAM:format_1915"],
                         "includeSelf": false
                     },
                     "examples": [ "EDAM:format_3749", "EDAM:format_1930", "EDAM:format_2572", "EDAM:format_3016", "EDAM:format_2072" ]
@@ -1762,8 +1743,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:edam"],
-                        "classes": ["EDAM:format_1915"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EDAM:format_1915"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -1800,8 +1780,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:edam"],
-                        "classes": [ "EDAM:data_0006" ],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": [ "EDAM:data_0006" ],
                         "includeSelf": false
                     },
                     "examples": [ "EDAM:data_2044", "EDAM:data_2977", "EDAM:data_0863" ]
@@ -1810,8 +1789,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:edam"],
-                        "classes": [ "EDAM:data_0006" ],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": [ "EDAM:data_0006" ],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -2392,7 +2370,7 @@
                     "$ref": "../common/schema.json#/$defs/@id",
                     "examples": [
                         "urn:uuid:bd08aa08-47ac-412d-b978-68660c23928e",
-                        "ega:EGAB00000000001#component-1"
+                        "ega:EGA00000000001#component-1"
                     ]
                 },
                 "agent": {
@@ -2591,9 +2569,7 @@
                         "title": "Ontology constraints for this specific id",
                         "graphRestriction": {
                             "ontologies": ["obo:cro"],
-                            "classes": ["CRO:0000000"],
-                            "relations": ["rdfs:subClassOf"],
-                            "direct": false,
+                            "allChildrenOf": ["CRO:0000000"],
                             "includeSelf": false
                         },
                         "examples": [ "CREDIT:00000013", "CRO:0000101", "CRO:0000055", "CREDIT:00000005" ]
@@ -2602,9 +2578,7 @@
                         "title": "Ontology constraints for this specific label",
                         "graphRestriction": {
                             "ontologies": ["obo:cro"],
-                            "classes": ["CRO:0000000"],
-                            "relations": ["rdfs:subClassOf"],
-                            "direct": false,
+                            "allChildrenOf": ["CRO:0000000"],
                             "includeSelf": false,
                             "queryFields": [ "label" ]
                         },
@@ -2704,16 +2678,14 @@
                         {
                             "graphRestriction": {
                                 "ontologies": [ "obo:ncit" ],
-                                "classes": [ "mesh:D005842" ],
-                                "relations": [ "rdfs:subClassOf" ],
+                                "allChildrenOf": [ "mesh:D005842" ],
                                 "includeSelf": false
                             }
                         },
                         {
                             "graphRestriction": {
                                 "ontologies": [ "obo:gaz" ],
-                                "classes": [ "GAZ:00000448" ],
-                                "relations": [ "rdfs:subClassOf" ],
+                                "allChildrenOf": [ "GAZ:00000448" ],
                                 "includeSelf": false
                             }
                         }
@@ -2729,8 +2701,7 @@
                         {
                             "graphRestriction": {
                                 "ontologies": [ "obo:ncit" ],
-                                "classes": [ "mesh:D005842" ],
-                                "relations": [ "rdfs:subClassOf" ],
+                                "allChildrenOf": [ "mesh:D005842" ],
                                 "queryFields": [ "label" ],
                                 "includeSelf": false
                             }
@@ -2738,8 +2709,7 @@
                         {
                             "graphRestriction": {
                                 "ontologies": [ "obo:gaz" ],
-                                "classes": [ "GAZ:00000448" ],
-                                "relations": [ "rdfs:subClassOf" ],
+                                "allChildrenOf": [ "GAZ:00000448" ],
                                 "queryFields": [ "label" ],
                                 "includeSelf": false
                             }
@@ -2776,8 +2746,7 @@
                 "id": {
                     "graphRestriction": {
                         "ontologies": [ "obo:ncit" ],
-                        "classes": [ "NCIT:C25464" ],
-                        "relations": [ "rdfs:subClassOf"],
+                        "allChildrenOf": [ "NCIT:C25464" ],
                         "includeSelf": false
                     },
                     "examples": [
@@ -2788,8 +2757,7 @@
                 "label": {
                     "graphRestriction": {
                         "ontologies": [ "obo:ncit" ],
-                        "classes": [ "NCIT:C25464" ],
-                        "relations": [ "rdfs:subClassOf"],
+                        "allChildrenOf": [ "NCIT:C25464" ],
                         "queryFields": [ "label" ],
                         "includeSelf": false
                     },
@@ -2847,8 +2815,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction": {
                         "ontologies": [ "obo:ror" ],
-                        "classes": [ "OBI:0000245" ],
-                        "relations": [ "rdfs:subClassOf"],
+                        "allChildrenOf": [ "OBI:0000245" ],
                         "includeSelf": false
                     },
                     "examples": [
@@ -2860,8 +2827,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies": [ "obo:ror" ],
-                        "classes": [ "OBI:0000245" ],
-                        "relations": [ "rdfs:subClassOf"],
+                        "allChildrenOf": [ "OBI:0000245" ],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -2912,8 +2878,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:duo"],
-                        "classes": ["DUO:0000001"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DUO:0000001"],
                         "includeSelf": false
                     },
                     "examples": [ "DUO:0000042", "DUO:0000004", "DUO:0000007" ]
@@ -2922,8 +2887,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:duo"],
-                        "classes": ["DUO:0000001"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DUO:0000001"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -2960,8 +2924,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:duo"],
-                        "classes": ["DUO:0000017"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DUO:0000017"],
                         "includeSelf": false
                     },
                     "examples": [ "DUO:0000043", "DUO:0000046", "DUO:0000028" ]
@@ -2970,8 +2933,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:duo"],
-                        "classes": ["DUO:0000017"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["DUO:0000017"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -3066,8 +3028,7 @@
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
                         "ontologies" : ["obo:efo"],
-                        "classes": ["EFO:0002773"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EFO:0002773"],
                         "includeSelf": false
                     },
                     "examples": [ "EFO:0030056", "EFO:0005396", "EFO:0008913" ]
@@ -3076,8 +3037,7 @@
                     "title": "Ontology constraints for this specific label",
                     "graphRestriction":  {
                         "ontologies" : ["obo:efo"],
-                        "classes": ["EFO:0002773"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["EFO:0002773"],
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
@@ -3136,8 +3096,7 @@
                 "id": {
                     "graphRestriction": {
                         "ontologies": ["obo:uo"],
-                        "classes": ["http://purl.obolibrary.org/obo/UO_0000000"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["http://purl.obolibrary.org/obo/UO_0000000"],
                         "includeSelf": false
                     },
                     "examples": ["UO:0000017", "UO:0000027"]
@@ -3145,8 +3104,7 @@
                 "label": {
                     "graphRestriction": {
                         "ontologies": ["obo:uo"],
-                        "classes": ["http://purl.obolibrary.org/obo/UO_0000000"],
-                        "relations": ["rdfs:subClassOf"],
+                        "allChildrenOf": ["http://purl.obolibrary.org/obo/UO_0000000"],
                         "queryFields": ["label"],
                         "includeSelf": false
                     },
@@ -4394,11 +4352,11 @@
             ],
             "examples": [
                 {
-                    "@id": "ega:EGAB00000000001",
+                    "@id": "ega:EGA00000000001",
                     "@type": "ega:submission"
                 },
                 {
-                    "@id": "ega:EGAB00001000002",
+                    "@id": "ega:EGA00001000002",
                     "@type": ["ega:submission", "prov:Collection"]
                 }
             ]
@@ -4572,14 +4530,14 @@
             "title": "Stable identifier for an EGA entity",
             "description": "A stable identifier for an EGA entity",
             "type": "string",
-            "pattern": "^ega:EGA[A-Z][0-9]{11}$",
+            "pattern": "^ega:EGA(?:[A-Z])?[0-9]{11}$",
             "examples": [
                 "ega:EGAS00000000001",
                 "ega:EGAC00001000002",
                 "ega:EGAP00000000001",
                 "ega:EGAN00001000002",
                 "ega:EGAD00000000001",
-                "ega:EGAB00001000002",
+                "ega:EGA00000000001",
                 "ega:EGAF00000000001",
                 "ega:EGAA00001000002",
                 "ega:EGAT00000000001",
@@ -4670,12 +4628,12 @@
             "allOf": [
                 { "$ref": "../common/schema.json#/$defs/egaStableIdentifierCurie" },
                 {
-                    "pattern": "^ega:EGAB"
+                    "pattern": "^ega:EGA[0-9]{11}$"
                 }
             ],
             "examples": [
-                "ega:EGAB00000000001",
-                "ega:EGAB00001000002"
+                "ega:EGA00000000001",
+                "ega:EGA00001000002"
             ]
         },
 

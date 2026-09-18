@@ -1,0 +1,41 @@
+{
+  "submission-invalid-collaborator-missing-access.json": [
+    "/components/1/accessLevel"
+  ],
+  "submission-invalid-entity-reference.json": [
+    "/hasEntities/0/@id"
+  ],
+  "submission-invalid-missing-creator.json": [
+    "/components"
+  ],
+  "submission-invalid-missing-owner.json": [
+    "/components"
+  ],
+  "submission-invalid-multiple-creators.json": [
+    "/components"
+  ],
+  "submission-invalid-multiple-owners.json": [
+    "/components"
+  ],
+  "submission-invalid-owner-missing-access.json": [
+    "/components/0/accessLevel"
+  ],
+  "submission-invalid-owner-read.json": [
+    "/components/0/accessLevel"
+  ],
+  "submission-invalid-root-id.json": [
+    "/@id"
+  ],
+  "submission-invalid-root-type.json": [
+    "/@type"
+  ],
+  "submission-invalid-self-entity.json": [
+    "/hasEntities/0/@id"
+  ],
+  "submission-invalid-status.json": [
+    "/status"
+  ],
+  "submission-invalid-user-id.json": [
+    "/components/0/agent/@id"
+  ]
+}

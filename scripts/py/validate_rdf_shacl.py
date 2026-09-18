@@ -33,7 +33,6 @@ try:
         validate_against_shacl,
     )
     from fega_tools.validation_common import (
-        CATEGORIES,
         DEFAULT_ROOT,
         INVALID_STATUS,
         SCRIPT_ERROR_STATUS,
@@ -63,6 +62,7 @@ LOGGER = logging.getLogger(Path(__file__).stem)
 
 
 SUMMARY_FILENAME = "shacl_summary.json"
+RDF_CATEGORIES = ("valid", "invalid")
 
 
 def materialize_data_context(
@@ -186,6 +186,9 @@ def load_shapes(shapes_paths: Sequence[Path]) -> Tuple[List[Path], List[Any], An
     """Discover, parse, and merge SHACL shape files."""
     from rdflib import Graph
 
+    for path in shapes_paths:
+        if not path.exists():
+            raise FileNotFoundError(f"Required shape input not found: {path}")
     shape_files = collect_candidate_rdf(list(shapes_paths))
     if not shape_files:
         raise FileNotFoundError("No RDF shape files were found under the given inputs")
@@ -202,6 +205,10 @@ def load_shapes(shapes_paths: Sequence[Path]) -> Tuple[List[Path], List[Any], An
     for graph in shape_graphs:
         merged_shapes += graph
 
+    from pyshacl import validate
+
+    validate(Graph(), shacl_graph=merged_shapes, meta_shacl=True, do_owl_imports=False)
+
     expected_types = extract_expected_types_from_shapes(shape_graphs)
     LOGGER.info("Discovered %d RDF shape file(s)", len(shape_files))
     LOGGER.debug("Expected types from shapes: %s", expected_types)
@@ -214,12 +221,15 @@ def validate_file_shacl(
     shapes_graph: Any,
     id_to_path_map: Dict[str, Path],
     required_root_type: str | None = None,
+    document: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """Validate one wrapped EGA metadata file against merged SHACL shapes."""
+    from rdflib import RDF, URIRef
+
     result: Dict[str, Any] = {"file": str(path)}
 
     try:
-        document = load_wrapped_example(path)
+        document = load_wrapped_example(path) if document is None else document
         jsonld_data = materialize_data_context(document["data"], path, id_to_path_map)
         data_graph = jsonld_to_rdf_graph(jsonld_data)
         found_types = sorted(extract_types_from_graph(data_graph))
@@ -263,6 +273,10 @@ def validate_file_shacl(
             "conforms": conforms,
             "types": found_types,
             "n_violations": len(violations),
+            "violations": violations,
+            "target_count": sum(1 for _ in data_graph.subjects(
+                RDF.type, URIRef(required_root_type)
+            )) if required_root_type else None,
             "violation_summary": _build_violation_summary(violations),
             "shacl_report": report_text,
         }
@@ -335,7 +349,7 @@ def summarize_entity(
                 coverage_gaps,
                 required_root_type,
             )
-            for category in CATEGORIES
+            for category in RDF_CATEGORIES
         },
     }
 
@@ -349,7 +363,7 @@ def validate_rdf_shacl(
     include_shacl_reports: bool = False,
     required_root_type: str | None = None,
 ) -> Dict[str, Any]:
-    """Validate valid and invalid FEGA examples against RDF/SHACL shapes."""
+    """Validate valid and invalid FEGA examples against supplied shapes."""
     entity_dirs = find_entity_dirs(
         root,
         entity,
@@ -363,7 +377,7 @@ def validate_rdf_shacl(
     id_to_path_map = build_id_to_path_map(repo_root)
     shape_files, _shape_graphs, merged_shapes, expected_types = load_shapes(shapes_paths)
 
-    coverage_gaps = find_example_coverage_gaps(entity_dirs, CATEGORIES)
+    coverage_gaps = find_example_coverage_gaps(entity_dirs, RDF_CATEGORIES)
     for gap in coverage_gaps:
         LOGGER.warning(
             "Coverage gap for %s: %s", gap["entity"], format_coverage_gap(gap)
@@ -380,14 +394,14 @@ def validate_rdf_shacl(
         )
         for entity_dir in entity_dirs
     ]
-    totals = aggregate_category_summaries(file_summaries)
+    totals = aggregate_category_summaries(file_summaries, RDF_CATEGORIES)
     category_totals = totals.pop("category_totals")
     valid_examples_passed = category_totals["valid"]["passed"]
     invalid_examples_passed = category_totals["invalid"]["passed"]
     input_paths = [
         entity_summary["categories"][category]["input_path"]
         for entity_summary in file_summaries
-        for category in CATEGORIES
+        for category in RDF_CATEGORIES
     ]
 
     summary: Dict[str, Any] = {
@@ -411,7 +425,7 @@ def validate_rdf_shacl(
 
     if not include_shacl_reports:
         for entity_summary in summary["files"]:
-            for category in CATEGORIES:
+            for category in RDF_CATEGORIES:
                 for result in entity_summary["categories"][category]["files"]:
                     result.pop("shacl_report", None)
 
@@ -427,7 +441,7 @@ def _log_results(summary: Dict[str, Any]) -> None:
     invalid_total = category_totals["invalid"]["total_files"]
 
     LOGGER.info("%d / %d valid files passed SHACL validation", valid_passed, valid_total)
-    LOGGER.info("%d / %d invalid files failed SHACL validation", invalid_passed, invalid_total)
+    LOGGER.info("%d / %d invalid files rejected by SHACL validation", invalid_passed, invalid_total)
 
     log_suite_status(LOGGER, summary["passed"])
 
@@ -436,18 +450,17 @@ def make_arg_parser() -> argparse.ArgumentParser:
     """Build the command-line parser for RDF/SHACL suite validation."""
     parser = argparse.ArgumentParser(
         prog="validate_rdf_shacl",
-        description="Validate FEGA valid/invalid example suites against RDF/SHACL shapes.",
+        description="Validate valid and invalid RDF examples against SHACL shapes.",
         epilog=(
             "Examples:\n"
             "  validate_rdf_shacl --root schemas/entities --entity dataset "
-            "--shapes standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl -v\n"
-            "  validate_rdf_shacl --root schemas/entities --all-entities "
-            "--shapes standards/rdf/healthdcat-ap"
+            "--shapes standards/rdf/dcatap/release-3.0.0/shapes.ttl "
+            "standards/rdf/healthdcat-ap/release-6.0.0/shacl/non-public-shapes-v6.ttl -v\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_root_argument(parser, default=DEFAULT_ROOT)
-    selection = parser.add_mutually_exclusive_group(required=True)
+    selection = parser.add_mutually_exclusive_group()
     selection.add_argument(
         "--entity",
         help=help_with_example("Validate one entity by directory name", "--entity dataset"),
@@ -462,8 +475,8 @@ def make_arg_parser() -> argparse.ArgumentParser:
         "-s",
         dest="shapes",
         nargs="+",
-        type=Path,
         required=True,
+        type=Path,
         help=help_with_example("SHACL shape files or directories", "--shapes standards/rdf"),
     )
     add_summary_arguments(parser, SUMMARY_FILENAME)

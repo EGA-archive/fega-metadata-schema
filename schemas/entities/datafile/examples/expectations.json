@@ -1,0 +1,17 @@
+{
+  "datafile-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "datafile-invalid-required-fileName.json": [
+    "/fileName"
+  ],
+  "datafile-invalid-type-atType.json": [
+    "/@type"
+  ],
+  "datafile-invalid-type-isPartOf.json": [
+    "/isPartOf/0/@type"
+  ],
+  "datafile-invalid-value-checksum.json": [
+    "/checksums/0/value"
+  ]
+}

@@ -43,7 +43,10 @@
           {
             "@id": "http://data.europa.eu/eli/reg/2016/679/2016-05-04"
           }
-        ]
+        ],
+        "dcat:accessURL": {
+          "@id": "https://ega-archive.org/datasets/EGAD00000000002/request"
+        }
       }
     ],
     "dcat:theme": [
@@ -94,7 +97,7 @@
       }
     ],
     "inSubmission": {
-      "@id": "ega:EGAB00000000001",
+      "@id": "ega:EGA00000000001",
       "@type": "ega:submission"
     }
   }

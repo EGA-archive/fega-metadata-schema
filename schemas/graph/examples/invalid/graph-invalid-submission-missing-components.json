@@ -8,7 +8,7 @@
     "@type": "ega:graph",
     "@graph": [
       {
-        "@id": "ega:EGAB00000000001",
+        "@id": "ega:EGA00000000001",
         "@type": "ega:submission",
         "title": "Example Genomics submission",
         "status": "draft"

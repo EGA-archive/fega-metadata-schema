@@ -10,7 +10,7 @@
         "@type": ["ega:biomaterial", "prov:Entity", "COB:0000022"],
         "label": "SUBJECT-invalid",
         "sex": {"phenotypicSex": {"id": "PATO:0000383", "label": "female"}},
-        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+        "inSubmission": {"@id": "ega:EGA-invalid", "@type": "ega:submission"}
       },
       {
         "@id": "ega:EGAT-invalid-lab",
@@ -21,7 +21,7 @@
         "labEquipment": [{"name": "Microcentrifuge"}],
         "reagent": [{"name": "Buffer"}],
         "keywords": ["DNA extraction"],
-        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+        "inSubmission": {"@id": "ega:EGA-invalid", "@type": "ega:submission"}
       },
       {
         "@id": "ega:EGAD-invalid",
@@ -31,7 +31,7 @@
         "datasetType": ["whole genome sequencing"],
         "hasPart": [{"@id": "ega:EGAF-missing", "@type": "ega:datafile"}],
         "hasPolicy": "ega:EGAP-invalid",
-        "inSubmission": {"@id": "ega:EGAB-invalid", "@type": "ega:submission"}
+        "inSubmission": {"@id": "ega:EGA-invalid", "@type": "ega:submission"}
       }
     ]
   }
