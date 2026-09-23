@@ -1,0 +1,38 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld",
+    "@id": "ega:EGAG00000000002",
+    "@type": "ega:graph",
+    "@graph": [
+      {
+        "@id": "ega:EGAJ00000000001",
+        "@type": "ega:project",
+        "title": "Inherited cardiac disease research programme",
+        "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+        "inSubmission": {
+          "@id": "ega:EGA00000000001",
+          "@type": "ega:submission"
+        }
+      },
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study",
+        "title": "Minimal case-control genomics study",
+        "description": "Minimal study metadata record for a case-control genomics investigation.",
+        "studyDesign": [
+          {
+            "id": "EFO:0001427",
+            "label": "case control design"
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGA00000000001",
+          "@type": "ega:submission"
+        }
+      }
+    ]
+  }
+}

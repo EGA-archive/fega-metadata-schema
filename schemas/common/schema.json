@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
     "type": "object",
     "title": "EGA common metadata definitions",
-    "meta:version": "1.0.0-draft.2",
+    "meta:version": "1.0.0-draft.3",
     "$async": true,
     "description": "Metadata schema for common definitions inherited by other EGA metadata schemas.",
     "@context": "./context.jsonld",
@@ -2171,6 +2171,145 @@
             }
         },
 
+        "publications": {
+            "type": "array",
+            "title": "Publications",
+            "description": "Scientific publications associated with the resource.",
+            "meta:sssomMappings": [
+                {
+                    "predicate_id": "skos:closeMatch",
+                    "object_id": "schema:citation",
+                    "mapping_justification": "semapv:ManualMappingCuration",
+                    "object_match_field": "rdfs:label",
+                    "subject_match_field": "rdfs:label",
+                    "author_id": [ "orcid:0000-0002-7747-6256" ],
+                    "creator_id": [ "orcid:0000-0002-7747-6256" ],
+                    "reviewer_id": [ "" ],
+                    "confidence": 1.0,
+                    "mapping_date": "2026-07-07"
+                }
+            ],
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "allOf": [
+                    {
+                        "$ref": "../common/schema.json#/$defs/externalIdentifier"
+                    }
+                ]
+            },
+            "examples": [
+                [
+                    "pubmed:16333295"
+                ],
+                [
+                    "pmc:PMC3084216"
+                ],
+                [
+                    "https://doi.org/10.1038/nature12373",
+                    "doi:10.1038/nature12373"
+                ]
+            ]
+        },
+
+        "qualifiedAttributions": {
+            "type": "array",
+            "title": "Qualified attributions",
+            "description": "People or organisations credited for the resource, together with their roles.",
+            "meta:sssomMappings": [
+                {
+                    "predicate_id": "skos:exactMatch",
+                    "object_id": "prov:qualifiedAttribution",
+                    "mapping_justification": "semapv:ManualMappingCuration",
+                    "object_match_field": "rdfs:label",
+                    "subject_match_field": "rdfs:label",
+                    "author_id": [ "orcid:0000-0002-7747-6256" ],
+                    "creator_id": [ "orcid:0000-0002-7747-6256" ],
+                    "reviewer_id": [ "" ],
+                    "confidence": 1.0,
+                    "mapping_date": "2026-07-09"
+                }
+            ],
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "allOf": [
+                    {
+                        "$ref": "../common/schema.json#/$defs/qualifiedAttribution"
+                    }
+                ]
+            },
+            "examples": [
+                [
+                    {
+                        "@id": "urn:uuid:11111111-2222-3333-4444-555555555555",
+                        "@type": "prov:Attribution",
+                        "agent": {
+                            "@type": [
+                                "prov:Agent",
+                                "prov:Person"
+                            ],
+                            "name": "Jane Doe",
+                            "givenName": "Jane",
+                            "familyName": "Doe",
+                            "email": "jane.doe@example.org",
+                            "affiliations": [
+                                {
+                                    "id": "ror:02catss52",
+                                    "label": "European Bioinformatics Institute"
+                                }
+                            ],
+                            "sameAs": [
+                                {
+                                    "@id": "https://orcid.org/0000-0002-1584-4316"
+                                }
+                            ]
+                        },
+                        "hadRole": [
+                            {
+                                "id": "CREDIT:00000013",
+                                "label": "writing original draft role"
+                            },
+                            {
+                                "id": "CRO:0000055",
+                                "label": "study design role"
+                            }
+                        ],
+                        "order": 1
+                    },
+                    {
+                        "@id": "urn:uuid:66666666-7777-8888-9999-000000000000",
+                        "@type": "prov:Attribution",
+                        "agent": {
+                            "@type": [
+                                "prov:Agent",
+                                "prov:Organization"
+                            ],
+                            "name": "European Commission",
+                            "affiliations": [
+                                {
+                                    "id": "ror:00k4n6c32",
+                                    "label": "European Commission"
+                                }
+                            ],
+                            "sameAs": [
+                                {
+                                    "@id": "https://ror.org/00k4n6c32"
+                                }
+                            ]
+                        },
+                        "hadRole": [
+                            {
+                                "id": "CREDIT:00000004",
+                                "label": "funding acquisition role"
+                            }
+                        ],
+                        "order": 2
+                    }
+                ]
+            ]
+        },
+
         "qualifiedAttribution": {
             "type": "object",
             "title": "Qualified attribution",
@@ -3454,7 +3593,7 @@
         "keywords": {
             "title": "Keywords",
             "description": "Keywords or tags associated with an entity, used for categorization or search purposes.",
-            "type": ["string", "array"],
+            "type": "array",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -3611,6 +3750,66 @@
             "required": ["@type"]
         },
 
+        "relationshipItemRestrictionProject": {
+            "type": "object",
+            "title": "Relationship item restriction: Project",
+            "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'project'.",
+            "properties": {
+                "@id": {
+                    "allOf": [
+                        {
+                            "$ref": "../common/schema.json#/$defs/egaStableIdentifierProject"
+                        }
+                    ]
+                },
+                "@type": {
+                    "anyOf": [
+                        {
+                            "const": "ega:project"
+                        },
+                        {
+                            "type": "array",
+                            "allOf": [
+                                {
+                                    "contains": {
+                                        "const": "ega:project"
+                                    }
+                                },
+                                {
+                                    "title": "An EGA entity can only have one 'ega:...' type",
+                                    "contains": {
+                                        "allOf": [
+                                            {
+                                                "$ref": "../common/schema.json#/$defs/egaType"
+                                            }
+                                        ]
+                                    },
+                                    "maxContains": 1
+                                }
+                            ],
+                            "minItems": 2,
+                            "uniqueItems": true
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "@type"
+            ],
+            "examples": [
+                {
+                    "@id": "ega:EGAJ00000000001",
+                    "@type": "ega:project"
+                },
+                {
+                    "@id": "ega:EGAJ00001000002",
+                    "@type": [
+                        "ega:project",
+                        "schema:Project"
+                    ]
+                }
+            ]
+        },
         "relationshipItemRestrictionStudy": {
             "type": "object",
             "title": "Relationship item restriction: Study",
@@ -4061,7 +4260,8 @@
                         {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess"},
                         {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol"},
                         {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection"},
-                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy"}
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy"},
+                        {"$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject"}
                     ]
                 }
             ],
@@ -4073,6 +4273,10 @@
                 {
                     "@id": "ega:EGAF00000000001",
                     "@type": "ega:datafile"
+                },
+                {
+                    "@id": "ega:EGAJ00000000001",
+                    "@type": "ega:project"
                 }
             ]
         },

@@ -1,0 +1,38 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+    "@id": "ega:EGAJ00000000001",
+    "@type": "ega:project",
+    "title": "Inherited cardiac disease research programme",
+    "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+    "hasStudy": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study"
+      }
+    ],
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    },
+    "funding": {
+      "funder": {
+        "@type": [
+          "prov:Agent",
+          "prov:Organization"
+        ],
+        "@id": "https://example.org/funders/northbridge-research-council",
+        "name": "Northbridge Research Council"
+      },
+      "award": {
+        "@id": "https://doi.org/10.5555/heartgen.grant.2026",
+        "number": "NRC-HG-2026-0042",
+        "title": "Genomic discovery in inherited cardiac disease",
+        "url": "https://example.org/awards/NRC-HG-2026-0042"
+      }
+    }
+  }
+}

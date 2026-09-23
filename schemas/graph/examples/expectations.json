@@ -76,5 +76,8 @@
   ],
   "graph-invalid-wrong-type.json": [
     "/@type"
+  ],
+  "graph-invalid-project-missing-hasStudy.json": [
+    "/@graph/0/hasStudy"
   ]
 }

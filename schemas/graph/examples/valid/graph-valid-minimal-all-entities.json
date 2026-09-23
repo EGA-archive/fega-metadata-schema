@@ -318,6 +318,22 @@
             "accessLevel": "write"
           }
         ]
+      },
+      {
+        "@id": "ega:EGAJ00000000001",
+        "@type": "ega:project",
+        "title": "Inherited cardiac disease research programme",
+        "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+        "hasStudy": [
+          {
+            "@id": "ega:EGAS00001000002",
+            "@type": "ega:study"
+          }
+        ],
+        "inSubmission": {
+          "@id": "ega:EGA00000000001",
+          "@type": "ega:submission"
+        }
       }
     ]
   }

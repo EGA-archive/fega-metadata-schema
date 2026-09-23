@@ -1,0 +1,125 @@
+{
+  "project-invalid-missing-id.json": [
+    "/@id"
+  ],
+  "project-invalid-missing-type.json": [
+    "/@type"
+  ],
+  "project-invalid-missing-title.json": [
+    "/title"
+  ],
+  "project-invalid-missing-description.json": [
+    "/description"
+  ],
+  "project-invalid-missing-inSubmission.json": [
+    "/inSubmission"
+  ],
+  "project-invalid-empty-title.json": [
+    "/title"
+  ],
+  "project-invalid-empty-description.json": [
+    "/description"
+  ],
+  "project-invalid-root-accession.json": [
+    "/@id"
+  ],
+  "project-invalid-root-type.json": [
+    "/@type"
+  ],
+  "project-invalid-multiple-ega-types.json": [
+    "/@type"
+  ],
+  "project-invalid-empty-studies.json": [
+    "/hasStudy"
+  ],
+  "project-invalid-duplicate-studies.json": [
+    "/hasStudy"
+  ],
+  "project-invalid-study-cardinality.json": [
+    "/hasStudy"
+  ],
+  "project-invalid-external-identifier.json": [
+    "/sameAs/0/@id"
+  ],
+  "project-invalid-study-type.json": [
+    "/hasStudy/0/@type"
+  ],
+  "project-invalid-study-accession.json": [
+    "/hasStudy/0/@id"
+  ],
+  "project-invalid-study-missing-id.json": [
+    "/hasStudy/0/@id"
+  ],
+  "project-invalid-study-missing-type.json": [
+    "/hasStudy/0/@type"
+  ],
+  "project-invalid-submission-accession.json": [
+    "/inSubmission/@id"
+  ],
+  "project-invalid-missing-studies-and-subprojects.json": [
+    "/hasStudy"
+  ],
+  "project-invalid-empty-subprojects.json": [
+    "/hasSubproject"
+  ],
+  "project-invalid-duplicate-subprojects.json": [
+    "/hasSubproject"
+  ],
+  "project-invalid-subproject-cardinality.json": [
+    "/hasSubproject"
+  ],
+  "project-invalid-subproject-type.json": [
+    "/hasSubproject/0/@type"
+  ],
+  "project-invalid-subproject-accession.json": [
+    "/hasSubproject/0/@id"
+  ],
+  "project-invalid-subproject-missing-id.json": [
+    "/hasSubproject/0/@id"
+  ],
+  "project-invalid-subproject-missing-type.json": [
+    "/hasSubproject/0/@type"
+  ],
+  "project-invalid-funding-empty.json": [
+    "/funding"
+  ],
+  "project-invalid-funding-not-array.json": [
+    "/funding"
+  ],
+  "project-invalid-funding-duplicate.json": [
+    "/funding"
+  ],
+  "project-invalid-funding-missing-funder.json": [
+    "/funding/0/funder"
+  ],
+  "project-invalid-funding-empty-funder.json": [
+    "/funding/0/funder/@type"
+  ],
+  "project-invalid-funding-unidentified-funder.json": [
+    "/funding/0/funder/name"
+  ],
+  "project-invalid-funding-funder-id.json": [
+    "/funding/0/funder/@id"
+  ],
+  "project-invalid-funding-empty-funder-name.json": [
+    "/funding/0/funder/name"
+  ],
+  "project-invalid-funding-empty-award.json": [
+    "/funding/0/award/@id"
+  ],
+  "project-invalid-funding-number-type.json": [
+    "/funding/0/award/number"
+  ],
+  "project-invalid-funding-empty-number.json": [
+    "/funding/0/award/number"
+  ],
+  "project-invalid-funding-empty-title.json": [
+    "/funding/0/award/title"
+  ],
+  "project-invalid-funding-award-id.json": [
+    "/funding/0/award/@id"
+  ],
+  "project-invalid-funding-award-url.json": [
+    "/funding/0/award/url"
+  ]
+}
