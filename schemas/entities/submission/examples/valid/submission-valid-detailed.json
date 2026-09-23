@@ -72,6 +72,10 @@
       {
         "@id": "ega:EGAD00000000001",
         "@type": "ega:dataset"
+      },
+      {
+        "@id": "ega:EGAJ00000000002",
+        "@type": ["ega:project", "schema:Project"]
       }
     ],
     "sameAs": [

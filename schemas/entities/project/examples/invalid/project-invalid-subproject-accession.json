@@ -1,0 +1,35 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+    "@id": "ega:EGAJ00000000001",
+    "@type": "ega:project",
+    "title": "HeartGen umbrella programme",
+    "description": "A research programme connecting inherited cardiac disease projects across participating centres.",
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    },
+    "hasSubproject": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:project"
+      },
+      {
+        "@id": "ega:EGAJ00001000003",
+        "@type": [
+          "ega:project",
+          "schema:Project"
+        ]
+      }
+    ],
+    "hasStudy": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study"
+      }
+    ]
+  }
+}

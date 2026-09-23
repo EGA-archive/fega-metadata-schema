@@ -1,0 +1,49 @@
+{
+  "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+  "@type": [
+    "ega:project",
+    "schema:Project"
+  ],
+  "@embed": "@always",
+  "@explicit": false,
+  "title": {},
+  "alternativeTitle": {},
+  "description": {},
+  "keyword": {},
+  "sameAs": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "publications": {},
+  "landingPage": {},
+  "qualifiedAttributions": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "hasStudy": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "inSubmission": {
+    "@embed": "@always"
+  },
+  "hasSubproject": [
+    {
+      "@embed": "@always"
+    }
+  ],
+  "funding": [
+    {
+      "@embed": "@always",
+      "funder": {
+        "@embed": "@always"
+      },
+      "award": {
+        "@embed": "@always"
+      }
+    }
+  ]
+}
