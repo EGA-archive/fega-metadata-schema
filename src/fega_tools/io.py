@@ -69,10 +69,18 @@ def collect_candidate_json(
     return collect_candidate_files(paths, suffixes, missing=missing)
 
 
-def load_json(path: Path) -> Any:
-    """Load and return the JSON value stored at *path*."""
+def load_json(path: Path, *, reject_duplicate_keys: bool = False) -> Any:
+    """Load JSON, optionally rejecting duplicate object keys rather than losing data."""
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"Duplicate JSON key: {key!r}")
+            result[key] = value
+        return result
+
     with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+        return json.load(handle, object_pairs_hook=unique_object if reject_duplicate_keys else None)
 
 
 def load_json_object(path: Path) -> dict[str, Any]:

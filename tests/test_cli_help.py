@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from scripts.py import (
+    lint_schemas,
     modify_ids,
     release,
     schema_diff,
@@ -38,6 +39,7 @@ def _assert_documented(parser) -> None:
 
 def test_every_parser_and_argument_has_plain_help_and_an_example() -> None:
     parsers = (
+        lint_schemas.build_parser(),
         modify_ids.build_arg_parser(),
         release.build_parser(),
         build_notes_parser(),

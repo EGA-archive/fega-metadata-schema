@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, FrozenSet, List, Set, Tuple
+from typing import Any, Dict, FrozenSet, List, Sequence, Set, Tuple
 from urllib.parse import urlparse
 
 GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/"
@@ -58,24 +58,33 @@ def find_repo_root(start: Path) -> Path:
 # $id → local-path map
 # ---------------------------------------------------------------------------
 
-def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
+def build_id_to_path_map(
+    repo_root: Path, *, search_roots: Sequence[Path] | None = None
+) -> Dict[str, Path]:
     """Return a dict mapping GitHub raw URLs (and schema $ids) to local Paths.
 
     Covers every conventional ``schema.json`` and flat ``*.schema.json``
     schema, plus every ``context.jsonld``, found under *repo_root*.
+    Optional *search_roots* restrict scanning without changing URI construction.
     """
+    roots = list(search_roots) if search_roots is not None else [repo_root]
     id_map: Dict[str, Path] = {}
     raw_prefixes = {GITHUB_RAW_PREFIX}
 
     schema_files = sorted(
-        {*repo_root.rglob("schema.json"), *repo_root.rglob("*.schema.json")}
+        {file for root in roots for pattern in ("schema.json", "*.schema.json")
+         for file in root.rglob(pattern)}
     )
     for schema_file in schema_files:
+        if search_roots is not None and not any(
+            schema_file.resolve().is_relative_to(root.resolve()) for root in roots
+        ):
+            continue  # A symlink must not expand a caller's requested search scope.
         try:
             with schema_file.open("r", encoding="utf-8") as fh:
                 schema = json.load(fh)
-            schema_id = schema.get("$id", "")
-            if schema_id:
+            schema_id = schema.get("$id", "") if isinstance(schema, dict) else ""
+            if isinstance(schema_id, str) and schema_id:
                 id_map[schema_id] = schema_file
                 try:
                     relative = schema_file.relative_to(repo_root).as_posix()
@@ -101,7 +110,7 @@ def build_id_to_path_map(repo_root: Path) -> Dict[str, Path]:
         for prefix in raw_prefixes:
             id_map.setdefault(prefix + relative, schema_file)
 
-    for context_file in sorted(repo_root.rglob("context.jsonld")):
+    for context_file in sorted({file for root in roots for file in root.rglob("context.jsonld")}):
         try:
             relative = context_file.relative_to(repo_root).as_posix()
             for prefix in raw_prefixes:

@@ -191,6 +191,14 @@ Then validate that wrapper document with a running Biovalidator instance:
 python scripts/py/validate_metadata.py <path/to/document.json>
 ```
 
+### Schema authoring linter
+
+Run `python scripts/py/lint_schemas.py -v` to lint all schemas. The linter is read-only and checks for violations of custom schema rules of this repository (e.g., 'a ``title`` property should not be empty'). Its goal is to help schema authors maintain a consistent style and avoid common mistakes that would hinder machine-readability of the schemas.
+
+Rules live in [`src/fega_tools/schema_lint/`](./src/fega_tools/schema_lint/): add/remove a rule within [``rules.py``](./src/fega_tools/schema_lint/rules.py), and then adjust the [``__init__.py``](./src/fega_tools/schema_lint/__init__.py) `RULES`.
+
+Example arrays (``"examples": []``) are validated against their properties that contain them, ensuring they are valid examples.
+
 ## Contributing
 
 We welcome [issues](https://github.com/EGA-archive/fega-metadata-schema/issues/new/choose) and [pull requests](https://github.com/EGA-archive/fega-metadata-schema/pulls). Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before contributing.
