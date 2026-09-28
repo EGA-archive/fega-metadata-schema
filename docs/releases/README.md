@@ -11,6 +11,10 @@ Maintainers provide exactly three release inputs:
 
 The manifest, changelog entry, citation version, URI rewrites, checksums, dependencies, and reports are generated and asserted.
 
+## Component change detection
+
+A component must advance `meta:version` when its own schema, context or frame changes, or when a schema definition it references changes. For example, a component referencing `common/schema.json#/$defs/ontologyTerm` inherits changes to `ontologyTerm` and definitions reached through its nested `$ref` values. Adding or editing an unrelated definition in Common does not require that component to bump its version. Common itself still needs a version bump for its own changes.
+
 ## Branch, tag, and URI model
 
 | Ref or record | Meaning | First-party raw URI segment |

@@ -559,6 +559,79 @@ def _changed_file(old: Path | None, new: Path | None) -> bool:
     return normalize_asset(old) != normalize_asset(new)
 
 
+def _referenced_fragments(root: Path, schema: Path, documents: dict[Path, Any]) -> dict[Path, set[str]]:
+    """Follow repository references without widening JSON Pointers to files.
+
+    A whole-schema reference intentionally reaches the entire document. Named
+    anchors and dynamic references conservatively do the same; this is a
+    dependency analysis, not a general JSON Schema evaluator.
+    """
+    reached: dict[Path, set[str]] = {}
+    pending = [(schema, "")]
+    while pending:
+        path, fragment = pending.pop()
+        if fragment in reached.get(path, set()):
+            continue
+        if path not in documents:
+            documents[path] = load_json(root / path)
+        document = documents[path]
+        node = document
+        if fragment:
+            try:
+                for part in fragment[1:].split("/"):
+                    key = part.replace("~1", "/").replace("~0", "~")
+                    node = node[int(key)] if isinstance(node, list) else node[key]
+            except (KeyError, IndexError, TypeError, ValueError):
+                # A removed/unresolvable target must not silently lose its
+                # dependency. Comparing the whole file will retain the change.
+                pending.append((path, ""))
+                continue
+        reached.setdefault(path, set()).add(fragment)
+
+        def references(value: Any) -> Iterable[tuple[str, bool]]:
+            if isinstance(value, dict):
+                for key in ("$ref", "$dynamicRef", "$recursiveRef"):
+                    if isinstance(value.get(key), str):
+                        yield value[key], key != "$ref"
+                for child in value.values():
+                    yield from references(child)
+            elif isinstance(value, list):
+                for child in value:
+                    yield from references(child)
+
+        for reference, dynamic in references(node):
+            base, _, pointer = reference.partition("#")
+            pointer = unquote(pointer)
+            if dynamic or (pointer and not pointer.startswith("/")):
+                pointer = ""
+            uri = parse_raw_github_uri(base)
+            if not base:
+                target = path
+            elif uri:
+                target = _local_asset_path(uri, root)
+            elif not urlsplit(base).scheme:
+                try:
+                    target = ((root / path).parent / unquote(base)).resolve().relative_to(root)
+                except ValueError:
+                    target = None
+            else:
+                target = None
+            if target is not None and (root / target).is_file():
+                pending.append((target, pointer))
+    return reached
+
+
+def _fragment_contains_change(fragment: str, change_path: str) -> bool:
+    """Include both changes inside a target and replacement of its ancestors."""
+    return (
+        not fragment
+        or change_path in {"/", "/$id", "/$schema"}
+        or change_path == fragment
+        or change_path.startswith(fragment + "/")
+        or fragment.startswith(change_path + "/")
+    )
+
+
 def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap: bool = False, approved_rationales: Mapping[str, str] | None = None, repository: str | None = None, requested_version: str | None = None) -> dict[str, Any]:
     """Analyse current components against an optional previous checkout."""
     root = root.resolve()
@@ -580,6 +653,7 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
     previous_groups = {item["name"]: item for item in discover_standard_groups(previous_root.resolve())} if previous_root and previous else {}
     required_by_name: dict[str, Severity] = {}
     detail_by_name: dict[str, list[dict[str, Any]]] = {}
+    schema_details_by_name: dict[str, list[dict[str, Any]]] = {}
     old_by_name: dict[str, Component | None] = {}
     for component in current:
         old = _component_by_identity(previous, component.identifier)
@@ -597,6 +671,7 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
             diff = compare_schemas(old_schema, new_schema)
             required = diff.severity
             details.extend(change.as_dict() for change in diff.changes)
+            schema_details_by_name[component.name] = list(details)
             if old.schema != component.schema:
                 required = max(required, Severity.MAJOR)
                 details.insert(0, {"path": old.schema.as_posix(), "severity": "major", "message": "component schema relocated"})
@@ -616,12 +691,38 @@ def analyse_release(root: Path, previous_root: Path | None = None, *, bootstrap:
                         details.append({"path": group_path, "severity": "unknown", "message": "reachable standard group changed"})
         required_by_name[component.name] = required
         detail_by_name[component.name] = details
-    # A changed dependency affects every component that reaches it.  Keep the
-    # graph finite and deterministic even when component references cycle.
+    # Keep the manifest's file-level inventory, but inherit schema changes only
+    # through the fragments a consumer reaches in either snapshot. The union
+    # retains removed or retargeted references, and traversal handles cycles.
+    current_documents: dict[Path, Any] = {}
+    previous_documents: dict[Path, Any] = {}
+    direct_details = {name: list(details) for name, details in detail_by_name.items()}
     for component in current:
-        inherited = [required_by_name.get(dep, Severity.SAME) for dep in dependencies.get(component.name, []) if dep in required_by_name]
-        if inherited:
-            required_by_name[component.name] = max([required_by_name[component.name], *inherited])
+        old = old_by_name[component.name]
+        if old is None or previous_root is None:
+            continue
+        reached = _referenced_fragments(root, component.schema, current_documents)
+        old_reached = _referenced_fragments(previous_root.resolve(), old.schema, previous_documents)
+        for dependency in current:
+            if dependency.name == component.name:
+                continue
+            old_dependency = old_by_name[dependency.name]
+            fragments = reached.get(dependency.schema, set()) | old_reached.get(
+                old_dependency.schema if old_dependency else dependency.schema, set())
+            if not fragments:
+                continue
+            schema_details = schema_details_by_name.get(dependency.name, [])
+            for detail in direct_details[dependency.name]:
+                if detail in schema_details and not any(
+                    _fragment_contains_change(fragment, detail["path"]) for fragment in fragments
+                ):
+                    continue
+                inherited = dict(detail, dependency=dependency.name,
+                                 schema=dependency.schema.as_posix(),
+                                 message=f"Referenced component '{dependency.name}': {detail['message']}")
+                detail_by_name[component.name].append(inherited)
+                required_by_name[component.name] = max(
+                    required_by_name[component.name], Severity.parse(detail["severity"]))
     for component in current:
         old = old_by_name[component.name]
         required = required_by_name[component.name]
