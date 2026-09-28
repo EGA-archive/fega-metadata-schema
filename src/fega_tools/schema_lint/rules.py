@@ -126,9 +126,22 @@ def documentation(node: Node):
     )
     if independent and not reuse:
         if "type" not in schema:
-            yield node.issue(
-                "explicit-type", "Independent definitions must declare type."
-            )
+            try:
+                inherited_type = any(
+                    isinstance(part.schema, dict) and "type" in part.schema
+                    for bound in effective_constraints(node)
+                    for part in conjunction(bound)
+                )
+            except (ValueError, TypeError, re.error) as exc:
+                yield node.issue(
+                    "explicit-type", f"Cannot inspect inherited type: {exc}"
+                )
+            else:
+                if not inherited_type:
+                    yield node.issue(
+                        "explicit-type",
+                        "Independent definitions must declare type locally or through in-scope inheritance.",
+                    )
         for key in ("title", "description", "examples"):
             if key not in schema:
                 yield node.issue(

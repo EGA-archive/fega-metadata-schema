@@ -102,11 +102,11 @@ def test_pure_reference_inherits_metadata_but_siblings_need_allof(tmp_path, extr
         ({"title": "Text alias", "allOf": [{"$ref": "base.schema.json"}]}, set()),
         (
             {"$ref": "base.schema.json", "maxLength": 2},
-            {"reference-style", "explicit-type", "documentation"},
+            {"reference-style", "documentation"},
         ),
         (
             {"maxLength": 2, "allOf": [{"$ref": "base.schema.json"}]},
-            {"explicit-type", "documentation"},
+            {"documentation"},
         ),
     ],
 )
@@ -116,6 +116,80 @@ def test_reference_representation_and_constrained_definitions(
     """Check references use the supported representation."""
     write(tmp_path, string(), "base.schema.json")
     assert rules(lint(tmp_path, schema)) == expected
+
+
+@pytest.mark.parametrize("declared", ["string", ["string", "null"], "array"])
+def test_type_can_be_inherited_transitively(tmp_path, declared):
+    """Constrained definitions can inherit types through relative reference chains."""
+    write(tmp_path, {"$ref": "base.schema.json#/$defs/value"}, "defs/alias.schema.json")
+    write(
+        tmp_path,
+        {"$defs": {"value": {"type": declared, "$ref": "alias.schema.json"}}},
+        "defs/base.schema.json",
+    )
+    issues = lint(
+        tmp_path,
+        {"maxLength": 5, "allOf": [{"$ref": "defs/alias.schema.json"}]},
+    )
+    assert "explicit-type" not in rules(issues)
+    assert "documentation" in rules(issues)
+
+
+@pytest.mark.parametrize("transitive", [False, True])
+def test_out_of_scope_type_does_not_count(tmp_path, transitive):
+    """Type inheritance respects the same boundary as inherited size constraints."""
+    write(tmp_path, string(), "standards/base.schema.json")
+    ref = "../standards/base.schema.json"
+    if transitive:
+        write(tmp_path, {"$ref": ref}, "schemas/alias.schema.json")
+        ref = "alias.schema.json"
+    selected = write(
+        tmp_path,
+        {"maxLength": 5, "allOf": [{"$ref": ref}]},
+        "schemas/schema.json",
+    )
+    assert "explicit-type" in rules(lint_schemas([selected], root=tmp_path))
+    assert "explicit-type" not in rules(
+        lint_schemas([selected], root=tmp_path, resolution_root=Path("."))
+    )
+
+
+@pytest.mark.parametrize("keyword", ["anyOf", "oneOf", "if", "then", "else", "not"])
+def test_conditional_type_does_not_count(tmp_path, keyword):
+    """A type appearing only in an alternative or condition is not inherited."""
+    write(tmp_path, string(), "base.schema.json")
+    ref = {"$ref": "base.schema.json"}
+    condition = [ref, {}] if keyword in {"anyOf", "oneOf"} else ref
+    assert "explicit-type" in rules(lint(tmp_path, {keyword: condition}))
+
+
+@pytest.mark.parametrize("missing", [False, True])
+def test_reference_without_inherited_type_still_fails(tmp_path, missing):
+    """Neither untyped cycles nor broken references satisfy the type requirement."""
+    if not missing:
+        write(tmp_path, {"$ref": "base.schema.json"}, "base.schema.json")
+    issues = lint(tmp_path, {"maxLength": 5, "allOf": [{"$ref": "base.schema.json"}]})
+    assert "explicit-type" in rules(issues)
+    assert ("reference-resolution" in rules(issues)) == missing
+
+
+def test_inherited_type_stays_at_the_correct_instance_location(tmp_path):
+    """Parent reuse can supply property types without leaking types to siblings."""
+    write(
+        tmp_path,
+        {"type": "object", "properties": {"name": string()}},
+        "base.schema.json",
+    )
+    issues = lint(
+        tmp_path,
+        {
+            "properties": {"name": {"maxLength": 5}, "otherName": {"maxLength": 5}},
+            "allOf": [{"$ref": "base.schema.json"}],
+        },
+    )
+    assert {issue.path for issue in issues if issue.rule == "explicit-type"} == {
+        ("properties", "otherName")
+    }
 
 
 def test_type_union_order_and_generic_keywords(tmp_path):
