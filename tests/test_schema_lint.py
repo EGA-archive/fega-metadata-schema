@@ -137,6 +137,157 @@ def test_type_union_order_and_generic_keywords(tmp_path):
     )
 
 
+@pytest.mark.parametrize("kind", ["string", "array"])
+@pytest.mark.parametrize("reuse", ["$ref", "allOf"])
+@pytest.mark.parametrize("weaker_local_bounds", [False, True])
+def test_type_bounds_can_be_inherited(tmp_path, kind, reuse, weaker_local_bounds):
+    """Referenced bounds remain effective even with weaker local constraints."""
+    bounds = (
+        {"minLength": 2} if kind == "string" else {"minItems": 2, "uniqueItems": True}
+    )
+    write(tmp_path, {"type": kind, **bounds}, "base.schema.json")
+    schema = {"type": kind}
+    if reuse == "$ref":
+        schema["$ref"] = "base.schema.json"
+    else:
+        schema["allOf"] = [{"$ref": "base.schema.json"}]
+    if weaker_local_bounds:
+        schema.update(
+            {"minLength": 0}
+            if kind == "string"
+            else {"minItems": 0, "uniqueItems": False}
+        )
+    issues = lint(tmp_path, schema)
+    assert "nonempty-values" not in rules(issues)
+    if reuse == "$ref":
+        assert "reference-style" in rules(issues)
+
+
+def test_type_bounds_follow_transitive_relative_refs_and_cycles(tmp_path):
+    """Nested references preserve URI scope and cyclic reuse terminates."""
+    write(
+        tmp_path, {"$ref": "second.schema.json#/$defs/text"}, "base/first.schema.json"
+    )
+    write(
+        tmp_path,
+        {"$defs": {"text": {"minLength": 1, "$ref": "first.schema.json"}}},
+        "base/second.schema.json",
+    )
+    issues = lint(
+        tmp_path, {"type": "string", "allOf": [{"$ref": "base/first.schema.json"}]}
+    )
+    assert "nonempty-values" not in rules(issues)
+    assert "reference-resolution" not in rules(issues)
+
+
+@pytest.mark.parametrize("transitive", [False, True])
+def test_out_of_scope_type_bounds_do_not_count(tmp_path, transitive):
+    """Standard constraints count only when the resolution boundary includes them."""
+    write(
+        tmp_path,
+        {"type": "array", "minItems": 1, "uniqueItems": True},
+        "standards/base.schema.json",
+    )
+    ref = "../standards/base.schema.json"
+    if transitive:
+        write(tmp_path, {"$ref": ref}, "schemas/base.schema.json")
+        ref = "base.schema.json"
+    selected = write(
+        tmp_path, {"type": "array", "allOf": [{"$ref": ref}]}, "schemas/schema.json"
+    )
+    skipped = set()
+    issues = lint_schemas([selected], root=tmp_path, skipped_references=skipped)
+    assert {issue.path for issue in issues if issue.rule == "nonempty-values"} == {
+        ("minItems",),
+        ("uniqueItems",),
+    }
+    assert skipped
+    wide_issues = lint_schemas([selected], root=tmp_path, resolution_root=Path("."))
+    assert "nonempty-values" not in rules(wide_issues)
+
+
+@pytest.mark.parametrize("keyword", ["anyOf", "oneOf", "if", "then", "else", "not"])
+def test_conditional_type_bounds_do_not_count(tmp_path, keyword):
+    """A constraint in a conditional or alternative is not guaranteed to apply."""
+    write(tmp_path, {"minItems": 1, "uniqueItems": True}, "base.schema.json")
+    ref = {"$ref": "base.schema.json"}
+    condition = [ref, {}] if keyword in {"anyOf", "oneOf"} else ref
+    issues = lint(tmp_path, {"type": "array", keyword: condition})
+    assert {issue.path for issue in issues if issue.rule == "nonempty-values"} == {
+        ("minItems",),
+        ("uniqueItems",),
+    }
+
+
+def test_inherited_property_bounds_stay_at_the_correct_instance_location(tmp_path):
+    """Parent inheritance can constrain a property, but unrelated bounds cannot."""
+    write(
+        tmp_path,
+        {
+            "minLength": 3,
+            "minItems": 2,
+            "uniqueItems": True,
+            "properties": {"name": {"minLength": 1}},
+        },
+        "base.schema.json",
+    )
+    issues = lint(
+        tmp_path,
+        {
+            "allOf": [{"$ref": "base.schema.json"}],
+            "properties": {
+                "name": {"type": "string"},
+                "otherName": {"type": "string"},
+                "members": {
+                    "type": "array",
+                    "items": {"minItems": 1, "uniqueItems": True},
+                },
+            },
+        },
+    )
+    assert {issue.path for issue in issues if issue.rule == "nonempty-values"} == {
+        ("properties", "otherName", "minLength"),
+        ("properties", "members", "minItems"),
+        ("properties", "members", "uniqueItems"),
+    }
+
+
+def test_inherited_bounds_must_meet_each_requirement(tmp_path):
+    """An inherited minimum does not also imply unique array items."""
+    write(tmp_path, {"minItems": 1, "uniqueItems": False}, "base.schema.json")
+    issues = lint(tmp_path, {"type": "array", "allOf": [{"$ref": "base.schema.json"}]})
+    assert {issue.path for issue in issues if issue.rule == "nonempty-values"} == {
+        ("uniqueItems",)
+    }
+
+
+def test_broken_inheritance_does_not_hide_other_known_bounds(tmp_path):
+    """Report broken references while retaining effective constraints elsewhere."""
+    issues = lint(
+        tmp_path,
+        {
+            "type": "string",
+            "allOf": [
+                {"$ref": "missing.schema.json"},
+                {"minLength": 1},
+            ],
+        },
+    )
+    assert "reference-resolution" in rules(issues)
+    assert "nonempty-values" not in rules(issues)
+
+
+def test_dac_jurisdiction_inherits_relationship_array_bounds():
+    """DAC jurisdiction need not repeat relationshipArray's minItems/uniqueItems."""
+    issues = lint_schemas([ROOT / "schemas/entities/DAC/schema.json"], root=ROOT)
+    assert not [
+        issue
+        for issue in issues
+        if issue.rule == "nonempty-values"
+        and issue.path[:2] == ("properties", "jurisdiction")
+    ]
+
+
 def test_cross_file_anchor_pointer_and_nested_id(tmp_path):
     """Check references resolve through anchors and JSON Pointers."""
     base = write(

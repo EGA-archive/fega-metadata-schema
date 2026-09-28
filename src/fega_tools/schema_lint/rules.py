@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from fega_tools.jsonld_utils import JSONLD_KEYWORDS
+from .inheritance import conjunction, effective_constraints
 from .model import DEFINITION_ROLES, Node
 
 # Unknown/extension keywords have no imposed position. Do not infer requirements
@@ -196,21 +197,37 @@ def property_names(node: Node):
 
 
 def nonempty_values(node: Node):
-    """Check that typed strings and arrays cannot be empty."""
+    """Require string/array bounds locally or through in-scope inheritance."""
     declared = node.schema.get("type", [])
     types = declared if isinstance(declared, list) else [declared]
+    if "string" not in types and "array" not in types:
+        return
+    schemas = []
+    try:
+        for bound in effective_constraints(node):
+            schemas.extend(
+                part.schema
+                for part in conjunction(bound)
+                if isinstance(part.schema, dict)
+            )
+    except (ValueError, TypeError, re.error) as exc:
+        yield node.issue(
+            "nonempty-values", f"Cannot inspect inherited constraints: {exc}"
+        )
     for kind, keyword in (("string", "minLength"), ("array", "minItems")):
         if kind in types:
-            value = node.schema.get(keyword)
-            if type(value) is not int or value < 1:
+            values = (schema.get(keyword) for schema in schemas)
+            if not any(type(value) is int and value >= 1 for value in values):
                 yield node.issue(
                     "nonempty-values",
-                    f"An explicit {kind} type needs explicit {keyword} >= 1.",
+                    f"An explicit {kind} type needs {keyword} >= 1 locally or through in-scope inheritance.",
                     keyword,
                 )
-    if "array" in types and node.schema.get("uniqueItems") is not True:
+    if "array" in types and not any(
+        schema.get("uniqueItems") is True for schema in schemas
+    ):
         yield node.issue(
             "nonempty-values",
-            "An explicit array type needs uniqueItems: true.",
+            "An explicit array type needs uniqueItems: true locally or through in-scope inheritance.",
             "uniqueItems",
         )
