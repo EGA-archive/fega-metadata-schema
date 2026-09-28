@@ -49,12 +49,14 @@ DEFINITION_ROLES = {
 
 
 def pointer(parts: tuple) -> str:
+    """Turn a schema path into a JSON Pointer."""
     return "".join(
         "/" + str(part).replace("~", "~0").replace("/", "~1") for part in parts
     )
 
 
 def resource(schema: Any) -> Resource:
+    """Create a JSON Schema resource for reference resolution."""
     return Resource.from_contents(schema, default_specification=DRAFT202012)
 
 
@@ -66,6 +68,7 @@ class Issue:
     message: str
 
     def __str__(self) -> str:
+        """Return the issue as readable text."""
         return f"{self.file}#{pointer(self.path)} [{self.rule}] {self.message}"
 
 
@@ -75,6 +78,7 @@ class BoundSchema:
     resolver: Any
 
     def child(self, schema: Any) -> BoundSchema:
+        """Bind a child schema to the current resolver."""
         return BoundSchema(schema, self.resolver.in_subresource(resource(schema)))
 
 
@@ -89,9 +93,11 @@ class Node:
 
     @property
     def schema(self) -> Any:
+        """Return the schema at this location."""
         return self.bound.schema
 
     def issue(self, rule: str, message: str, *suffix: Any) -> Issue:
+        """Create an issue at this node and an optional child path."""
         return Issue(self.file, self.path + suffix, rule, message)
 
 
@@ -122,6 +128,7 @@ def children(schema: Any) -> Iterator[tuple[tuple, str, Any]]:
 
 
 def walk(node: Node) -> Iterator[Node]:
+    """Yield this schema node and all nested schema nodes."""
     yield node
     for path, role, child in children(node.schema):
         yield from walk(

@@ -224,6 +224,7 @@ def context_terms_and_prefixes(context: Any) -> Tuple[Set[str], Set[str]]:
     prefixes: Set[str] = set()
 
     def visit(value: Any) -> None:
+        """Collect terms and prefixes from a context value."""
         if isinstance(value, list):
             for item in value:
                 visit(item)
@@ -365,10 +366,12 @@ def find_undefined_terms(data: Dict[str, Any], context: Any) -> List[str]:
         paths: Dict[int, str]
 
         def _expand(self, active_ctx, active_property, element, *args, **kwargs):
+            """Expand an element while recording its source path."""
             if not hasattr(self, "paths"):
                 self.paths = {}
 
                 def index(value, path=""):
+                    """Record paths for nested JSON-LD values."""
                     if isinstance(value, (dict, list)):
                         self.paths[id(value)] = path
                         items = value.items() if isinstance(value, dict) else enumerate(value)
@@ -380,9 +383,11 @@ def find_undefined_terms(data: Dict[str, Any], context: Any) -> List[str]:
 
         def _expand_object(self, active_ctx, active_property, expanded_active_property,
                            element, *args, **kwargs):
+            """Expand an object while recording dropped properties."""
             previous = self.on_property_dropped
 
             def record(expanded_key):
+                """Record the source path for a dropped property."""
                 for key in element:
                     if key != "@context" and self._expand_iri(active_ctx, key, vocab=True) == expanded_key:
                         escaped = key.replace("~", "~0").replace("/", "~1")
@@ -404,6 +409,7 @@ def find_invalid_context_type_mappings(context: Any) -> List[str]:
     invalid: List[str] = []
 
     def visit(value: Any, path: str = "") -> None:
+        """Find invalid type mappings in a context value."""
         if isinstance(value, list):
             for index, item in enumerate(value):
                 visit(item, f"{path}[{index}]")
@@ -440,6 +446,7 @@ def make_local_document_loader(
     makes network requests during frame processing.
     """
     def loader(url: str, options: Dict[str, Any] = {}) -> Dict[str, Any]:  # noqa: B006
+        """Load a mapped JSON-LD document from local storage."""
         if url in id_to_path_map:
             local_path = id_to_path_map[url]
             with local_path.open("r", encoding="utf-8") as fh:

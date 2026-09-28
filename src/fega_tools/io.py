@@ -71,7 +71,9 @@ def collect_candidate_json(
 
 def load_json(path: Path, *, reject_duplicate_keys: bool = False) -> Any:
     """Load JSON, optionally rejecting duplicate object keys rather than losing data."""
+
     def unique_object(pairs):
+        """Build an object while rejecting repeated keys."""
         result = {}
         for key, value in pairs:
             if key in result:

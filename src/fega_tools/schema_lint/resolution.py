@@ -30,10 +30,12 @@ class LocalResolver:
     """
 
     def __init__(self, resolver, store):
+        """Create a resolver that uses the local schema store."""
         self.resolver = resolver
         self.store = store
 
     def lookup(self, ref):
+        """Resolve a reference through the local schema store."""
         uri, fragment = urldefrag(urljoin(self.resolver._base_uri, ref))
         self.store.check_uri(uri)
         try:
@@ -49,9 +51,11 @@ class LocalResolver:
         return Resolved(resolved.contents, LocalResolver(resolved.resolver, self.store))
 
     def in_subresource(self, subresource):
+        """Create a resolver for a nested schema resource."""
         return LocalResolver(self.resolver.in_subresource(subresource), self.store)
 
     def dynamic_scope(self):
+        """Return the resolver's dynamic scope."""
         return self.resolver.dynamic_scope()
 
 
@@ -65,6 +69,7 @@ class SchemaStore:
         resolution_root: Path,
         skipped_references: set[str],
     ):
+        """Build a local store for the selected schema files."""
         self.root = root
         self.resolution_root = resolution_root
         self.skipped_references = skipped_references
@@ -94,6 +99,7 @@ class SchemaStore:
         self.registry = self.registry.crawl()
 
     def physical_path(self, path: Path) -> Path:
+        """Return the cached physical path for a file."""
         # A run is read-only; resolving symlinks once avoids filesystem I/O on
         # every repeated lookup during example validation.
         if path not in self.physical_paths:
@@ -101,6 +107,7 @@ class SchemaStore:
         return self.physical_paths[path]
 
     def load(self, path: Path):
+        """Load and cache a schema file."""
         path = self.physical_path(path)
         self.check_path(path, path.as_uri())
         if path not in self.documents:
@@ -131,16 +138,19 @@ class SchemaStore:
         return self.physical_path(path) if path is not None else None
 
     def check_path(self, path: Path, uri: str) -> None:
+        """Reject files outside the configured resolution root."""
         if not path.is_relative_to(self.resolution_root):
             self.skipped_references.add(uri)
             raise OutsideResolutionRoot(uri)
 
     def check_uri(self, uri: str) -> None:
+        """Check the local path for a reference URI."""
         path = self.path_for_uri(uri)
         if path is not None:
             self.check_path(path, uri)
 
     def retrieve(self, uri: str):
+        """Load the local resource for a reference URI."""
         path = self.path_for_uri(uri)
         if path is None:
             raise NoSuchResource(
@@ -155,6 +165,7 @@ class SchemaStore:
         return resource(document)
 
     def node(self, path: Path) -> Node:
+        """Create a schema node with a resolver bound to the file."""
         schema = self.load(path)
         resolver = self.registry.resolver(path.as_uri()).in_subresource(
             resource(schema)

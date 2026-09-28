@@ -14,11 +14,13 @@ DIALECT = "https://json-schema.org/draft/2020-12/schema"
 
 
 def ordered(schema):
+    """Return a schema with keys sorted by the linter's keyword order."""
     ranks = {key: index for index, key in enumerate(KEYWORD_ORDER)}
     return dict(sorted(schema.items(), key=lambda item: ranks.get(item[0], -1)))
 
 
 def string(**extra):
+    """Return a basic documented string schema."""
     return ordered(
         dict(
             type="string",
@@ -32,6 +34,7 @@ def string(**extra):
 
 
 def write(root, schema, name="schema.json"):
+    """Write a schema fixture and return its path."""
     path = root / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(schema), encoding="utf-8")
@@ -39,20 +42,24 @@ def write(root, schema, name="schema.json"):
 
 
 def lint(root, schema):
+    """Lint a schema written under the test directory."""
     return lint_schemas([write(root, schema)], root=root)
 
 
 def rules(issues):
+    """Return the rule names reported by a lint run."""
     return {issue.rule for issue in issues}
 
 
 def test_clean_schema_and_boolean_constraints(tmp_path):
+    """Check valid schemas and boolean schemas have no issues."""
     assert not lint(tmp_path, string())
     assert not lint(tmp_path, True)
     assert not lint(tmp_path, False)
 
 
 def test_definitions_fragments_and_annotation_data(tmp_path):
+    """Check annotations and schema fragments are handled separately."""
     schema = ordered(
         {
             "type": "object",
@@ -81,6 +88,7 @@ def test_definitions_fragments_and_annotation_data(tmp_path):
 
 @pytest.mark.parametrize("extra", [{}, {"title": "Reuse"}, {"examples": ["ok"]}])
 def test_pure_reference_inherits_metadata_but_siblings_need_allof(tmp_path, extra):
+    """Check pure references inherit metadata and reject sibling constraints."""
     write(tmp_path, string(), "base.schema.json")
     issues = lint(tmp_path, ordered({"$ref": "base.schema.json", **extra}))
     assert rules(issues) == ({"reference-style"} if extra else set())
@@ -105,11 +113,13 @@ def test_pure_reference_inherits_metadata_but_siblings_need_allof(tmp_path, extr
 def test_reference_representation_and_constrained_definitions(
     tmp_path, schema, expected
 ):
+    """Check references use the supported representation."""
     write(tmp_path, string(), "base.schema.json")
     assert rules(lint(tmp_path, schema)) == expected
 
 
 def test_type_union_order_and_generic_keywords(tmp_path):
+    """Check union ordering and generic keywords are validated."""
     issues = lint(
         tmp_path,
         {
@@ -128,6 +138,7 @@ def test_type_union_order_and_generic_keywords(tmp_path):
 
 
 def test_cross_file_anchor_pointer_and_nested_id(tmp_path):
+    """Check references resolve through anchors and JSON Pointers."""
     base = write(
         tmp_path,
         {
@@ -156,6 +167,7 @@ def test_cross_file_anchor_pointer_and_nested_id(tmp_path):
 
 
 def test_refs_in_unused_definitions_and_transitive_dependencies(tmp_path):
+    """Check references are checked in unused and transitive definitions."""
     write(tmp_path, {"$defs": {"unused": {"$ref": "missing.json"}}}, "base.schema.json")
     issues = lint(tmp_path, {"$ref": "base.schema.json"})
     assert rules(issues) == {"reference-resolution"}
@@ -174,11 +186,13 @@ def test_refs_in_unused_definitions_and_transitive_dependencies(tmp_path):
     ],
 )
 def test_broken_refs_fail_without_network(tmp_path, ref):
+    """Check unresolved references are reported without network access."""
     issues = lint(tmp_path, {"title": "A", "$ref": ref})
     assert "reference-resolution" in rules(issues)
 
 
 def test_recursive_schemas_and_nonproductive_cycles(tmp_path):
+    """Check recursive schemas are handled without false reference errors."""
     schema = {
         "type": "object",
         "properties": {"child": {"$ref": "#"}},
@@ -190,6 +204,7 @@ def test_recursive_schemas_and_nonproductive_cycles(tmp_path):
 
 
 def test_graph_restriction_examples_inherit_id_and_label_constraints(tmp_path):
+    """Check inherited graph restrictions validate their examples."""
     write(
         tmp_path,
         {
@@ -226,6 +241,7 @@ def test_graph_restriction_examples_inherit_id_and_label_constraints(tmp_path):
 
 
 def test_inheritance_preserves_original_relative_ref_scope(tmp_path):
+    """Check inherited constraints keep their original reference scope."""
     write(
         tmp_path,
         {"$defs": {"text": {"type": "string", "minLength": 3}}},
@@ -245,6 +261,7 @@ def test_inheritance_preserves_original_relative_ref_scope(tmp_path):
 
 
 def test_conditional_alternatives_and_formats_use_jsonschema(tmp_path):
+    """Check conditional schemas and format examples are validated."""
     schema = {
         "type": "object",
         "if": {"required": ["flag"]},
@@ -261,6 +278,7 @@ def test_conditional_alternatives_and_formats_use_jsonschema(tmp_path):
 
 
 def mapping():
+    """Return a valid example mapping."""
     return {
         "predicate_id": "skos:exactMatch",
         "object_id": "schema:name",
@@ -272,6 +290,7 @@ def mapping():
 
 
 def test_sssom_implicit_subject_valid_values_and_optional_extensions(tmp_path):
+    """Check valid mappings allow optional extension values."""
     entry = mapping()
     entry.update(confidence=0.8, comment="Curated")
     assert not lint(tmp_path, string(**{"meta:sssomMappings": [entry]}))
@@ -295,6 +314,7 @@ def test_sssom_implicit_subject_valid_values_and_optional_extensions(tmp_path):
     ],
 )
 def test_sssom_invalid_values(tmp_path, field, value):
+    """Check invalid mapping values are reported."""
     entry = mapping()
     entry[field] = value
     issues = lint(tmp_path, string(**{"meta:sssomMappings": [entry]}))
@@ -302,6 +322,7 @@ def test_sssom_invalid_values(tmp_path, field, value):
 
 
 def test_sssom_required_fields_order_and_shape(tmp_path):
+    """Check mapping fields are required, ordered, and object-shaped."""
     entries = [dict(reversed(list(mapping().items()))), {}, "wrong"]
     issues = lint(tmp_path, string(**{"meta:sssomMappings": entries}))
     assert rules(issues) == {"sssom", "sssom-order"}
@@ -309,6 +330,7 @@ def test_sssom_required_fields_order_and_shape(tmp_path):
 
 
 def test_bad_files_do_not_stop_other_checks(tmp_path):
+    """Check one bad file does not stop the remaining checks."""
     duplicate = tmp_path / "duplicate.schema.json"
     duplicate.write_text('{"title":"a","title":"b"}')
     broken = tmp_path / "broken.schema.json"
@@ -322,6 +344,7 @@ def test_bad_files_do_not_stop_other_checks(tmp_path):
 
 
 def test_discovery_cli_exit_codes_and_no_modifications(tmp_path, capsys):
+    """Check schema discovery, exit codes, and read-only behavior."""
     common = write(tmp_path, string(), "schemas/common/schema.json")
     profile = write(tmp_path, string(), "schemas/graph/test.schema.json")
     write(tmp_path, {}, "schemas/common/examples/data.json")
@@ -339,6 +362,7 @@ def test_discovery_cli_exit_codes_and_no_modifications(tmp_path, capsys):
 
 
 def test_repository_collection_resolves_without_modification():
+    """Check repository schemas resolve without changing files."""
     files = discover_schemas([ROOT / "schemas"])
     before = {path: path.read_bytes() for path in files}
     issues = lint_schemas(files, root=ROOT)
@@ -354,6 +378,7 @@ def test_repository_collection_resolves_without_modification():
     ],
 )
 def test_optional_format_dependencies_are_active(tmp_path, format_name, bad, good):
+    """Check optional format validators are active when installed."""
     schema = string(format=format_name)
     schema["examples"] = [bad, good]
     errors = [
@@ -363,6 +388,7 @@ def test_optional_format_dependencies_are_active(tmp_path, format_name, bad, goo
 
 
 def test_local_dependency_with_arbitrary_filename_and_canonical_id(tmp_path):
+    """Check local references can use canonical IDs and arbitrary filenames."""
     write(tmp_path, {"$id": "https://example.test/text", **string()}, "text.json")
     issues = lint(tmp_path, {"$ref": "text.json", "examples": ["abc", 4]})
     assert "reference-resolution" not in rules(issues)
@@ -376,6 +402,7 @@ def test_local_dependency_with_arbitrary_filename_and_canonical_id(tmp_path):
 def test_resolution_boundary_never_reads_excluded_artifacts(
     tmp_path, monkeypatch, reference_kind
 ):
+    """Check excluded references never open files outside the boundary."""
     standard = write(tmp_path, {"$ref": "missing.json"}, "standards/base.schema.json")
     standard.write_text("not even valid JSON")
     schema_dir = tmp_path / "schemas"
@@ -398,6 +425,7 @@ def test_resolution_boundary_never_reads_excluded_artifacts(
     original_open = Path.open
 
     def guarded_open(path, *args, **kwargs):
+        """Open a path only when it stays inside the allowed test area."""
         assert not path.resolve().is_relative_to(tmp_path / "standards"), path
         return original_open(path, *args, **kwargs)
 
@@ -408,6 +436,7 @@ def test_resolution_boundary_never_reads_excluded_artifacts(
 
 
 def test_wider_resolution_checks_standard_examples_and_transitive_refs(tmp_path):
+    """Check a wider root validates external schemas and transitive references."""
     standard = write(
         tmp_path,
         {
@@ -436,6 +465,7 @@ def test_wider_resolution_checks_standard_examples_and_transitive_refs(tmp_path)
 
 
 def test_scope_is_generic_and_local_checks_survive_excluded_inheritance(tmp_path):
+    """Check local rules run when inherited references are excluded."""
     write(tmp_path, {"type": "object"}, "schemas/other.schema.json")
     selected = write(
         tmp_path,
@@ -472,6 +502,7 @@ def test_scope_is_generic_and_local_checks_survive_excluded_inheritance(tmp_path
 
 @pytest.mark.parametrize("keyword", ["not", "oneOf", "if"])
 def test_excluded_refs_are_not_treated_as_boolean_schemas(tmp_path, keyword):
+    """Check excluded references are not treated as boolean schemas."""
     write(tmp_path, False, "standards/base.schema.json")
     ref = {"$ref": "../standards/base.schema.json"}
     condition = [ref, string()] if keyword == "oneOf" else ref
@@ -486,6 +517,7 @@ def test_excluded_refs_are_not_treated_as_boolean_schemas(tmp_path, keyword):
 
 
 def test_cli_scope_reporting_and_invalid_boundaries(tmp_path, capsys):
+    """Check CLI reports skipped references and invalid boundaries."""
     write(tmp_path, {"type": "string", "minLength": 5}, "standards/base.schema.json")
     selected = write(
         tmp_path,
@@ -514,6 +546,7 @@ def test_cli_scope_reporting_and_invalid_boundaries(tmp_path, capsys):
 
 @pytest.mark.parametrize("stale_install", [False, True])
 def test_direct_script_uses_checkout_without_pythonpath(tmp_path, stale_install):
+    """Check the script imports the current checkout."""
     import os
     import subprocess
     import sys
@@ -546,6 +579,7 @@ def test_direct_script_uses_checkout_without_pythonpath(tmp_path, stale_install)
 
 
 def test_help_without_site_packages_and_missing_dependency_message(tmp_path):
+    """Check help works without packages and reports missing dependencies clearly."""
     import os
     import subprocess
     import sys
@@ -579,6 +613,7 @@ def test_help_without_site_packages_and_missing_dependency_message(tmp_path):
 def test_missing_format_support_is_a_setup_error(
     tmp_path, monkeypatch, capsys, missing_format
 ):
+    """Check missing format support is reported as a setup error."""
     from jsonschema import FormatChecker
 
     monkeypatch.delitem(FormatChecker.checkers, missing_format)

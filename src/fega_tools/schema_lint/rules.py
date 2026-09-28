@@ -115,6 +115,7 @@ def annotation_only_reference(schema: dict) -> bool:
 
 
 def documentation(node: Node):
+    """Check that independent schemas contain useful documentation."""
     schema = node.schema
     reuse = annotation_only_reference(schema)
     independent = (
@@ -149,6 +150,7 @@ def documentation(node: Node):
 
 
 def reference_style(node: Node):
+    """Check that references use the repository's preferred form."""
     schema = node.schema
     if "$ref" in schema and len(schema) > 1:
         # A documented allOf edge is the explicit inheritance representation.
@@ -169,6 +171,7 @@ def reference_style(node: Node):
 
 
 def keyword_order(node: Node):
+    """Check that recognized schema keywords follow the expected order."""
     actual = [key for key in node.schema if key in KEYWORD_RANK]
     expected = sorted(actual, key=KEYWORD_RANK.__getitem__)
     if actual != expected:
@@ -178,6 +181,7 @@ def keyword_order(node: Node):
 
 
 def property_names(node: Node):
+    """Check that property names use the repository's naming style."""
     properties = node.schema.get("properties", {})
     if not isinstance(properties, dict):
         return
@@ -192,6 +196,7 @@ def property_names(node: Node):
 
 
 def nonempty_values(node: Node):
+    """Check that typed strings and arrays cannot be empty."""
     declared = node.schema.get("type", [])
     types = declared if isinstance(declared, list) else [declared]
     for kind, keyword in (("string", "minLength"), ("array", "minItems")):

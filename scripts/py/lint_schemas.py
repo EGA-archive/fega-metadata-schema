@@ -17,6 +17,7 @@ from fega_tools.jsonld_utils import find_repo_root
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the command-line parser for schema linting."""
     parser = argparse.ArgumentParser(
         description="Lint EGA schema authoring conventions using local references only."
     )
@@ -56,6 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Run schema linting and return a process exit code."""
     args = build_parser().parse_args(argv)
     # argparse handles --help before importing optional validation dependencies.
     try:

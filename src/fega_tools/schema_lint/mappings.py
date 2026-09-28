@@ -36,10 +36,12 @@ IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9_.-]*:[^\s:][^\s]*\Z")
 
 
 def is_identifier(value) -> bool:
+    """Return whether a value is a non-empty identifier."""
     return isinstance(value, str) and bool(IDENTIFIER.fullmatch(value))
 
 
 def mappings(node: Node):
+    """Check schema mapping entries for valid fields and values."""
     if "meta:sssomMapping" in node.schema:
         yield node.issue(
             "sssom",

@@ -84,6 +84,7 @@ def effective_constraints(node: Node):
 
 
 def examples(node: Node):
+    """Validate each example against its inherited constraints."""
     values = node.schema.get("examples")
     if not isinstance(values, list):
         return

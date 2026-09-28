@@ -26,6 +26,7 @@ PYTHON = sys.executable
 
 
 def _assert_documented(parser) -> None:
+    """Check that a parser and its arguments have usable help text."""
     assert parser.description, parser.prog
     for action in parser._actions:
         if action.dest == "help":
@@ -38,6 +39,7 @@ def _assert_documented(parser) -> None:
 
 
 def test_every_parser_and_argument_has_plain_help_and_an_example() -> None:
+    """Check that every project parser documents its arguments with examples."""
     parsers = (
         lint_schemas.build_parser(),
         modify_ids.build_arg_parser(),
@@ -58,6 +60,7 @@ def test_every_parser_and_argument_has_plain_help_and_an_example() -> None:
 
 
 def test_every_script_accepts_top_level_help() -> None:
+    """Check that every Python script responds successfully to help."""
     for script in sorted((ROOT / "scripts/py").glob("*.py")):
         result = subprocess.run([str(PYTHON), str(script), "-h"], cwd=ROOT, env={"PYTHONPATH": str(ROOT / "src")}, capture_output=True, text=True)
         assert result.returncode == 0, f"{script}: {result.stderr}"
