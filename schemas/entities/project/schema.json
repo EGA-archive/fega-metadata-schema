@@ -1,0 +1,718 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json",
+  "type": "object",
+  "title": "EGA project metadata schema",
+  "description": "A research initiative providing the scientific context for EGA Studies, either directly or through child Projects, and the datasets discoverable through those Studies.",
+  "meta:sssomMappings": [
+    {
+      "predicate_id": "skos:closeMatch",
+      "object_id": "isa:investigation-schema-json",
+      "mapping_justification": "semapv:ManualMappingCuration",
+      "object_match_field": "rdfs:comment",
+      "subject_match_field": "rdfs:comment",
+      "author_id": ["orcid:0000-0002-7747-6256"],
+      "creator_id": ["orcid:0000-0002-7747-6256"],
+      "reviewer_id": [""],
+      "confidence": 0.8,
+      "mapping_date": "2026-09-23"
+    },
+    {
+      "predicate_id": "skos:closeMatch",
+      "object_id": "schema:ResearchProject",
+      "mapping_justification": "semapv:ManualMappingCuration",
+      "object_match_field": "rdfs:comment",
+      "subject_match_field": "rdfs:comment",
+      "author_id": ["orcid:0000-0002-7747-6256"],
+      "creator_id": ["orcid:0000-0002-7747-6256"],
+      "reviewer_id": [""],
+      "confidence": 0.8,
+      "mapping_date": "2026-09-23"
+    },
+    {
+      "predicate_id": "skos:broadMatch",
+      "object_id": "schema:Project",
+      "mapping_justification": "semapv:ManualMappingCuration",
+      "object_match_field": "rdfs:title",
+      "subject_match_field": "rdfs:title",
+      "author_id": ["orcid:0000-0002-7747-6256"],
+      "creator_id": ["orcid:0000-0002-7747-6256"],
+      "reviewer_id": [""],
+      "confidence": 0.8,
+      "mapping_date": "2026-09-23"
+    },
+    {
+      "predicate_id": "skos:relatedMatch",
+      "object_id": "prov:Activity",
+      "mapping_justification": "semapv:ManualMappingCuration",
+      "object_match_field": "rdfs:comment",
+      "subject_match_field": "rdfs:comment",
+      "author_id": ["orcid:0000-0002-7747-6256"],
+      "creator_id": ["orcid:0000-0002-7747-6256"],
+      "reviewer_id": [""],
+      "confidence": 0.8,
+      "mapping_date": "2026-09-23",
+      "comment": "#! In DCAT, a project can be represented as an activity that provides context for research activities"
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    },
+    {
+      "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
+    }
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "hasStudy"
+      ]
+    },
+    {
+      "required": [
+        "hasSubproject"
+      ]
+    }
+  ],
+  "meta:version": "1.0.0-draft.2",
+  "$async": true,
+  "@context": "./context.jsonld",
+  "required": [
+    "@id",
+    "@type",
+    "title",
+    "description",
+    "inSubmission",
+    "hasStudy"
+  ],
+  "properties": {
+    "@id": {
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@id"
+        }
+      ],
+      "examples": [
+        "ega:EGAJ00000000001",
+        "ega:EGAJ00001000002"
+      ]
+    },
+
+    "@type": {
+      "title": "Project resource type",
+      "description": "The JSON-LD type for an EGA project.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@type"
+        }
+      ],
+      "examples": [
+        "ega:project",
+        [
+          "ega:project",
+          "schema:Project"
+        ],
+        [
+          "ega:project",
+          "schema:Project",
+          "schema:ResearchProject"
+        ]
+      ]
+    },
+
+    "title": {
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "isa:investigation-schema-json.title",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 0.8,
+          "mapping_date": "2026-09-23"
+        },
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "dct:title",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 0.8,
+          "mapping_date": "2026-09-23"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/label"
+        }
+      ],
+      "examples": [
+        "National CAncer data Node DeveLopErs",
+        "Heterogeneous Semantic Data Integration For The Gut-Brain Interplay"
+      ]
+    },
+
+    "alternativeTitle": {
+      "description": "Other names or acronyms used for the research initiative.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/alternativeLabels"
+        }
+      ],
+      "examples": [
+        [
+          "CANDLE"
+        ],
+        [
+          "HEREDITARY"
+        ]
+      ]
+    },
+
+    "description": {
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "isa:investigation-schema-json.description",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23"
+        },
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "dct:description",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/description"
+        }
+      ],
+      "examples": [
+        "The HEREDITARY project addresses the critical challenge of leveraging multimodal health data to improve disease prevention, diagnosis, and treatment. Despite advancements in digitalization and machine learning, utilizing medical data remains complex due to its diverse nature—ranging from genomic data and bio-images to bio-signals and medical texts. Integrating this data from multiple sources is further complicated by technical and legal barriers, data heterogeneity, and privacy concerns."
+      ]
+    },
+
+    "keyword": {
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/keywords"
+        }
+      ],
+      "examples": [
+        [
+          "cardiomyopathy",
+          "rare disease",
+          "genomics"
+        ]
+      ]
+    },
+
+    "sameAs": {
+      "description": "External records representing the same research initiative (e.g., an INSDC BioProject or ENA project). Use a resolvable URI.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/sameAs"
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1234567"
+          }
+        ]
+      ]
+    },
+
+    "landingPage": {
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/landingPage"
+        }
+      ],
+      "examples": [
+        "https://hereditary-project.eu/"
+      ]
+    },
+
+    "funding": {
+      "type": "array",
+      "title": "Funding",
+      "description": "Funding supporting this Project. Each entry pairs one funder with an optional award or grant. Record separate entries for separate awards or funders.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "schema:funding",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:label",
+          "subject_match_field": "rdfs:label",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23",
+          "comment": "An EGA funding reference pairs a funder with optional award metadata: it is not itself a Grant."
+        }
+      ],
+      "$comment": "Main source of inspiration was the way Zenodo deals with funding metadata.",
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/fundingReference"
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "examples": [
+        [
+          {
+            "funder": {
+              "@type": [
+                "prov:Agent",
+                "prov:Organization"
+              ],
+              "@id": "https://commission.europa.eu/index_en",
+              "name": "European Commission"
+            },
+            "award": {
+              "@id": "https://cordis.europa.eu/project/id/101137074",
+              "number": "101137074",
+              "title": "HEREDITARY",
+              "url": "https://cordis.europa.eu/project/id/101137074"
+            }
+          }
+        ],
+        [
+          {
+            "funder": {
+              "@type": [
+                "prov:Agent",
+                "prov:Organization"
+              ],
+              "name": "European Commission"
+            }
+          }
+        ]
+      ]
+    },
+
+    "qualifiedAttributions": {
+      "description": "People and organisations credited for the project, with their scientific roles and optional contact details.",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/qualifiedAttributions"
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@type": "prov:Attribution",
+            "agent": {
+              "@type": [
+                "prov:Agent",
+                "prov:Person"
+              ],
+              "name": "Maya Rivera",
+              "email": "maya.rivera@example.org"
+            },
+            "hadRole": [
+              {
+                "id": "CREDIT:00000005",
+                "label": "investigation role"
+              }
+            ]
+          },
+          {
+            "@type": "prov:Attribution",
+            "agent": {
+              "@id": "https://example.org/organisations/northbridge-genomics",
+              "@type": [
+                "prov:Agent",
+                "prov:Organization"
+              ],
+              "name": "Northbridge Genomics Institute"
+            },
+            "hadRole": [
+              {
+                "id": "CREDIT:00000010",
+                "label": "supervision role"
+              }
+            ]
+          }
+        ]
+      ]
+    },
+
+    "hasStudy": {
+      "title": "Has Studies",
+      "description": "EGA Studies conducted directly within this research initiative. Each item identifies a separately described Study. Studies belonging to child Projects are reached through hasSubproject and need not be repeated here.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "isa:investigation-schema-json.studies",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23"
+        },
+        {
+          "predicate_id": "skos:broadMatch",
+          "object_id": "dct:hasPart",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 0.9,
+          "mapping_date": "2026-09-23"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/hasPart"
+        },
+        {
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
+              }
+            ]
+          }
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAS00001000002",
+            "@type": "ega:study"
+          }
+        ],
+        [
+          {
+            "@id": "ega:EGAS00001000002",
+            "@type": "ega:study"
+          },
+          {
+            "@id": "ega:EGAS00001000003",
+            "@type": [
+              "ega:study",
+              "schema:ResearchProject"
+            ]
+          }
+        ]
+      ]
+    },
+
+    "inSubmission": {
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/inSubmission"
+        }
+      ],
+      "examples": [
+        {
+          "@id": "ega:EGA00000000001",
+          "@type": "ega:submission"
+        }
+      ]
+    },
+
+    "hasSubproject": {
+      "title": "Has subprojects",
+      "description": "Immediate child Projects within this research initiative. Each reference identifies a separately described Project. Follow these links to reach further subprojects and their Studies. A Project must not be its own child or descendant (i.e., no circular references allowed).",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:broadMatch",
+          "object_id": "dct:hasPart",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23"
+        }
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/hasPart"
+        },
+        {
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
+              }
+            ]
+          }
+        }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAJ00001000002",
+            "@type": "ega:project"
+          }
+        ],
+        [
+          {
+            "@id": "ega:EGAJ00001000002",
+            "@type": "ega:project"
+          },
+          {
+            "@id": "ega:EGAJ00001000003",
+            "@type": [
+              "ega:project",
+              "schema:Project"
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  
+  "$defs": {
+    "fundingReference": {
+      "type": "object",
+      "title": "Funding reference",
+      "description": "A funder supporting the Project and, when known, the award through which that support was provided.",
+      "required": [
+        "funder"
+      ],
+      "properties": {
+        "funder": {
+          "title": "Funder",
+          "description": "The person or organisation providing financial support. Use a ROR URI or Crossref Funder Registry DOI as @id when available, or provide a name.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "schema:funder",
+              "mapping_justification": "semapv:ManualMappingCuration",
+              "object_match_field": "rdfs:label",
+              "subject_match_field": "rdfs:label",
+              "author_id": ["orcid:0000-0002-7747-6256"],
+              "creator_id": ["orcid:0000-0002-7747-6256"],
+              "reviewer_id": [""],
+              "confidence": 1.0,
+              "mapping_date": "2026-09-23"
+            }
+          ],
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/agent"
+            }
+          ],
+          "examples": [
+            {
+              "@type": [
+                "prov:Agent",
+                "prov:Organization"
+              ],
+              "@id": "https://commission.europa.eu/index_en",
+              "name": "European Commission"
+            },
+            {
+              "@type": [
+                "prov:Agent",
+                "prov:Organization"
+              ],
+              "name": "Eastmere Medical Research Foundation"
+            }
+          ]
+        },
+
+        "award": {
+          "title": "Funding award",
+          "description": "The award or grant supporting the Project. Omit this field when no award details are known.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/fundingAward"
+            }
+          ],
+          "examples": [
+            {
+              "@id": "https://cordis.europa.eu/project/id/101137074",
+              "number": "101137074",
+              "title": "HEREDITARY",
+              "url": "https://cordis.europa.eu/project/id/101137074"
+            },
+            {
+              "number": "NRC-SEED-2026-0017",
+              "title": "HeartGen pilot sequencing"
+            }
+          ]
+        }
+      },
+      "examples": [
+        {
+          "funder": {
+            "@type": [
+              "prov:Agent",
+              "prov:Organization"
+            ],
+            "@id": "https://commission.europa.eu/index_en",
+            "name": "European Commission"
+          },
+          "award": {
+            "@id": "https://cordis.europa.eu/project/id/101137074",
+            "number": "101137074",
+            "title": "HEREDITARY",
+            "url": "https://cordis.europa.eu/project/id/101137074"
+          }
+        },
+        {
+          "funder": {
+            "@type": [
+              "prov:Agent",
+              "prov:Organization"
+            ],
+            "name": "Eastmere Medical Research Foundation"
+          }
+        }
+      ]
+    },
+
+    "fundingAward": {
+      "type": "object",
+      "title": "Funding award",
+      "description": "Discovery metadata for a funding award or grant.",
+      "meta:sssomMappings": [
+        {
+          "predicate_id": "skos:closeMatch",
+          "object_id": "schema:Grant",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "object_match_field": "rdfs:comment",
+          "subject_match_field": "rdfs:comment",
+          "author_id": ["orcid:0000-0002-7747-6256"],
+          "creator_id": ["orcid:0000-0002-7747-6256"],
+          "reviewer_id": [""],
+          "confidence": 1.0,
+          "mapping_date": "2026-09-23"
+        }
+      ],
+      "anyOf": [
+        {
+          "required": [ "@id" ]
+        },
+        {
+          "required": [ "number" ]
+        }
+      ],
+      "properties": {
+        "@id": {
+          "description": "A globally resolvable identifier for the award, such as a grant DOI URL.",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/@id"
+            }
+          ],
+          "examples": [
+            "https://cordis.europa.eu/project/id/101137074"
+          ]
+        },
+        "number": {
+          "title": "Award number",
+          "description": "The identifier assigned by the funder. Keep it as a string, including any leading zeros or punctuation.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "schema:identifier",
+              "mapping_justification": "semapv:ManualMappingCuration",
+              "object_match_field": "rdfs:comment",
+              "subject_match_field": "rdfs:comment",
+              "author_id": ["orcid:0000-0002-7747-6256"],
+              "creator_id": ["orcid:0000-0002-7747-6256"],
+              "reviewer_id": [""],
+              "confidence": 0.9,
+              "mapping_date": "2026-09-23"
+            }
+          ],
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/label"
+            }
+          ],
+          "examples": [
+            "NRC-HG-2026-0042",
+            "101137074"
+          ]
+        },
+        "title": {
+          "title": "Award title",
+          "description": "The name of the funded award or grant.",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/label"
+            }
+          ],
+          "examples": [
+            "HEREDITARY"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "title": "Award URL",
+          "description": "A page describing the award on the funder's website or another authoritative service.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "schema:url",
+              "mapping_justification": "semapv:ManualMappingCuration",
+              "object_match_field": "rdfs:label",
+              "subject_match_field": "rdfs:label",
+              "author_id": ["orcid:0000-0002-7747-6256"],
+              "creator_id": ["orcid:0000-0002-7747-6256"],
+              "reviewer_id": [""],
+              "confidence": 1.0,
+              "mapping_date": "2026-09-23"
+            }
+          ],
+          "format": "uri",
+          "examples": [
+            "https://cordis.europa.eu/project/id/101137074"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "@id": "https://cordis.europa.eu/project/id/101137074",
+          "number": "101137074",
+          "title": "HEREDITARY",
+          "url": "https://cordis.europa.eu/project/id/101137074"
+        },
+        {
+          "number": "NRC-SEED-2026-0017",
+          "title": "HeartGen pilot sequencing"
+        }
+      ]
+    }
+  }
+}

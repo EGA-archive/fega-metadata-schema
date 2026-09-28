@@ -1,0 +1,22 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+    "@id": "ega:EGAJ00000000001",
+    "@type": "ega:project",
+    "title": "",
+    "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+    "hasStudy": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study"
+      }
+    ],
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    }
+  }
+}

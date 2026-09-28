@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
   "type": "object",
   "title": "EGA Graph metadata schema",
-    "meta:version": "1.0.0-draft.2",
+    "meta:version": "1.0.0-draft.3",
   "$async": true,
   "description": "A typed named JSON-LD graph containing complete EGA entity instances. This schema validates each item against the schema selected by its EGA @type. It does not validate graph-wide relationship semantics.",
   "@context": "./context.jsonld",
@@ -65,6 +65,7 @@
           { "$ref": "#/$defs/entitySchemaProcess" },
           { "$ref": "#/$defs/entitySchemaProtocol" },
           { "$ref": "#/$defs/entitySchemaProtocolCollection" },
+          { "$ref": "#/$defs/entitySchemaProject" },
           { "$ref": "#/$defs/entitySchemaStudy" },
           { "$ref": "#/$defs/entitySchemaSubmission" }
         ]
@@ -135,6 +136,7 @@
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" },
+        { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }
       ]
@@ -292,6 +294,20 @@
       }
     },
 
+    "declaresProject": {
+      "title": "Declares a Project",
+      "type": "object",
+      "required": ["@type"],
+      "properties": {
+        "@type": {
+          "anyOf": [
+            { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" },
+            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" }, "minContains": 1 }
+          ]
+        }
+      }
+    },
+
     "declaresStudy": {
       "title": "Declares a Study",
       "type": "object",
@@ -408,6 +424,16 @@
         ]
       },
       "then": { "$ref": "../entities/protocolCollection/schema.json" }
+    },
+
+    "entitySchemaProject": {
+      "if": {
+        "allOf": [
+          { "$ref": "#/$defs/declaresProject" },
+          { "$ref": "#/$defs/routableEntityType" }
+        ]
+      },
+      "then": { "$ref": "../entities/project/schema.json" }
     },
 
     "entitySchemaStudy": {

@@ -1,0 +1,119 @@
+{
+  "@context": [
+    "../../common/context.jsonld",
+    {
+      "entityDoc": "entities:project/schema.json#",
+      "properties": "@nest",
+      "title": {
+        "@id": "dct:title"
+      },
+      "alternativeTitle": {
+        "@id": "dct:alternative",
+        "@container": "@set"
+      },
+      "description": {
+        "@id": "dct:description"
+      },
+      "keyword": {
+        "@id": "schema:keywords",
+        "@container": "@set"
+      },
+      "publications": {
+        "@id": "schema:citation",
+        "@type": "@id",
+        "@container": "@set"
+      },
+      "landingPage": {
+        "@id": "dcat:landingPage",
+        "@type": "@id",
+        "@container": "@set"
+      },
+      "qualifiedAttributions": {
+        "@id": "prov:qualifiedAttribution",
+        "@container": "@set"
+      },
+      "agent": {
+        "@id": "prov:agent"
+      },
+      "hadRole": {
+        "@id": "prov:hadRole",
+        "@container": "@set"
+      },
+      "affiliations": {
+        "@id": "schema:affiliation",
+        "@container": "@set"
+      },
+      "atLocation": {
+        "@id": "prov:atLocation"
+      },
+      "order": {
+        "@id": "entityDoc:order"
+      },
+      "hasStudy": {
+        "@id": "dct:hasPart",
+        "@type": "@id",
+        "@container": "@set"
+      },
+      "hasSubproject": {
+        "@id": "entityDoc:hasSubproject",
+        "@type": "@id",
+        "@container": "@set"
+      },
+      "funding": {
+        "@id": "entityDoc:funding",
+        "@container": "@set",
+        "@context": {
+          "entityDoc": {
+            "@id": "entities:project/schema.json#",
+            "@prefix": true
+          },
+          "funder": {
+            "@id": "schema:funder"
+          },
+          "award": {
+            "@id": "entityDoc:award",
+            "@context": {
+              "id": null,
+              "identifier": null,
+              "name": null,
+              "number": {
+                "@id": "schema:identifier"
+              },
+              "title": {
+                "@id": "schema:name"
+              },
+              "url": {
+                "@id": "schema:url",
+                "@type": "@id"
+              }
+            }
+          }
+        }
+      },
+      "funder": {
+        "@id": "schema:funder"
+      },
+      "number": {
+        "@id": "schema:identifier"
+      },
+      "award": {
+        "@id": "entityDoc:award",
+        "@context": {
+          "id": null,
+          "identifier": null,
+          "name": null,
+          "number": {
+            "@id": "schema:identifier"
+          },
+          "title": {
+            "@id": "schema:name"
+          },
+          "url": {
+            "@id": "schema:url",
+            "@type": "@id"
+          }
+        }
+      }
+    }
+  ]
+}

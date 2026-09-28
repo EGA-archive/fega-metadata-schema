@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
     "type": "object",
     "title": "EGA study metadata schema",
-    "meta:version": "1.0.0-draft.2",
+    "meta:version": "1.0.0-draft.3",
     "$async": true,
     "description": "Compilation of Protocol Collections (e.g., examinations, analyses or critical inspections) applied to investigate a particular topic within the context of a given Project.",
     "@context": "./context.jsonld",
@@ -226,7 +226,6 @@
         "publications": {
             "title": "Publications",
             "description": "Scientific publications that are associated with the study.",
-            "type": "array",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
@@ -241,11 +240,11 @@
                     "mapping_date": "2026-07-07"
                 }
             ],
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": {
-                "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-            },
+            "allOf": [
+                {
+                    "$ref": "../../common/schema.json#/$defs/publications"
+                }
+            ],
             "examples": [
                 [ "pubmed:16333295" ],
                 [ "pmc:PMC3084216" ],
@@ -415,7 +414,7 @@
         },
         "qualifiedAttributions": {
             "title": "Qualified attributions",
-            "type": "array",
+            "description": "People or organisations credited for the resource, together with their roles.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -440,6 +439,11 @@
                     "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../../common/schema.json#/$defs/qualifiedAttributions"
                 }
             ],
             "examples": [
@@ -504,10 +508,7 @@
                         "order": 2
                     }
                 ]
-            ],
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": { "$ref": "../../common/schema.json#/$defs/qualifiedAttribution" }
+            ]
         },
         "hasCohort": {
             "title": "Has Cohorts",

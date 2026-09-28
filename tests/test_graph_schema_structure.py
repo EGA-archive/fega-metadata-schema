@@ -21,7 +21,7 @@ def test_graph_entity_dispatch_uses_type_declarations() -> None:
 
     assert "oneOf" not in defs["supportedEntityType"]
     supported_type_refs = defs["supportedEgaTypeValue"]["anyOf"]
-    assert len(supported_type_refs) == 11
+    assert len(supported_type_refs) == 12
     assert all(
         branch["$ref"].startswith(
             "../common/schema.json#/$defs/relationshipItemRestriction"
@@ -44,6 +44,7 @@ def test_graph_entity_dispatch_uses_type_declarations() -> None:
         "Protocol",
         "ProtocolCollection",
         "Study",
+        "Project",
         "Submission",
     }
     for entity_name in entity_names:

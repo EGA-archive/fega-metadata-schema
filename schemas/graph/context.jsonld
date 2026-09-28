@@ -53,6 +53,10 @@
       "ega:submission": {
         "@id": "ega:submission",
         "@context": "../entities/submission/context.jsonld"
+      },
+      "ega:project": {
+        "@id": "ega:project",
+        "@context": "../entities/project/context.jsonld"
       }
     }
   ]

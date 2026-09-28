@@ -219,7 +219,7 @@ Table of contents and contributions
 | Ontology	 | Structured representation of concepts, including controlled vocabulary with defined relations |
 | Policy	 | When in uppercase, it refers to the entity "Policy" of the EGA v2 model, representing a statement of data-use and access conditions; when in lower case, it refers to the everyday sense of a general organisational rule or practice |
 | Process	 | Activity representing the execution of a protocol with inputs and outputs |
-| Project	 | Umbrella grouping of related studies and datasets |
+| Project	 | Research initiative grouping related Studies |
 | Protocol	 | Step-by-step scientific method description |
 | Protocol Collection | Versioned set of related protocols |
 | Serialisation | Concrete encoding of a data model into a specific file or message format, such as JSON, XML or RDF/Turtle. |
@@ -505,7 +505,7 @@ The entities defined in the EGA v2 model are as follows. Each of them  listed he
 
 * **Cohort** ([prov:Collection](https://www.w3.org/TR/prov-o/#Collection)): A group of Biomaterials (e.g., individuals, biopsies) sharing specific characteristics, facilitating comparative studies and discovery.
 
-* **Project** ([schema:Project](https://schema.org/Project)): Umbrella record that groups related Studies and Datasets under a single scientific or funding scope.
+* **Project** ([schema:Project](https://schema.org/Project)): Research initiative that groups one or more related Studies under a shared scientific scope.
 
 * **Protocol collection** (prov:Collection, prov:Plan): A versioned set of Protocol records that together define a complete workflow. May include a single or multiple protocols, depending on the desired granularity by the submitter. See [*Disambiguation*](#7411-processes-and-protocols).
 

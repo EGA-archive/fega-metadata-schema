@@ -342,6 +342,182 @@ def test_inherited_placeholder_change_requires_each_component_draft_counter(tmp_
     assert "Component 'widget' changed but meta:version is unchanged" in report["errors"]
 
 
+def _fragment_repos(tmp_path: Path, reference: str = "../common/schema.json#/$defs/used") -> tuple[Path, Path]:
+    previous, current = tmp_path / "previous", tmp_path / "current"
+    for root in (previous, current):
+        _repo(root, "1.0.0-draft.1")
+        _write(root / "schemas/common/schema.json", {
+            "$id": f"https://raw.githubusercontent.com/{REPOSITORY}/main/schemas/common/schema.json",
+            "meta:version": "1.0.0-draft.1" if root == previous else "1.0.0-draft.2",
+            "$defs": {
+                "used": {"type": ["string", "number"]},
+                "unused": {"type": "string"},
+            },
+        })
+        path = root / "schemas/widget/schema.json"
+        widget = json.loads(path.read_text())
+        widget["properties"]["value"] = {"$ref": reference}
+        _write(path, widget)
+    return previous, current
+
+
+@pytest.mark.parametrize("change", ["add", "modify", "remove"])
+def test_unreferenced_common_definition_does_not_require_consumer_bump(tmp_path: Path, change: str) -> None:
+    previous, current = _fragment_repos(tmp_path)
+    path = current / "schemas/common/schema.json"
+    common = json.loads(path.read_text())
+    if change == "add":
+        common["$defs"]["another"] = {"type": "boolean"}
+    elif change == "modify":
+        common["$defs"]["unused"]["type"] = "boolean"
+    else:
+        del common["$defs"]["unused"]
+    _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+
+    assert report["errors"] == []
+    assert widget["required_change"] == "same"
+    assert widget["details"] == []
+    assert "common" in widget["dependencies"]  # Manifest inventory is unchanged.
+
+
+@pytest.mark.parametrize("reference", [
+    "../common/schema.json#/$defs/used",
+    f"https://raw.githubusercontent.com/{REPOSITORY}/main/schemas/common/schema.json#/$defs/used",
+    "../common/schema.json#/%24defs/used",
+])
+def test_referenced_definition_inherits_only_its_own_severity(tmp_path: Path, reference: str) -> None:
+    previous, current = _fragment_repos(tmp_path, reference)
+    path = current / "schemas/common/schema.json"
+    common = json.loads(path.read_text())
+    common["$defs"]["used"]["type"] = "string"
+    common["$defs"]["unrelatedAddition"] = {"type": "boolean"}
+    _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    components = {c["name"]: c for c in report["components"]}
+
+    assert components["common"]["required_change"] == "unknown"
+    assert components["widget"]["required_change"] == "major"
+    assert report["errors"] == ["Component 'widget' changed but meta:version is unchanged"]
+    assert components["widget"]["details"][0]["dependency"] == "common"
+    assert components["widget"]["details"][0]["path"] == "/$defs/used/type"
+
+
+@pytest.mark.parametrize("cycle", [False, True])
+def test_nested_common_references_propagate_with_cycles(tmp_path: Path, cycle: bool) -> None:
+    previous, current = _fragment_repos(tmp_path)
+    for root in (previous, current):
+        path = root / "schemas/common/schema.json"
+        common = json.loads(path.read_text())
+        common["$defs"]["used"] = {"$ref": "#/$defs/leaf"}
+        common["$defs"]["leaf"] = {"type": ["string", "number"] if root == previous else "string"}
+        if cycle:
+            common["$defs"]["leaf"]["$ref"] = "#/$defs/used"
+        _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+
+    assert widget["required_change"] == "major"
+    assert widget["details"][0]["path"] == "/$defs/leaf/type"
+
+
+@pytest.mark.parametrize("change_used", [False, True])
+def test_fragment_dependency_chain_does_not_propagate_whole_component_severity(tmp_path: Path, change_used: bool) -> None:
+    previous, current = _fragment_repos(tmp_path, "../middle/schema.json#/$defs/selected")
+    for root in (previous, current):
+        _write(root / "schemas/middle/schema.json", {
+            "$id": f"https://raw.githubusercontent.com/{REPOSITORY}/main/schemas/middle/schema.json",
+            "meta:version": "1.0.0-draft.1" if root == previous else "1.0.0-draft.2",
+            "$defs": {"selected": {"$ref": "../common/schema.json#/$defs/used"}},
+        })
+    path = current / "schemas/common/schema.json"
+    common = json.loads(path.read_text())
+    common["$defs"]["used" if change_used else "unused"]["type"] = "boolean"
+    _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+
+    assert widget["required_change"] == ("major" if change_used else "same")
+    assert bool(report["errors"]) == change_used
+
+
+@pytest.mark.parametrize("reference", [
+    "../common/schema.json",  # Whole-schema dependency.
+    "../common/schema.json#named",  # Unsupported anchor: conservative fallback.
+])
+def test_whole_schema_and_anchor_dependencies_remain_conservative(tmp_path: Path, reference: str) -> None:
+    previous, current = _fragment_repos(tmp_path, reference)
+    for root in (previous, current):
+        path = root / "schemas/common/schema.json"
+        common = json.loads(path.read_text())
+        common["$defs"]["used"]["$anchor"] = "named"
+        if root == current:
+            common["$defs"]["unused"]["type"] = "boolean"
+        _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert "Component 'widget' changed but meta:version is unchanged" in report["errors"]
+
+
+@pytest.mark.parametrize("reference", ["../common/schema.json#/$defs/a~1b~0c", "../common/schema.json#/$defs/used"])
+def test_removed_referenced_definition_is_not_silently_ignored(tmp_path: Path, reference: str) -> None:
+    previous, current = _fragment_repos(tmp_path, reference)
+    for root in (previous, current):
+        path = root / "schemas/common/schema.json"
+        common = json.loads(path.read_text())
+        if root == previous:
+            common["$defs"]["a/b~c"] = {"type": "string"}
+        else:
+            del common["$defs"]["used"]
+        _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+    assert widget["required_change"] == "unknown"
+    assert "Component 'widget' changed but meta:version is unchanged" in report["errors"]
+
+
+def test_escaped_pointer_and_similarly_named_definition_are_distinct(tmp_path: Path) -> None:
+    previous, current = _fragment_repos(tmp_path, "../common/schema.json#/$defs/a~1b~0c")
+    for root in (previous, current):
+        path = root / "schemas/common/schema.json"
+        common = json.loads(path.read_text())
+        common["$defs"]["a/b~c"] = {"type": "string"}
+        common["$defs"]["a/b~cSuffix"] = {"type": "string" if root == previous else "boolean"}
+        _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    assert report["errors"] == []
+    path = current / "schemas/common/schema.json"
+    common = json.loads(path.read_text())
+    common["$defs"]["a/b~c"]["type"] = "boolean"
+    _write(path, common)
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+    assert widget["required_change"] == "major"
+    assert {d["path"] for d in widget["details"]} == {"/$defs/a~1b~0c/type"}
+
+
+def test_context_change_still_propagates_to_fragment_consumers(tmp_path: Path) -> None:
+    previous, current = _fragment_repos(tmp_path)
+    for root in (previous, current):
+        _write(root / "schemas/common/context.jsonld", {
+            "@context": {"name": "https://example.org/old" if root == previous else "https://example.org/new"},
+        })
+
+    report = analyse_release(current, previous, repository=REPOSITORY)
+    widget = next(c for c in report["components"] if c["name"] == "widget")
+    assert widget["required_change"] == "unknown"
+    assert widget["details"][0]["dependency"] == "common"
+    assert widget["details"][0]["path"] == "schemas/common/context.jsonld"
+
+
 def test_context_version_term_is_not_ignored_as_schema_metadata(tmp_path):
     old, new = tmp_path / "old", tmp_path / "new"
     _repo(old)
