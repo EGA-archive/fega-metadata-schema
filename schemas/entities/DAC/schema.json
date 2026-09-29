@@ -1,22 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
-  "type": "object",
-  "title": "EGA Data Access Committee metadata schema",
     "meta:version": "1.0.0-draft.2",
   "$async": true,
+  "type": "object",
+  "title": "EGA Data Access Committee metadata schema",
   "description": "Metadata for an EGA Data Access Committee (DAC), the body managing data access requests, overseeing the approval process for data usage in accordance with its defined Policy.",
   "$comment": "#! Instead of EGA stable IDs, the embedded memberships, agents and contact points use JSON-LD identifiers only, including fragment identifiers rooted at the DAC URI (e.g., ega:EGAC00000000001#contact-point-1).",
   "@context": "./context.jsonld",
-  "required": [
-    "@id",
-    "@type",
-    "title",
-    "description",
-    "status",
-    "contactPoint",
-    "components"
-  ],
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:broadMatch",
@@ -45,19 +36,22 @@
       "mapping_date": "2026-07-21"
     }
   ],
-  "allOf": [
-    {
-      "title": "Base constraints for JSON-LD",
-      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
-    },
-    {
-      "title": "Entity type restriction",
-      "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionDAC"
-    }
+  "required": [
+    "@id",
+    "@type",
+    "title",
+    "description",
+    "status",
+    "contactPoint",
+    "components"
   ],
   "properties": {
     "@id": {
-      "$ref": "../../common/schema.json#/$defs/@id",
+  "allOf": [
+    {
+          "$ref": "../../common/schema.json#/$defs/@id"
+        }
+      ],
       "examples": [
         "ega:EGAC00000000001",
         "ega:EGAC00001000002"

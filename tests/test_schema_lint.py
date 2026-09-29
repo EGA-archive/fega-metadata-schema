@@ -58,6 +58,85 @@ def test_clean_schema_and_boolean_constraints(tmp_path):
     assert not lint(tmp_path, False)
 
 
+def test_description_is_optional_but_title_is_required(tmp_path):
+    """Omitting a description is valid; omitting a title still fails."""
+    schema = string()
+    del schema["description"]
+    assert not lint(tmp_path, schema)
+    del schema["title"]
+    issues = lint(tmp_path, schema)
+    assert [(issue.rule, issue.path) for issue in issues] == [
+        ("documentation", ("title",))
+    ]
+
+
+@pytest.mark.parametrize(
+    "description, expected_rule",
+    [("", "documentation"), ("   ", "documentation"), (42, "schema-structure")],
+)
+def test_supplied_description_must_be_nonempty_text(
+    tmp_path, description, expected_rule
+):
+    """Optional descriptions must still be useful when supplied."""
+    schema = string()
+    schema["description"] = description
+    assert expected_rule in rules(lint(tmp_path, schema))
+
+
+@pytest.mark.parametrize(
+    "filename, needs_examples",
+    [
+        ("schemas/entities/DAC/schema.json", False),
+        ("schemas/entities/dataset/schema.json", False),
+        ("schemas/common/schema.json", True),
+        ("schemas/graph/schema.json", True),
+        ("schemas/entities/DAC/nested/schema.json", True),
+        ("schemas/entities/DAC/other.schema.json", True),
+    ],
+)
+def test_only_entity_roots_can_omit_examples(tmp_path, filename, needs_examples):
+    """Entity suites replace root examples, but not nested definition examples."""
+    nested = string()
+    del nested["examples"]
+    selected = write(
+        tmp_path,
+        {
+            "type": "object",
+            "title": "Entity",
+            "properties": {"name": nested},
+            "$defs": {"text": nested},
+        },
+        filename,
+    )
+    issues = lint_schemas([selected], root=tmp_path)
+    expected = {("properties", "name", "examples"), ("$defs", "text", "examples")}
+    if needs_examples:
+        expected.add(("examples",))
+    assert {issue.path for issue in issues if issue.rule == "documentation"} == expected
+
+
+@pytest.mark.parametrize(
+    "examples, expected_rule", [([], "documentation"), ([42], "example-validation")]
+)
+def test_supplied_entity_root_examples_are_checked(tmp_path, examples, expected_rule):
+    """The root exemption does not permit empty arrays or invalid examples."""
+    selected = write(
+        tmp_path,
+        {"type": "object", "title": "Entity", "examples": examples},
+        "schemas/entities/DAC/schema.json",
+    )
+    assert expected_rule in rules(lint_schemas([selected], root=tmp_path))
+
+
+def test_entity_root_still_needs_title(tmp_path):
+    """Only examples are optional at an independent entity root."""
+    selected = write(tmp_path, {"type": "object"}, "schemas/entities/DAC/schema.json")
+    issues = lint_schemas([selected], root=tmp_path)
+    assert [(issue.rule, issue.path) for issue in issues] == [
+        ("documentation", ("title",))
+    ]
+
+
 def test_definitions_fragments_and_annotation_data(tmp_path):
     """Check annotations and schema fragments are handled separately."""
     schema = ordered(
@@ -154,13 +233,99 @@ def test_out_of_scope_type_does_not_count(tmp_path, transitive):
     )
 
 
-@pytest.mark.parametrize("keyword", ["anyOf", "oneOf", "if", "then", "else", "not"])
+@pytest.mark.parametrize("keyword", ["allOf", "anyOf", "oneOf"])
+@pytest.mark.parametrize("via_ref", [False, True])
+def test_type_can_appear_in_a_composition_branch(tmp_path, keyword, via_ref):
+    """One typed leaf suffices, even alongside an untyped alternative."""
+    branch = {"anyOf": [{"oneOf": [{"type": "string"}, {"type": "array"}]}]}
+    if via_ref:
+        write(tmp_path, branch, "defs/typed.schema.json")
+        write(tmp_path, {"$ref": "typed.schema.json"}, "defs/alias.schema.json")
+        branch = {"$ref": "defs/alias.schema.json"}
+    issues = lint(tmp_path, {"maxLength": 5, keyword: [{}, branch]})
+    assert "explicit-type" not in rules(issues)
+
+
+def test_contact_point_union_types_and_examples(tmp_path):
+    """The @type property needs no redundant type next to its alternatives."""
+    issues = lint(
+        tmp_path,
+        {
+            "type": "object",
+            "properties": {
+                "@type": {
+                    "anyOf": [
+                        {"type": "string", "const": "cv:ContactPoint"},
+                        {
+                            "type": "array",
+                            "title": "Contact point type collection",
+                            "uniqueItems": True,
+                            "minItems": 2,
+                            "contains": {"const": "cv:ContactPoint"},
+                            "examples": [["cv:ContactPoint", "vcard:Kind"]],
+                        },
+                    ],
+                    "examples": [
+                        "cv:ContactPoint",
+                        ["cv:ContactPoint", "vcard:Kind"],
+                        42,
+                    ],
+                }
+            },
+        },
+    )
+    assert "explicit-type" not in rules(issues)
+    assert {issue.path for issue in issues if issue.rule == "example-validation"} == {
+        ("properties", "@type", "examples", 2)
+    }
+
+
+@pytest.mark.parametrize("keyword", ["anyOf", "oneOf"])
+def test_composed_type_respects_resolution_scope(tmp_path, keyword):
+    """Alternatives cannot import type declarations across the resolution boundary."""
+    write(tmp_path, {"type": "string"}, "standards/base.schema.json")
+    selected = write(
+        tmp_path,
+        {keyword: [{"$ref": "../standards/base.schema.json"}, {}]},
+        "schemas/schema.json",
+    )
+    assert "explicit-type" in rules(lint_schemas([selected], root=tmp_path))
+    assert "explicit-type" not in rules(
+        lint_schemas([selected], root=tmp_path, resolution_root=Path("."))
+    )
+
+
+@pytest.mark.parametrize("typed", [False, True])
+def test_composed_type_cycles_terminate(tmp_path, typed):
+    """Recursive alternatives neither hang nor hide typed sibling branches."""
+    branches = [{"allOf": [{"$ref": "#"}]}]
+    if typed:
+        branches.append({"type": "string"})
+    issues = lint(tmp_path, {"anyOf": branches})
+    assert ("explicit-type" in rules(issues)) is not typed
+
+
+@pytest.mark.parametrize(
+    "branch",
+    [
+        {"properties": {"name": {"type": "string"}}},
+        {"items": {"type": "string"}},
+        {"$defs": {"unused": {"type": "string"}}},
+        {"const": "text"},
+    ],
+)
+def test_composed_type_does_not_use_unrelated_locations(tmp_path, branch):
+    """Nested instance types and inferred types do not document this node's type."""
+    issues = lint(tmp_path, {"anyOf": [branch]})
+    assert any(issue.rule == "explicit-type" and issue.path == () for issue in issues)
+
+
+@pytest.mark.parametrize("keyword", ["if", "then", "else", "not"])
 def test_conditional_type_does_not_count(tmp_path, keyword):
-    """A type appearing only in an alternative or condition is not inherited."""
+    """Conditionals and negation do not supply a type for the definition."""
     write(tmp_path, string(), "base.schema.json")
     ref = {"$ref": "base.schema.json"}
-    condition = [ref, {}] if keyword in {"anyOf", "oneOf"} else ref
-    assert "explicit-type" in rules(lint(tmp_path, {keyword: condition}))
+    assert "explicit-type" in rules(lint(tmp_path, {keyword: ref}))
 
 
 @pytest.mark.parametrize("missing", [False, True])

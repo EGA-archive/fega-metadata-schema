@@ -1,4 +1,4 @@
-"""Unconditional, in-scope inheritance shared by authoring and example checks."""
+"""In-scope schema traversal shared by authoring and example checks."""
 
 from __future__ import annotations
 
@@ -31,6 +31,28 @@ def conjunction(bound: BoundSchema, seen: frozenset = frozenset()):
             )
     for branch in bound.schema.get("allOf", []):
         yield from conjunction(bound.child(branch), seen)
+
+
+def has_declared_type(bound: BoundSchema, seen: frozenset = frozenset()) -> bool:
+    """Find a type at this instance location, including composition alternatives.
+
+    This is an authoring presence check: one typed branch suffices. It does not
+    imply that its type or other constraints apply to every valid instance.
+    """
+    for part in conjunction(bound, seen):
+        schema = part.schema
+        if not isinstance(schema, dict):
+            continue
+        if "type" in schema:
+            return True
+        branch_seen = seen | {id(bound.schema), id(schema)}
+        for keyword in ("anyOf", "oneOf"):
+            if any(
+                has_declared_type(part.child(branch), branch_seen)
+                for branch in schema.get(keyword, [])
+            ):
+                return True
+    return False
 
 
 def effective_constraints(node: Node):

@@ -5,11 +5,11 @@ from __future__ import annotations
 import re
 
 from fega_tools.jsonld_utils import JSONLD_KEYWORDS
-from .inheritance import conjunction, effective_constraints
+from .inheritance import conjunction, effective_constraints, has_declared_type
 from .model import DEFINITION_ROLES, Node
 
 # Unknown/extension keywords have no imposed position. Do not infer requirements
-# from this list. In particular, $defs and $comment were not assigned positions.
+# from this list.
 KEYWORD_ORDER = (
     "$schema",
     "$id",
@@ -47,6 +47,9 @@ KEYWORD_ORDER = (
     "patternProperties",
     "propertyNames",
     "dependentSchemas",
+    "allOf",
+    "anyOf",
+    "oneOf",
     "properties",
     "enum",
     "meta:enum",
@@ -64,9 +67,6 @@ KEYWORD_ORDER = (
     "isValidTerm",
     "isValidTaxonomy",
     "isValidIdentifier",
-    "allOf",
-    "anyOf",
-    "oneOf",
     "not",
     "if",
     "then",
@@ -75,6 +75,7 @@ KEYWORD_ORDER = (
     "writeOnly",
     "deprecate",
     "examples",
+    "$comment"
 )
 KEYWORD_RANK = {key: index for index, key in enumerate(KEYWORD_ORDER)}
 ANNOTATIONS = {
@@ -127,22 +128,26 @@ def documentation(node: Node):
     if independent and not reuse:
         if "type" not in schema:
             try:
-                inherited_type = any(
-                    isinstance(part.schema, dict) and "type" in part.schema
-                    for bound in effective_constraints(node)
-                    for part in conjunction(bound)
+                documented_type = any(
+                    has_declared_type(bound) for bound in effective_constraints(node)
                 )
             except (ValueError, TypeError, re.error) as exc:
                 yield node.issue(
-                    "explicit-type", f"Cannot inspect inherited type: {exc}"
+                    "explicit-type", f"Cannot inspect composed type: {exc}"
                 )
             else:
-                if not inherited_type:
+                if not documented_type:
                     yield node.issue(
                         "explicit-type",
-                        "Independent definitions must declare type locally or through in-scope inheritance.",
+                        "Independent definitions must declare type locally or in an allOf/anyOf/oneOf branch or in-scope reference.",
                     )
-        for key in ("title", "description", "examples"):
+        # Entity roots have standalone examples/ suites; nested definitions still
+        # document their own examples, as do roots of other schema files.
+        entity_root = not node.path and node.file.match(
+            "schemas/entities/*/schema.json"
+        )
+        required = ("title",) if entity_root else ("title", "examples")
+        for key in required:
             if key not in schema:
                 yield node.issue(
                     "documentation",
