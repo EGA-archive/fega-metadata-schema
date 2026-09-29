@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
+  "meta:version": "1.0.0-draft.2",
+  "$async": true,
   "type": "object",
   "title": "EGA policy metadata schema",
-    "meta:version": "1.0.0-draft.2",
-  "$async": true,
   "description": "Data access policy, governing how data is processed, protected, and shared.",
   "@context": "./context.jsonld",
   "meta:sssomMappings": [
@@ -12,11 +12,10 @@
       "predicate_id": "skos:broadMatch",
       "object_id": "dct:Policy",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-22",
       "$comment": "An EGA policy is a specialised DCMI Policy describing controlled-access data-use terms."
@@ -25,11 +24,10 @@
       "predicate_id": "skos:exactMatch",
       "object_id": "egav1crg.2:policy_create",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:label",
       "subject_match_field": "rdfs:label",
+      "object_match_field": "rdfs:label",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-22"
     },
@@ -37,15 +35,15 @@
       "predicate_id": "skos:exactMatch",
       "object_id": "egav1ebi:Policy",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:label",
       "subject_match_field": "rdfs:label",
+      "object_match_field": "rdfs:label",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-22"
     }
   ],
+  "required": [ "@id", "@type", "title", "description", "status", "governedBy" ],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
@@ -56,14 +54,17 @@
       "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionPolicy"
     }
   ],
-  "required": [ "@id", "@type", "title", "description", "status", "governedBy" ],
   "anyOf": [
     { "required": ["policyText"] },
     { "required": ["policyDocument"] }
   ],
   "properties": {
     "@id": {
-      "$ref": "../../common/schema.json#/$defs/@id",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@id"
+        }
+      ],
       "examples": [
         "ega:EGAP00000000001",
         "ega:EGAP00001000002"
@@ -125,11 +126,10 @@
           "predicate_id": "skos:relatedMatch",
           "object_id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json#governs",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22",
           "comment": "The mapping relation is 'reverse': 'governs' is the reverse of 'governedBy'."
@@ -138,8 +138,8 @@
       "allOf": [
         { "$ref": "../../common/schema.json#/$defs/relationshipArray" },
         { 
-          "$comment": "#! For now we are defining each policy governed exclusively by one DAC, but if this is to change in the future with joint-DACs, or HDABs from the EHDS, we can simply modify the maximum here.",
-          "maxItems": 1
+          "maxItems": 1,
+          "$comment": "#! For now we are defining each policy governed exclusively by one DAC, but if this is to change in the future with joint-DACs, or HDABs from the EHDS, we can simply modify the maximum here."
         },
         {
           "items": {
@@ -158,44 +158,41 @@
     },
 
     "policyText": {
+      "type": "string",
       "title": "Policy text",
       "description": "The human-readable terms and conditions of the data-access policy.",
-      "type": "string",
-      "minLength": 1,
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:closeMatch",
           "object_id": "dct:RightsStatement",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         }
       ],
+      "minLength": 1,
       "examples": [
         "Use of the dataset is limited to the approved research purpose ... . Users must protect confidentiality, must not attempt re-identification, and must report suspected misuse to the governing DAC."
       ]
     },
 
     "policyDocument": {
+      "type": "string",
       "title": "Policy document",
       "description": "An absolute URI identifying an external document that contains the policy terms or an equivalent representation of them.",
-      "type": "string",
-      "format": "uri",
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:closeMatch",
           "object_id": "dct:RightsStatement",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         },
@@ -203,15 +200,16 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "foaf:page",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         }
       ],
+      "format": "uri",
+      "minLength": 1,
       "examples": [
         "https://www.sanger.ac.uk/wp-content/uploads/WSI-Data-Sharing-Policy.pdf",
         "https://example.org/policies/genomics-access-policy-v2.pdf"
@@ -219,26 +217,25 @@
     },
 
     "dataUseConditions": {
+      "type": "array",
       "title": "Policy data use conditions",
       "description": "DUO permissions and their modifiers that semantically annotate the terms and conditions of this policy.",
-      "type": "array",
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:closeMatch",
           "object_id": "beaconRepo:datasets/defaultSchema.json#dataUseConditions",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22",
           "$comment": "The authoritative owner is the EGA Policy entity; the Beacon mapping describes the DUO data shape only."
         }
       ],
-      "minItems": 1,
       "uniqueItems": true,
+      "minItems": 1,
       "items": {
         "$ref": "../../common/schema.json#/$defs/dataUseCondition"
       },
@@ -293,24 +290,18 @@
     },
 
     "relatedResource": {
+      "type": "array",
       "title": "Related resource",
       "description": "A resource related to this policy when no more specific relationship applies.",
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-      },
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:exactMatch",
           "object_id": "dct:relation",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         },
@@ -318,11 +309,10 @@
             "predicate_id": "skos:relatedMatch",
             "object_id": "healthdcatap:relatedResource",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:label",
             "subject_match_field": "rdfs:label",
+            "object_match_field": "rdfs:label",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 1.0,
             "mapping_date": "2026-07-22"
         },
@@ -330,11 +320,10 @@
             "predicate_id": "skos:closeMatch",
             "object_id": "schema:citation",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:label",
             "subject_match_field": "rdfs:label",
+            "object_match_field": "rdfs:label",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 1.0,
             "mapping_date": "2026-07-22"
         },
@@ -342,24 +331,32 @@
             "predicate_id": "skos:closeMatch",
             "object_id": "egav1ebi:EGA.dataset.xsd#DatasetType/DATASET_LINKS",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:label",
             "subject_match_field": "rdfs:label",
+            "object_match_field": "rdfs:label",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 1.0,
             "mapping_date": "2026-07-22"
         }
+      ],
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "$ref": "../../common/schema.json#/$defs/externalIdentifier"
+      },
+      "examples": [
+        ["ega:EGAD00000000001"],
+        ["https://example.org/resources/associated-policy-guidance"]
       ]
     },
 
     "version": {
       "title": "Policy version",
       "description": "The version indicator for this Policy entity.",
-      "$comment": "Includes changes to any property of it, so if (e.g.) the policy text changes, it justifies a different version of the policy altogether.",
       "allOf": [
         { "$ref": "../../common/schema.json#/$defs/version" }
-      ]
+      ],
+      "$comment": "Includes changes to any property of it, so if (e.g.) the policy text changes, it justifies a different version of the policy altogether."
     },
 
     "validityPeriod": {
@@ -387,11 +384,10 @@
           "predicate_id": "skos:relatedMatch",
           "object_id": "dct:rights",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22",
           "comment": "The mapping relation is 'reverse': 'appliesTo' is the reverse of 'dct:rights'."
