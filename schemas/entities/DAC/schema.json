@@ -1,24 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
-    "meta:version": "1.0.0-draft.2",
+  "meta:version": "1.0.0-draft.2",
   "$async": true,
   "type": "object",
   "title": "EGA Data Access Committee metadata schema",
   "description": "Metadata for an EGA Data Access Committee (DAC), the body managing data access requests, overseeing the approval process for data usage in accordance with its defined Policy.",
-  "$comment": "#! Instead of EGA stable IDs, the embedded memberships, agents and contact points use JSON-LD identifiers only, including fragment identifiers rooted at the DAC URI (e.g., ega:EGAC00000000001#contact-point-1).",
   "@context": "./context.jsonld",
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:broadMatch",
       "object_id": "prov:Organization",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:label",
       "subject_match_field": "rdfs:label",
+      "object_match_field": "rdfs:label",
       "match_string": "DAC",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-21"
     },
@@ -26,12 +24,11 @@
       "predicate_id": "skos:closeMatch",
       "object_id": "foaf:Group",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:label",
       "subject_match_field": "rdfs:label",
+      "object_match_field": "rdfs:label",
       "match_string": "DAC",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-21"
     }
@@ -45,10 +42,20 @@
     "contactPoint",
     "components"
   ],
-  "properties": {
-    "@id": {
   "allOf": [
     {
+      "title": "Base constraints for JSON-LD",
+      "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
+    },
+    {
+      "title": "Entity type restriction",
+      "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionDAC"
+    }
+  ],
+  "properties": {
+    "@id": {
+      "allOf": [
+        {
           "$ref": "../../common/schema.json#/$defs/@id"
         }
       ],
@@ -116,12 +123,11 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "adms:status",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "status",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
@@ -137,19 +143,16 @@
       "type": "array",
       "title": "Contact points",
       "description": "Shared or institutional contact information for enquiries addressed to the DAC.",
-      "minItems": 1,
-      "uniqueItems": true,
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:closeMatch",
           "object_id": "dcat:contactPoint",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "contactPoint",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         },
@@ -157,16 +160,17 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "schema:contactPoint",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "contactPoint",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
       ],
+      "uniqueItems": true,
+      "minItems": 1,
       "items": {
         "$ref": "#/$defs/contactPoint"
       },
@@ -197,53 +201,64 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "org:Membership",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "components",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
       ],
-      "minItems": 1,
+      "allOf": [
+        {
+          "minContains": 1,
+          "contains": {
+            "type": "object",
+            "title": "DAC membership with a main contact",
+            "required": ["roles"],
+            "properties": {
+              "roles": {
+                "type": "array",
+                "title": "DAC membership roles",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": {
+                  "const": "main_contact"
+                },
+                "examples": [["main_contact"]]
+              }
+            },
+            "examples": [{"roles": ["main_contact"]}]
+          }
+        },
+        {
+          "minContains": 1,
+          "contains": {
+            "type": "object",
+            "title": "DAC membership with an administrator",
+            "required": ["roles"],
+            "properties": {
+              "roles": {
+                "type": "array",
+                "title": "DAC membership roles",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": {
+                  "const": "administrator"
+                },
+                "examples": [["administrator"]]
+              }
+            },
+            "examples": [{"roles": ["administrator"]}]
+          }
+        }
+      ],
       "uniqueItems": true,
+      "minItems": 1,
       "items": {
         "$ref": "#/$defs/component"
       },
-      "allOf": [
-        {
-          "contains": {
-            "type": "object",
-            "required": ["roles"],
-            "properties": {
-              "roles": {
-                "type": "array",
-                "contains": {
-                  "const": "main_contact"
-                }
-              }
-            }
-          },
-          "minContains": 1
-        },
-        {
-          "contains": {
-            "type": "object",
-            "required": ["roles"],
-            "properties": {
-              "roles": {
-                "type": "array",
-                "contains": {
-                  "const": "administrator"
-                }
-              }
-            }
-          },
-          "minContains": 1
-        }
-      ],
       "examples": [
         [
           {
@@ -276,12 +291,11 @@
           "predicate_id": "skos:relatedMatch",
           "object_id": "prov:wasAttributedTo",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "governs",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         },
@@ -289,12 +303,11 @@
           "predicate_id": "skos:relatedMatch",
           "object_id": "dct:creator",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "governs",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-22"
         }
@@ -338,12 +351,11 @@
           "predicate_id": "skos:exactMatch",
           "object_id": "dpv:hasJurisdiction",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "jurisdiction",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
@@ -383,12 +395,11 @@
           "predicate_id": "skos:exactMatch",
           "object_id": "dcatap:applicableLegislation",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "applicableLegislation",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
@@ -437,7 +448,7 @@
       ]
     }
   },
-  
+  "$comment": "#! Instead of EGA stable IDs, the embedded memberships, agents and contact points use JSON-LD identifiers only, including fragment identifiers rooted at the DAC URI (e.g., ega:EGAC00000000001#contact-point-1).",
   "$defs": {
     "contactPoint": {
       "type": "object",
@@ -446,24 +457,40 @@
       "required": ["@type", "email"],
       "properties": {
         "@id": {
-          "$ref": "../../common/schema.json#/$defs/@id",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/@id"
+            }
+          ],
           "examples": [
             "ega:EGAC00000000001#contact-point-1",
             "https://example.org/contact-points/example-dac"
           ]
         },
         "@type": {
+          "title": "Contact point resource type",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/@type"
+            }
+          ],
           "anyOf": [
             {
-              "const": "cv:ContactPoint"
+              "type": "string",
+              "title": "Contact point type",
+              "minLength": 1,
+              "const": "cv:ContactPoint",
+              "examples": ["cv:ContactPoint"]
             },
             {
               "type": "array",
-              "minItems": 2,
+              "title": "Contact point type collection",
               "uniqueItems": true,
+              "minItems": 2,
               "contains": {
                 "const": "cv:ContactPoint"
-              }
+              },
+              "examples": [["cv:ContactPoint", "vcard:Kind"]]
             }
           ],
           "examples": [
@@ -476,6 +503,7 @@
           "title": "Contact email",
           "description": "An email address for DAC enquiries.",
           "format": "email",
+          "minLength": 1,
           "examples": [
             "dac@example.org",
             "data-access@example.org"
@@ -485,6 +513,7 @@
           "type": "string",
           "title": "Contact telephone number",
           "description": "A telephone number for DAC enquiries in E.164 format.",
+          "minLength": 1,
           "pattern": "^\\+[1-9][0-9]{1,14}$",
           "examples": [
             "+442012345678",
@@ -524,27 +553,34 @@
       "type": "object",
       "title": "DAC component membership",
       "description": "A membership that relates an agent to the DAC and states the roles that agent performs.",
+      "required": ["@type"],
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/agentRoleAssignment"
         }
       ],
-      "required": ["@type"],
       "properties": {
         "@type": {
+          "type": ["string", "array"],
+          "title": "Component membership types",
+          "minLength": 1,
           "anyOf": [
             {
               "const": "org:Membership"
             },
             {
               "type": "array",
-              "minItems": 2,
+              "title": "Component membership type collection",
               "uniqueItems": true,
+              "minItems": 2,
               "contains": {
                 "const": "org:Membership"
-              }
+              },
+              "examples": [["org:Membership", "prov:Association"]]
             }
           ],
+          "uniqueItems": true,
+          "minItems": 1,
           "examples": [
             "org:Membership",
             ["org:Membership", "prov:Association"]
@@ -553,17 +589,15 @@
         "agent": {
           "title": "Component agent",
           "description": "The participating person, organisation or other agent.",
-          "$ref": "#/$defs/componentAgent",
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:closeMatch",
               "object_id": "org:member",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
             },
@@ -571,13 +605,17 @@
               "predicate_id": "skos:closeMatch",
               "object_id": "schema:member",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
+            }
+          ],
+          "allOf": [
+            {
+              "$ref": "#/$defs/componentAgent"
             }
           ],
           "examples": [
@@ -594,24 +632,23 @@
         "agentType": {
           "title": "Agent classification",
           "description": "An optional concept classifying the nature of the agent, for example an EHDS Health Data Access Body. Structural classes belong in '@type'.",
-          "allOf": [
-            {
-              "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-            }
-          ],
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
               "object_id": "dct:type",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "match_string": "agentType",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
+            }
+          ],
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/externalIdentifier"
             }
           ],
           "examples": [
@@ -623,10 +660,27 @@
           "type": "array",
           "title": "DAC roles",
           "description": "Roles the agent performs in the DAC membership.",
-          "minItems": 1,
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:exactMatch",
+              "object_id": "org:role",
+              "mapping_justification": "semapv:ManualMappingCuration",
+              "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
+              "match_string": "roles",
+              "author_id": ["orcid:0000-0002-7747-6256"],
+              "creator_id": ["orcid:0000-0002-7747-6256"],
+              "confidence": 1.0,
+              "mapping_date": "2026-07-21"
+            }
+          ],
           "uniqueItems": true,
+          "minItems": 1,
           "items": {
             "type": "string",
+            "title": "DAC role",
+            "description": "A role performed by an agent in the DAC membership.",
+            "minLength": 1,
             "enum": [
               "administrator",
               "member",
@@ -639,21 +693,6 @@
               "main_contact"
             ]
           },
-          "meta:sssomMappings": [
-            {
-              "predicate_id": "skos:exactMatch",
-              "object_id": "org:role",
-              "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
-              "subject_match_field": "rdfs:label",
-              "match_string": "roles",
-              "author_id": ["orcid:0000-0002-7747-6256"],
-              "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
-              "confidence": 1.0,
-              "mapping_date": "2026-07-21"
-            }
-          ],
           "examples": [
             ["main_contact"],
             ["administrator", "approver"]
@@ -686,15 +725,19 @@
       "type": "object",
       "title": "DAC component agent",
       "description": "A named participant in a DAC membership.",
+      "required": ["@type", "name"],
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/agent"
         }
       ],
-      "required": ["@type", "name"],
       "properties": {
         "@id": {
-          "$ref": "../../common/schema.json#/$defs/@id",
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/@id"
+            }
+          ],
           "examples": [
             "orcid:0000-0002-1584-4316",
             "ega:EGAC00000000001#person-1"
@@ -714,24 +757,23 @@
         "name": {
           "title": "Component agent name",
           "description": "The name of the participating person or organisation.",
-          "allOf": [
-            {
-              "$ref": "../../common/schema.json#/$defs/label"
-            }
-          ],
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
               "object_id": "foaf:name",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "match_string": "name",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
+            }
+          ],
+          "allOf": [
+            {
+              "$ref": "../../common/schema.json#/$defs/label"
             }
           ],
           "examples": [
@@ -743,22 +785,22 @@
           "type": "string",
           "title": "Component agent email",
           "description": "An email address for the participating agent, where appropriate.",
-          "format": "email",
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:closeMatch",
               "object_id": "schema:email",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "match_string": "email",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
             }
           ],
+          "format": "email",
+          "minLength": 1,
           "examples": [
             "jane.doe@example.org",
             "data-access@example.org"
@@ -768,26 +810,25 @@
           "type": "array",
           "title": "Affiliations",
           "description": "ROR organisations with which the participating agent is affiliated.",
-          "minItems": 1,
-          "uniqueItems": true,
-          "items": {
-            "$ref": "../../common/schema.json#/$defs/organisation"
-          },
           "meta:sssomMappings": [
             {
               "predicate_id": "skos:exactMatch",
               "object_id": "schema:affiliation",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "match_string": "affiliations",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-21"
             }
           ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/organisation"
+          },
           "examples": [
             [
               {
