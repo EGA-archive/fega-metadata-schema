@@ -197,6 +197,8 @@ Run `python scripts/py/lint_schemas.py -v` to lint all schemas. The linter is re
 
 Rules live in [`src/fega_tools/schema_lint/`](./src/fega_tools/schema_lint/): add/remove a rule within [``rules.py``](./src/fega_tools/schema_lint/rules.py), and then adjust the [``__init__.py``](./src/fega_tools/schema_lint/__init__.py) `RULES`.
 
+Unused `$defs` entries produce advisory warnings. The summary (``-v``) includes their count, and `-vv` shows their locations. References are scanned across `schemas/` within `--resolution-root`, even when linting selected files; only definitions in selected files are reported. Self-references alone do not count as use, while references between different definitions (even within the same ``$defs`` array) do.
+
 Example arrays (``"examples": []``) are validated against their properties that contain them, ensuring they are valid examples.
 
 Use `python scripts/py/lint_schemas.py --check-api -v` with a running Biovalidator to validate examples involving custom keywords (e.g., OLS terms), including inherited constraints and larger structures containing them. The endpoint defaults to `http://localhost:3020/validate`, but you can override it with `--validator-url URL`. Complete applicable draft 2020-12 schemas are sent from this checkout, with local references bundled within `--resolution-root`. Without `--check-api`, no API calls are made and custom-dependent checks are reported as incomplete.

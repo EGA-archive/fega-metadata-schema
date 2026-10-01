@@ -46,6 +46,7 @@ def print_report(
     stream: TextIO,
     verbosity: int = 0,
     color: str = "auto",
+    warnings: Sequence[Issue] = (),
     checks: Sequence[str] = (),
     skipped_references: set[str] | None = None,
     skipped_examples: set[str] | None = None,
@@ -96,17 +97,23 @@ def print_report(
         paragraph("Checks: " + ", ".join(checks))
         line()
 
-    if verbosity and issues:
+    def findings_report(findings: Sequence[Issue], style: str) -> None:
         grouped = defaultdict(list)
-        for issue in issues:
+        for issue in findings:
             grouped[issue.file].append(issue)
         for file, findings in sorted(grouped.items()):
             line(_display_path(file, root), "heading")
             for issue in findings:
-                line(f"  [{issue.rule}]", "error")
+                line(f"  [{issue.rule}]", style)
                 line(f"    Path: #{pointer(issue.path)}", "path")
                 paragraph(issue.message, "    ")
                 line()
+
+    if verbosity and issues:
+        findings_report(issues, "error")
+    if verbosity > 1 and warnings:
+        line("Warnings (not lint violations)", "warning")
+        findings_report(warnings, "warning")
 
     if validator_url:
         paragraph(f"Custom-keyword example checks: Biovalidator at {validator_url}.")
@@ -145,11 +152,15 @@ def print_report(
         line()
 
     line(
-        f"Linted {file_count} schema(s): {len(issues)} violation(s).",
+        f"Linted {file_count} schema(s): {len(issues)} violation(s); {len(warnings)} warning(s).",
         (
             "error"
             if issues
-            else "warning" if skipped_references or skipped_examples else "success"
+            else (
+                "warning"
+                if warnings or skipped_references or skipped_examples
+                else "success"
+            )
         ),
     )
     if issues:
@@ -160,3 +171,5 @@ def print_report(
             line(f"  {rule:<{rule_width}}  {count:>5}")
         if not verbosity:
             line("Use -v to display every violation.")
+    if warnings and verbosity < 2:
+        line("Use -vv to display every warning.")

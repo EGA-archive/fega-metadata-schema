@@ -15,6 +15,7 @@ from .examples import check_format_dependencies, examples
 from .mappings import mappings
 from .model import BoundSchema, Issue, Node, children, pointer, walk
 from .resolution import OutsideResolutionRoot, SchemaStore
+from .unused_definitions import unused_definitions
 from .rules import (
     documentation,
     keyword_order,
@@ -110,6 +111,40 @@ def references(node: Node, seen: set):
             )
 
 
+def schema_structure(file: Path) -> list[Issue]:
+    """Check parsing and metaschema validity before entering bound resolvers."""
+    try:
+        schema = load_json(file, reject_duplicate_keys=True)
+    except (OSError, ValueError) as exc:
+        return [Issue(file, (), "json", str(exc))]
+    if not isinstance(schema, (dict, bool)):
+        return [
+            Issue(
+                file, (), "schema-structure", "A schema must be an object or boolean."
+            )
+        ]
+    dialect = schema.get("$schema") if isinstance(schema, dict) else None
+    cls = (
+        validator_for(schema, default=None)
+        if isinstance(dialect, str)
+        else Draft202012Validator
+    )
+    if cls is None:
+        return [
+            Issue(
+                file,
+                ("$schema",),
+                "schema-structure",
+                "Unsupported JSON Schema dialect.",
+            )
+        ]
+    # The repository uses draft 2020-12; absent $schema also means 2020-12.
+    return [
+        Issue(file, tuple(error.absolute_path), "schema-structure", error.message)
+        for error in validator_for(cls.META_SCHEMA)(cls.META_SCHEMA).iter_errors(schema)
+    ]
+
+
 def lint_schemas(
     files: Sequence[Path],
     *,
@@ -118,6 +153,7 @@ def lint_schemas(
     skipped_references: set[str] | None = None,
     validator_url: str | None = None,
     skipped_examples: set[str] | None = None,
+    warnings: list[Issue] | None = None,
 ) -> list[Issue]:
     """Lint files, resolving only inside schemas/ (or a supplied boundary).
 
@@ -125,6 +161,9 @@ def lint_schemas(
     resolution roots are interpreted against root. The optional output set
     records excluded references; exclusions are not lint violations. Providing
     validator_url enables API checks for examples involving custom keywords.
+    When supplied, warnings receives advisory findings separately from returned
+    violations. Usage is checked across schemas/, within the resolution boundary,
+    even when only some files are selected. Only selected definitions are reported.
     """
     root = root.resolve()
     if resolution_root is None:
@@ -145,45 +184,8 @@ def lint_schemas(
     issues = []
     valid_files = []
     for file in files:
-        try:
-            schema = load_json(file, reject_duplicate_keys=True)
-        except (OSError, ValueError) as exc:
-            issues.append(Issue(file, (), "json", str(exc)))
-            continue
-        if not isinstance(schema, (dict, bool)):
-            issues.append(
-                Issue(
-                    file,
-                    (),
-                    "schema-structure",
-                    "A schema must be an object or boolean.",
-                )
-            )
-            continue
-        dialect = schema.get("$schema") if isinstance(schema, dict) else None
-        cls = (
-            validator_for(schema, default=None)
-            if isinstance(dialect, str)
-            else Draft202012Validator
-        )
-        if cls is None:
-            issues.append(
-                Issue(
-                    file,
-                    ("$schema",),
-                    "schema-structure",
-                    "Unsupported JSON Schema dialect.",
-                )
-            )
-            continue
-        # The repository uses draft 2020-12; absent $schema also means 2020-12.
-        structural = list(
-            validator_for(cls.META_SCHEMA)(cls.META_SCHEMA).iter_errors(schema)
-        )
-        issues.extend(
-            Issue(file, tuple(error.absolute_path), "schema-structure", error.message)
-            for error in structural
-        )
+        structural = schema_structure(file)
+        issues.extend(structural)
         if structural:
             continue
         valid_files.append(file)
@@ -206,6 +208,27 @@ def lint_schemas(
                         )
                     else:
                         issues.extend(rule(location))
+    if warnings is not None:
+        collection_root = (
+            root / "schemas" if (root / "schemas").is_dir() else resolution_root
+        )
+        sources = sorted(
+            {
+                path.resolve()
+                for path in discover_schemas([collection_root]) + valid_files
+                if path.resolve().is_relative_to(resolution_root)
+                and path.resolve().is_relative_to(collection_root)
+            }
+        )
+        sources = [
+            path
+            for path in sources
+            if path in valid_files or not schema_structure(path)
+        ]
+        # Ancillary usage scanning must not add unrelated diagnostics or skipped
+        # references to the selected-file report. Third-party sources are excluded.
+        usage_store = SchemaStore(root, sources, resolution_root, set())
+        warnings.extend(unused_definitions(usage_store, valid_files, sources))
     return sorted(
         set(issues),
         key=lambda issue: (str(issue.file), str(issue.path), issue.rule, issue.message),

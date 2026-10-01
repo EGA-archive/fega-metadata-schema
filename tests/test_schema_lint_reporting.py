@@ -55,7 +55,7 @@ def test_verbose_report_groups_files_and_separates_every_diagnostic(tmp_path):
     )
     assert "    Path: #\n    Invalid root." in output
     assert "    First reason.\n    Second reason." in output
-    assert "Linted 2 schema(s): 3 violation(s)." in output
+    assert "Linted 2 schema(s): 3 violation(s); 0 warning(s)." in output
     assert "\x1b[" not in output
 
 
@@ -111,7 +111,7 @@ def test_color_policy_preserves_plain_report(
 def test_colorama_remains_optional(tmp_path, monkeypatch):
     monkeypatch.setattr(reporting, "Fore", None)
     output = render(tmp_path, color="always", stream=Terminal())
-    assert output == "Linted 2 schema(s): 0 violation(s).\n"
+    assert output == "Linted 2 schema(s): 0 violation(s); 0 warning(s).\n"
 
 
 def test_skipped_checks_are_distinct_and_details_require_double_verbose(tmp_path):
@@ -127,7 +127,7 @@ def test_skipped_checks_are_distinct_and_details_require_double_verbose(tmp_path
     assert "Use --check-api" in text and "Use --resolution-root ." in text
     assert "Use -vv" in output
     assert "https://example.org/" not in output
-    assert "Linted 2 schema(s): 0 violation(s)." in output
+    assert "Linted 2 schema(s): 0 violation(s); 0 warning(s)." in output
     detailed = render(tmp_path, verbosity=2, **options)
     assert (
         "[skipped-reference]\n    https://example.org/external.schema.json" in detailed

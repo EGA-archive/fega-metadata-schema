@@ -1013,7 +1013,7 @@ def test_direct_script_uses_checkout_without_pythonpath(tmp_path, stale_install)
         text=True,
     )
     assert result.returncode == 0, result.stderr
-    assert "Linted 1 schema(s): 0 violation(s)." in result.stdout
+    assert "Linted 1 schema(s): 0 violation(s); 0 warning(s)." in result.stdout
 
 
 def test_help_without_site_packages_and_missing_dependency_message(tmp_path):

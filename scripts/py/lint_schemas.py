@@ -75,7 +75,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_verbosity_argument(
         parser,
-        help_text="Print every violation with -v; also list skipped checks with -vv.",
+        help_text="Print every violation and warning counts with -v; also list warnings and skipped checks with -vv.",
     )
     return parser
 
@@ -108,6 +108,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
         skipped_references: set[str] = set()
         skipped_examples: set[str] = set()
+        warnings = []
         issues = lint_schemas(
             files,
             root=args.root,
@@ -119,6 +120,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 else None
             ),
             skipped_examples=skipped_examples,
+            warnings=warnings,
         )
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"Cannot lint schemas: {exc}")
@@ -130,8 +132,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         stream=sys.stdout,
         verbosity=args.verbosity,
         color=args.color,
+        warnings=warnings,
         checks=["JSON parsing", "schema structure", "references"]
-        + [rule.__name__.replace("_", " ") for rule in RULES],
+        + [rule.__name__.replace("_", " ") for rule in RULES]
+        + ["unused definitions (warning)"],
         skipped_references=skipped_references,
         skipped_examples=skipped_examples,
         validator_url=(
