@@ -2,17 +2,24 @@
 
 Projection follows only $ref/allOf, never conditional or alternative branches:
 those are evaluated by jsonschema when validating the containing instance.
-Ontology service keywords remain annotations; this linter makes no OLS requests.
+Custom-keyword constraints require the optional Biovalidator backend.
 """
 
 from __future__ import annotations
 
 import re
+import json
 
 from jsonschema import FormatChecker
 from jsonschema.validators import validator_for
 from referencing.exceptions import Unresolvable
 
+from fega_tools.validation_common import VALID_STATUS
+from .api_examples import (
+    ApiExampleValidator,
+    bundle_constraints,
+    contains_custom_keywords,
+)
 from .inheritance import effective_constraints
 from .model import Node, pointer
 from .resolution import OutsideResolutionRoot
@@ -32,7 +39,12 @@ def check_format_dependencies() -> None:
         )
 
 
-def examples(node: Node):
+def examples(
+    node: Node,
+    *,
+    api: ApiExampleValidator | None = None,
+    skipped: set[str] | None = None,
+):
     """Validate each example against its inherited constraints."""
     values = node.schema.get("examples")
     if not isinstance(values, list):
@@ -43,16 +55,51 @@ def examples(node: Node):
         constraints = {}
         for bound in effective_constraints(node):
             constraints[id(bound.schema)] = bound
-    except (Unresolvable, ValueError, TypeError, re.error) as exc:
+        custom = {
+            key for key, bound in constraints.items() if contains_custom_keywords(bound)
+        }
+    except (Unresolvable, ValueError, TypeError, RecursionError, re.error) as exc:
         yield node.issue(
             "example-validation",
             f"Cannot resolve inherited constraints: {exc}",
             "examples",
         )
         return
+    if custom:
+        reason = "custom keywords require --check-api"
+        if api is not None:
+            try:
+                schema = bundle_constraints(list(constraints.values()))
+            except OutsideResolutionRoot:
+                reason = "API check depends on an out-of-scope reference"
+            except (Unresolvable, ValueError, TypeError, RecursionError) as exc:
+                yield node.issue(
+                    "example-validation",
+                    f"Cannot prepare Biovalidator schema: {exc}",
+                    "examples",
+                )
+                return
+            else:
+                for index, example in enumerate(values):
+                    result = api.validate(schema, example)
+                    if result["status"] != VALID_STATUS:
+                        yield node.issue(
+                            "example-validation",
+                            f"Biovalidator {result['status']}: "
+                            + json.dumps(result.get("errors", []), ensure_ascii=False),
+                            "examples",
+                            index,
+                        )
+                return
+        if skipped is not None:
+            skipped.add(f"{node.file}#{pointer(node.path + ('examples',))}: {reason}")
     for index, example in enumerate(values):
         messages = set()
-        for bound in constraints.values():
+        for key, bound in constraints.items():
+            if key in custom:
+                # Ignoring a custom keyword can change oneOf/not/if outcomes.
+                # Only constraints independent of that logic are checked locally.
+                continue
             try:
                 cls = validator_for(bound.schema)
                 validator = cls(

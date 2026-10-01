@@ -10,6 +10,7 @@ from jsonschema.validators import validator_for
 from referencing.exceptions import Unresolvable
 
 from fega_tools.io import collect_candidate_json, load_json
+from .api_examples import ApiExampleValidator
 from .examples import check_format_dependencies, examples
 from .mappings import mappings
 from .model import BoundSchema, Issue, Node, children, pointer, walk
@@ -115,12 +116,15 @@ def lint_schemas(
     root: Path,
     resolution_root: Path | None = None,
     skipped_references: set[str] | None = None,
+    validator_url: str | None = None,
+    skipped_examples: set[str] | None = None,
 ) -> list[Issue]:
     """Lint files, resolving only inside schemas/ (or a supplied boundary).
 
     Standalone collections without schemas/ default to root itself. Relative
     resolution roots are interpreted against root. The optional output set
-    records excluded references; exclusions are not lint violations.
+    records excluded references; exclusions are not lint violations. Providing
+    validator_url enables API checks for examples involving custom keywords.
     """
     root = root.resolve()
     if resolution_root is None:
@@ -137,6 +141,7 @@ def lint_schemas(
                 f"Selected schema is outside resolution root: {file}; widen --resolution-root"
             )
     check_format_dependencies()
+    api = ApiExampleValidator(validator_url) if validator_url is not None else None
     issues = []
     valid_files = []
     for file in files:
@@ -195,7 +200,12 @@ def lint_schemas(
         for location in walk(node):
             if isinstance(location.schema, dict):
                 for rule in RULES:
-                    issues.extend(rule(location))
+                    if rule is examples:
+                        issues.extend(
+                            examples(location, api=api, skipped=skipped_examples)
+                        )
+                    else:
+                        issues.extend(rule(location))
     return sorted(
         set(issues),
         key=lambda issue: (str(issue.file), str(issue.path), issue.rule, issue.message),

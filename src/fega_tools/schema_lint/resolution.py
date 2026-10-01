@@ -58,6 +58,11 @@ class LocalResolver:
         """Return the resolver's dynamic scope."""
         return self.resolver.dynamic_scope()
 
+    def specification(self):
+        """Return the current resource's dialect, including inherited nested IDs."""
+        retrieved = self.resolver._registry.get_or_retrieve(self.resolver._base_uri)
+        return retrieved.value._specification
+
 
 class SchemaStore:
     """Resolve canonical IDs, file URIs, pointers and anchors without network I/O."""

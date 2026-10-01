@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections import Counter
 from pathlib import Path
 from typing import Sequence
 
@@ -39,6 +38,21 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--check-api",
+        action="store_true",
+        help=help_with_example(
+            "Validate examples involving custom keywords through a running Biovalidator endpoint",
+            "--check-api",
+        ),
+    )
+    parser.add_argument(
+        "--validator-url",
+        help=help_with_example(
+            "Biovalidator /validate URL for --check-api (default: http://localhost:3020/validate)",
+            "--check-api --validator-url http://localhost:3020/validate",
+        ),
+    )
+    parser.add_argument(
         "--resolution-root",
         type=Path,
         default=Path("schemas"),
@@ -49,19 +63,34 @@ def build_parser() -> argparse.ArgumentParser:
             "--resolution-root schemas",
         ),
     )
+    parser.add_argument(
+        "--color",
+        choices=("auto", "always", "never"),
+        default="auto",
+        help=help_with_example(
+            "Colour output (default: auto for terminals; respects NO_COLOR). "
+            "An explicit always/never overrides the environment",
+            "--color never",
+        ),
+    )
     add_verbosity_argument(
         parser,
-        help_text="Print every violation, including its file, JSON Pointer and rule.",
+        help_text="Print every violation with -v; also list skipped checks with -vv.",
     )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Run schema linting and return a process exit code."""
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.validator_url and not args.check_api:
+        parser.error("--validator-url requires --check-api")
     # argparse handles --help before importing optional validation dependencies.
     try:
         from fega_tools.schema_lint import RULES, discover_schemas, lint_schemas
+        from fega_tools.biovalidator import DEFAULT_VALIDATOR_URL
+        from fega_tools.schema_lint.reporting import print_report
     except ModuleNotFoundError as exc:
         print(
             f"Cannot start schema lint: missing Python module {exc.name!r}. "
@@ -78,42 +107,37 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 2
         skipped_references: set[str] = set()
+        skipped_examples: set[str] = set()
         issues = lint_schemas(
             files,
             root=args.root,
             resolution_root=args.resolution_root,
             skipped_references=skipped_references,
+            validator_url=(
+                (args.validator_url or DEFAULT_VALIDATOR_URL)
+                if args.check_api
+                else None
+            ),
+            skipped_examples=skipped_examples,
         )
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"Cannot lint schemas: {exc}")
         return 2
-    if args.verbosity:
-        print(
-            "Checks: JSON parsing, schema structure, references, "
-            + ", ".join(rule.__name__ for rule in RULES)
-        )
-        for issue in issues:
-            print(issue)
-        for ref in sorted(skipped_references):
-            print(f"[skipped-reference] {ref}")
-    if skipped_references:
-        print(
-            f"Skipped {len(skipped_references)} out-of-scope reference(s); "
-            "dependent example checks may be incomplete. "
-            "Use --resolution-root . to include repository dependencies."
-        )
-    print(f"Linted {len(files)} schema(s): {len(issues)} violation(s).")
-    if issues:
-        print(
-            "; ".join(
-                f"{rule}: {count}"
-                for rule, count in sorted(
-                    Counter(issue.rule for issue in issues).items()
-                )
-            )
-        )
-        if not args.verbosity:
-            print("Use -v to display every violation.")
+    print_report(
+        issues,
+        file_count=len(files),
+        root=args.root,
+        stream=sys.stdout,
+        verbosity=args.verbosity,
+        color=args.color,
+        checks=["JSON parsing", "schema structure", "references"]
+        + [rule.__name__.replace("_", " ") for rule in RULES],
+        skipped_references=skipped_references,
+        skipped_examples=skipped_examples,
+        validator_url=(
+            (args.validator_url or DEFAULT_VALIDATOR_URL) if args.check_api else None
+        ),
+    )
     return 1 if issues else 0
 
 

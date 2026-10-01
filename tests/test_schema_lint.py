@@ -84,18 +84,18 @@ def test_supplied_description_must_be_nonempty_text(
 
 
 @pytest.mark.parametrize(
-    "filename, needs_examples",
+    "filename",
     [
-        ("schemas/entities/DAC/schema.json", False),
-        ("schemas/entities/dataset/schema.json", False),
-        ("schemas/common/schema.json", True),
-        ("schemas/graph/schema.json", True),
-        ("schemas/entities/DAC/nested/schema.json", True),
-        ("schemas/entities/DAC/other.schema.json", True),
+        "schemas/entities/DAC/schema.json",
+        "schemas/entities/dataset/schema.json",
+        "schemas/common/schema.json",
+        "schemas/graph/schema.json",
+        "schemas/entities/DAC/nested/schema.json",
+        "schemas/entities/DAC/other.schema.json",
     ],
 )
-def test_only_entity_roots_can_omit_examples(tmp_path, filename, needs_examples):
-    """Entity suites replace root examples, but not nested definition examples."""
+def test_schema_file_roots_can_omit_examples(tmp_path, filename):
+    """File roots need no examples, but their properties and definitions do."""
     nested = string()
     del nested["examples"]
     selected = write(
@@ -110,22 +110,67 @@ def test_only_entity_roots_can_omit_examples(tmp_path, filename, needs_examples)
     )
     issues = lint_schemas([selected], root=tmp_path)
     expected = {("properties", "name", "examples"), ("$defs", "text", "examples")}
-    if needs_examples:
-        expected.add(("examples",))
     assert {issue.path for issue in issues if issue.rule == "documentation"} == expected
 
 
 @pytest.mark.parametrize(
     "examples, expected_rule", [([], "documentation"), ([42], "example-validation")]
 )
-def test_supplied_entity_root_examples_are_checked(tmp_path, examples, expected_rule):
+@pytest.mark.parametrize(
+    "filename", ["schemas/entities/DAC/schema.json", "schemas/common/schema.json"]
+)
+def test_supplied_root_examples_are_checked(
+    tmp_path, examples, expected_rule, filename
+):
     """The root exemption does not permit empty arrays or invalid examples."""
     selected = write(
         tmp_path,
         {"type": "object", "title": "Entity", "examples": examples},
-        "schemas/entities/DAC/schema.json",
+        filename,
     )
     assert expected_rule in rules(lint_schemas([selected], root=tmp_path))
+
+
+@pytest.mark.parametrize("values", [[""], [{}], [[]], ["", {}, []], [{}, {}]])
+@pytest.mark.parametrize("location", ["root", "properties", "$defs", "reference"])
+def test_examples_cannot_contain_only_empty_values(tmp_path, values, location):
+    """Empty-only examples provide no documentation, including on reuse nodes."""
+    schema = {"title": "Examples", "examples": values}
+    path = ("examples",)
+    if location in {"properties", "$defs"}:
+        schema = {"type": "object", "title": "Container", location: {"value": schema}}
+        path = (location, "value", "examples")
+    elif location == "reference":
+        write(tmp_path, {}, "base.schema.json")
+        schema["$ref"] = "base.schema.json"
+    issues = lint(tmp_path, schema)
+    assert [
+        (issue.path, issue.message) for issue in issues if issue.rule == "documentation"
+    ] == [
+        (
+            path,
+            "examples must include at least one value other than an empty string, object, or array.",
+        )
+    ]
+
+
+@pytest.mark.parametrize("value", ["text", {"name": "value"}, [1], 0, False, None])
+def test_empty_examples_can_accompany_other_values(tmp_path, value):
+    """Mixed examples are allowed; false, zero and null are not empty containers."""
+    issues = lint(tmp_path, {"title": "Examples", "examples": ["", {}, [], value]})
+    assert "documentation" not in rules(issues)
+    assert "example-validation" not in rules(issues)
+
+
+def test_mixed_examples_still_validate_against_schema(tmp_path):
+    """An informative example does not excuse another example's invalid value."""
+    schema = string()
+    schema["examples"] = ["", "text"]
+    issues = lint(tmp_path, schema)
+    assert "documentation" not in rules(issues)
+    assert {issue.path for issue in issues if issue.rule == "example-validation"} == {
+        ("examples", 0)
+    }
 
 
 def test_entity_root_still_needs_title(tmp_path):
@@ -372,7 +417,7 @@ def test_type_union_order_and_generic_keywords(tmp_path):
     assert len([issue for issue in issues if issue.rule == "nonempty-values"]) == 3
     # Unpositioned keywords must not change recognized-keyword relative order.
     assert not lint(
-        tmp_path, {"$comment": "Note", **string(), "x-extension": {"examples": []}}
+        tmp_path, {"x-note": "Note", **string(), "x-extension": {"examples": []}}
     )
 
 
@@ -920,7 +965,10 @@ def test_cli_scope_reporting_and_invalid_boundaries(tmp_path, capsys):
     )
     assert main(["--root", str(tmp_path), "-v"]) == 0
     output = capsys.readouterr().out
-    assert "[skipped-reference]" in output and "may be incomplete" in output
+    assert "Incomplete checks" in output and "may be incomplete" in output
+    assert "Use -vv" in output and "[skipped-reference]" not in output
+    assert main(["--root", str(tmp_path), "-vv"]) == 0
+    assert "[skipped-reference]" in capsys.readouterr().out
     assert main(["--root", str(tmp_path), "--resolution-root", "."]) == 1
     assert "Skipped" not in capsys.readouterr().out
     assert (

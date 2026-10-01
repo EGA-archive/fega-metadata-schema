@@ -16,7 +16,7 @@ concurrency:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
@@ -28,5 +28,14 @@ jobs:
         run: |
           python -m pip install -r requirements-lock.txt
           python -m pip install --no-deps -e .
-      - name: Lint all schemas
-        run: python scripts/py/lint_schemas.py --root . --resolution-root schemas schemas -v
+      - name: Start Biovalidator from main
+        uses: ./.github/actions/setup-biovalidator
+      - name: Lint all schemas and check custom-keyword examples
+        run: python scripts/py/lint_schemas.py --root . --resolution-root schemas --check-api --validator-url http://localhost:3020/validate schemas -v
+      - name: Upload Biovalidator log after failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with: {name: schema-lint-biovalidator-log, path: biovalidator.log, if-no-files-found: warn}
+      - name: Stop Biovalidator
+        if: always()
+        run: test ! -f biovalidator.pid || kill "$(cat biovalidator.pid)" || true

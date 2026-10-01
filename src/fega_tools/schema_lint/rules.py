@@ -141,12 +141,9 @@ def documentation(node: Node):
                         "explicit-type",
                         "Independent definitions must declare type locally or in an allOf/anyOf/oneOf branch or in-scope reference.",
                     )
-        # Entity roots have standalone examples/ suites; nested definitions still
-        # document their own examples, as do roots of other schema files.
-        entity_root = not node.path and node.file.match(
-            "schemas/entities/*/schema.json"
-        )
-        required = ("title",) if entity_root else ("title", "examples")
+        # File roots may be definition collections or use standalone examples/
+        # suites. Individual definitions and properties still need examples.
+        required = ("title", "examples") if node.path else ("title",)
         for key in required:
             if key not in schema:
                 yield node.issue(
@@ -160,12 +157,20 @@ def documentation(node: Node):
             not isinstance(schema[key], str) or not schema[key].strip()
         ):
             yield node.issue("documentation", f"{key} must be a non-empty string.", key)
-    if "examples" in schema and (
-        not isinstance(schema["examples"], list) or not schema["examples"]
-    ):
-        yield node.issue(
-            "documentation", "examples must be a non-empty array.", "examples"
-        )
+    if "examples" in schema:
+        values = schema["examples"]
+        if not isinstance(values, list) or not values:
+            yield node.issue(
+                "documentation", "examples must be a non-empty array.", "examples"
+            )
+        elif all(
+            isinstance(value, (str, dict, list)) and not value for value in values
+        ):
+            yield node.issue(
+                "documentation",
+                "examples must include at least one value other than an empty string, object, or array.",
+                "examples",
+            )
 
 
 def reference_style(node: Node):

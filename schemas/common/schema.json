@@ -1,10 +1,10 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
-    "type": "object",
-    "title": "EGA common metadata definitions",
     "meta:version": "1.0.0-draft.3",
     "$async": true,
+    "type": "object",
+    "title": "EGA common metadata definitions",
     "description": "Metadata schema for common definitions inherited by other EGA metadata schemas.",
     "@context": "./context.jsonld",
     "$defs": {
@@ -17,16 +17,16 @@
               "predicate_id": "skos:exactMatch",
               "object_id": "schema:identifier",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "match_string": "id",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
+              "match_string": "id",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
-              "confidence": 1.0,
-              "mapping_date": "2025-08-27"
+              "mapping_date": "2025-08-27",
+              "confidence": 1.0
             }
           ],
+          "minLength": 1,
           "anyOf": [
             {
               "format": "uri"
@@ -40,34 +40,33 @@
 
         "@id": {
             "type": "string",
+            "title": "JSON-LD identifier",
             "description": "The JSON-LD node identifier used as RDF subject identity and for relationship links. Must be a URI or a CURIE that can be expanded through the active JSON-LD context.",
-            "examples": [ "ega:EGAC00000000001", "biosample:SAMEA112654070", "https://www.ebi.ac.uk/biosamples/samples/SAMEA112654070" ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:identifier",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "dct:identifier",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "format": "uri"                    
@@ -75,7 +74,8 @@
                 {
                     "$ref": "../common/schema.json#/$defs/curieGeneralPattern"
                 }
-            ]
+            ],
+            "examples": [ "ega:EGAC00000000001", "biosample:SAMEA112654070", "https://www.ebi.ac.uk/biosamples/samples/SAMEA112654070" ]
         },
 
         "@type": {
@@ -86,57 +86,60 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "rdf:type",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "type",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
                     "mapping_date": "2025-08-29",
+                    "confidence": 1.0,
                     "$comment": "JSON-LD '@type' expands to RDF triples using predicate rdf:type."
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "match_string": "type",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.9,
                     "mapping_date": "2025-08-29",
+                    "confidence": 0.9,
                     "$comment": "From https://www.w3.org/TR/turtle/ 2.4: The token 'a' in the predicate position of a Turtle triple represents the IRI http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:additionalType",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "match_string": "type",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 }
             ],
             "anyOf": [
                 {
                     "type": "string",
-                    "minLength": 1
+                    "title": "Single resource type",
+                    "minLength": 1,
+                    "examples": ["prov:Entity"]
                 },
                 {
                     "type": "array",
+                    "title": "Resource type collection",
+                    "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "type": "string",
-                        "minLength": 1
+                        "title": "Resource type value",
+                        "minLength": 1,
+                        "examples": ["prov:Entity"]
                     },
-                    "minItems": 2,
-                    "uniqueItems": true
+                    "examples": [["prov:Entity", "prov:Person"]]
                 }
             ],
             "examples": [
@@ -159,9 +162,8 @@
                     "match_string": "label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-15"
+                    "mapping_date": "2025-04-15",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
@@ -169,9 +171,8 @@
                     "mapping_justification": "semapv:ManualMappingCuration",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-15"
+                    "mapping_date": "2025-04-15",
+                    "confidence": 1.0
                 },
                 {
                   "predicate_id": "skos:closeMatch",
@@ -180,9 +181,8 @@
                   "match_string": "title",
                   "author_id": ["orcid:0000-0002-7747-6256"],
                   "creator_id": ["orcid:0000-0002-7747-6256"],
-                  "reviewer_id": [""],
-                  "confidence": 1.0,
-                  "mapping_date": "2025-04-15"
+                  "mapping_date": "2025-04-15",
+                  "confidence": 1.0
                 }
             ],
             "minLength": 1,
@@ -197,32 +197,31 @@
 
         "description": {
             "type": "string",
+            "title": "Description",
             "description": "A description of the item.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "schema:description",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "description",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "rdfs:comment",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
                 }
             ],
             "minLength": 1,
@@ -269,7 +268,13 @@
                     "minLength": 1,
                     "examples": [ "COVID-19", "Axila skin", "bone marrow cell", "astrocyte", "oligodendrocyte", "Unknown", "Unaffected", "homo sapiens" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "MONDO:0100096",
+                    "label": "COVID-19"
+                }
+            ]
         },
 
         "biologicalMacromoleculeTerm": {
@@ -280,14 +285,13 @@
                   "predicate_id": "skos:exactMatch",
                   "object_id": "EFO:0004446",
                   "mapping_justification": "semapv:ManualMappingCuration",
-                  "match_string": "biologicalMacromoleculeTerm",
-                  "object_match_field": "rdfs:label",
                   "subject_match_field": "rdfs:label",
+                  "object_match_field": "rdfs:label",
+                  "match_string": "biologicalMacromoleculeTerm",
                   "author_id": ["orcid:0000-0002-7747-6256"],
                   "creator_id": ["orcid:0000-0002-7747-6256"],
-                  "reviewer_id": [""],
-                  "confidence": 1.0,
-                  "mapping_date": "2026-07-07"
+                  "mapping_date": "2026-07-07",
+                  "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -317,11 +321,16 @@
                     },
                     "examples": [ "ribonucleic acid", "genomic DNA" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "CHEBI:33697",
+                    "label": "ribonucleic acid"
+                }
+            ]
         },
 
         "homoSapiensTerm": {
-            "$comment": "#! Not in use currently, to be amended if not needed",
             "type": "object",
             "title": "Homo Sapiens Term",
             "meta:sssomMappings": [
@@ -329,14 +338,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "NCBITaxon:9606",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "match_string": "Homo Sapiens Term",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -348,9 +356,18 @@
             "properties": {
                 "id": {
                     "type": "string",
-                    "enum": ["NCBITaxon:9606"]
+                    "title": "Homo sapiens taxonomy identifier",
+                    "enum": ["NCBITaxon:9606"],
+                    "examples": ["NCBITaxon:9606"]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "NCBITaxon:9606",
+                    "label": "Homo sapiens"
+                }
+            ],
+            "$comment": "#! Not in use currently, to be amended if not needed"
         },
         
         "relationshipItem": {
@@ -364,14 +381,21 @@
               },
               "@type": { "$ref": "../common/schema.json#/$defs/@type" }
             },
+            "examples": [
+                {
+                    "@id": "ega:EGAD00000000001",
+                    "@type": "ega:dataset"
+                }
+            ],
             "$comment": "#! We may want to add a pattern check here, so that for example if 'biomaterial' is the '@type', the ID of the entity is 'EGAN...'. The issue for which I haven't added it yet is that FEGA identifiers are still being discussed and that it would be constraining external references to other archives (e.g., the activity that generated a file could be in a different archive, and not have an EGA stable ID)."
         },
 
         "relationshipArray": {
             "type": "array",
+            "title": "Relationship array",
             "description": "This entity is expected to be referenced where needed, as it contains the basic format of a relationship array. These arrays contain relationship items and semantically represent a type of relationship or linkage across entities in the linked data space.",
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "../common/schema.json#/$defs/relationshipItem"
             },
@@ -404,6 +428,7 @@
                     "$ref": "../common/schema.json#/$defs/@id"
                 },
                 "@type": {
+                    "title": "Period type",
                     "allOf": [
                         {
                             "$ref": "../common/schema.json#/$defs/@type"
@@ -415,13 +440,18 @@
                                 },
                                 {
                                     "type": "array",
+                                    "title": "Period type collection",
+                                    "uniqueItems": true,
+                                    "minItems": 1,
                                     "contains": {
                                         "const": "dct:PeriodOfTime"
-                                    }
+                                    },
+                                    "examples": [["dct:PeriodOfTime", "dct:Interval"]]
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "examples": ["dct:PeriodOfTime", ["dct:PeriodOfTime", "dct:Interval"]]
                 },
                 "startDate": {
                     "$ref": "../common/schema.json#/$defs/dateTime"
@@ -444,6 +474,7 @@
         },
 
         "HL7NullFlavor": {
+            "type": "string",
             "title": "HL7 Null Flavor",
             "description": "Captures why a value is missing, unknown, or inapplicable, per a subset of the HL7 Null Flavor codes. See more details at 'https://build.fhir.org/ig/HL7/UTG/CodeSystem-v3-NullFlavor.html'.",
             "meta:sssomMappings": [
@@ -451,17 +482,16 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://build.fhir.org/ig/HL7/UTG/CodeSystem-v3-NullFlavor.html",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "NullFlavor",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
                 }
             ],
-            "type": "string",
+            "minLength": 1,
             "enum": [
                 "ASKU",
                 "MSK",
@@ -481,7 +511,8 @@
                 "NI": "HL7 NullFlavor Code 'NI'. Display Name: 'No Information'. Definition: 'Absolutely no details are available at any level.' Example: 'A record for a visit exists, but no demographic or clinical data were recorded at all.'",
                 "OTH": "HL7 NullFlavor Code 'OTH'. Display Name: 'Other'. Definition: 'A valid value exists, but it is not represented in the known code set or categories.' Example: 'The schema's enum for a field does not include the value at hand.'",
                 "UNK": "HL7 NullFlavor Code 'UNK'. Display Name: 'Unknown'. Definition: 'A suitable value is applicable but is not currently known.' Example: 'A patient's middle name is valid information to collect, but it is not documented.'"
-            }
+            },
+            "examples": ["UNK", "NA"]
         },
 
         "diagnosis": {
@@ -493,76 +524,80 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "beaconRepo:common/disease.json",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-04-23"
+                    "mapping_date": "2025-04-23",
+                    "confidence": 0.8
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/disease.html#disease",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-04-23"
+                    "mapping_date": "2025-04-23",
+                    "confidence": 0.8
                 },
                 {
                     "predicate_id": "skos:narrowMatch",
-                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.Diagnosis",
+                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:Diagnosis",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
                     "mapping_date": "2025-04-23",
+                    "confidence": 0.8,
                     "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object."
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#histological-diagnosis",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-05-02"
+                    "mapping_date": "2025-05-02",
+                    "confidence": 0.8
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "beaconRepo:biosamples/defaultSchema.json#histologicalDiagnosis",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-05-02"
+                    "mapping_date": "2025-05-02",
+                    "confidence": 0.8
                 }
             ],
             "required": ["diagnosisType", "term"],
+            "anyOf": [
+                {
+                    "title": "Laterality and Primary Site dependency",
+                    "if":   { "required": ["laterality"] },
+                    "then": { "required": ["primarySite"] }
+                }
+            ],
             "properties": {
                 "diagnosisType": {
                     "type": "string",
                     "title": "Diagnosis type",
                     "description": "Classifies the diagnosis by the primary evidence used to establish it.",
+                    "minLength": 1,
                     "enum": ["clinical", "pathological", "molecular"],
                     "meta:enum": {
                         "clinical": "Inference made from clinical presentation (signs, symptoms, imaging, standard laboratory tests) before or without tissue confirmation.",
                         "pathological": "Conclusion reached by examining tissue or cells (histology, cytology, immunohistochemistry, gross pathology).",
                         "molecular": "Diagnosis supported predominantly by molecular evidence such as DNA/RNA sequencing, gene-expression profiling, methylation arrays or proteomics."
-                    }
+                    },
+                    "examples": ["clinical"]
                 },
                 "term": {
                     "type": "object",
@@ -573,38 +608,35 @@
                             "predicate_id": "skos:exactMatch",
                             "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/disease.html#term",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:label",
                             "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
                             "match_string": "term",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2025-04-15"
+                            "mapping_date": "2025-04-15",
+                            "confidence": 1.0
                         },
                         {
                             "predicate_id": "skos:exactMatch",
                             "object_id": "beaconRepo:common/disease.json#diseaseCode",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:comment",
                             "subject_match_field": "rdfs:comment",
+                            "object_match_field": "rdfs:comment",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2025-04-15"
+                            "mapping_date": "2025-04-15",
+                            "confidence": 1.0
                         },
                         {
                             "predicate_id": "skos:narrowMatch",
-                            "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.Diagnosis.diagnosis",
+                            "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:Diagnosis.diagnosis",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:comment",
                             "subject_match_field": "rdfs:comment",
+                            "object_match_field": "rdfs:comment",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 0.8,
                             "mapping_date": "2025-04-23",
+                            "confidence": 0.8,
                             "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object. GDI's definition of 'diagnosis' falls under 'disease' mainly due to the allowed values given for a diagnosis: SNOMED 'Disease'."
                         }
                     ],
@@ -638,46 +670,41 @@
                         "predicate_id": "skos:exactMatch",
                         "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/disease.html#excluded",
                         "mapping_justification": "semapv:ManualMappingCuration",
-                        "object_match_field": "rdfs:label",
                         "subject_match_field": "rdfs:label",
+                        "object_match_field": "rdfs:label",
                         "match_string": "term",
                         "author_id": ["orcid:0000-0002-7747-6256"],
                         "creator_id": ["orcid:0000-0002-7747-6256"],
-                        "reviewer_id": [""],
-                        "confidence": 1.0,
-                        "mapping_date": "2025-04-15"
+                        "mapping_date": "2025-04-15",
+                        "confidence": 1.0
                     },
                     {
                         "predicate_id": "skos:broadMatch",
                         "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#material-sample",
                         "mapping_justification": "semapv:ManualMappingCuration",
-                        "object_match_field": "rdfs:label",
                         "subject_match_field": "rdfs:label",
+                        "object_match_field": "rdfs:label",
                         "match_string": "term",
                         "author_id": ["orcid:0000-0002-7747-6256"],
                         "creator_id": ["orcid:0000-0002-7747-6256"],
-                        "reviewer_id": [""],
-                        "confidence": 0.6,
                         "mapping_date": "2025-05-02",
+                        "confidence": 0.6,
                         "$comment": "The material_sample from phenopackets allows the user to define whether a sample is reference (a.k.a. control) or abnormal (a.k.a. case). This information can be encoded easily in the diagnosis, introducing the ability to specify **for which** diagnosis (i.e. disease) a sample may be control or case."
                     }
                   ],
-                  "default": false
+                  "default": false,
+                  "examples": [false]
                 },
                 "onset": {
-                    "title": "Compatibility with Beacon v2 JSON Schema",
                     "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/disease.json#/properties/ageOfOnset"
                 },
                 "familyHistory": {
-                    "title": "Compatibility with Beacon v2 JSON Schema",
                     "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/disease.json#/properties/familyHistory"
                 },
                 "severity": {
-                    "title": "Compatibility with Beacon v2 JSON Schema",
                     "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/disease.json#/properties/severity"
                 },
                 "diseaseStage": {
-                    "title": "Compatibility with Beacon v2 JSON Schema",
                     "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/disease.json#/properties/stage"
                 },
                 "primarySite": {
@@ -739,43 +766,39 @@
                                     "predicate_id": "skos:closeMatch",
                                     "object_id": "EFO:0004925",
                                     "mapping_justification": "semapv:ManualMappingCuration",
-                                    "object_match_field": "rdfs:comment",
                                     "subject_match_field": "rdfs:comment",
+                                    "object_match_field": "rdfs:comment",
                                     "author_id": ["orcid:0000-0002-7747-6256"],
                                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                                    "reviewer_id": [""],
-                                    "confidence": 0.8,
-                                    "mapping_date": "2025-05-01"
+                                    "mapping_date": "2025-05-01",
+                                    "confidence": 0.8
                                 },
                                 {
                                     "predicate_id": "skos:closeMatch",
                                     "object_id": "SNOMED:395557000",
                                     "mapping_justification": "semapv:ManualMappingCuration",
-                                    "object_match_field": "rdfs:comment",
                                     "subject_match_field": "rdfs:comment",
+                                    "object_match_field": "rdfs:comment",
                                     "author_id": ["orcid:0000-0002-7747-6256"],
                                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                                    "reviewer_id": [""],
-                                    "confidence": 0.8,
-                                    "mapping_date": "2025-05-01"
+                                    "mapping_date": "2025-05-01",
+                                    "confidence": 0.8
                                 },
                                 {
                                     "predicate_id": "skos:closeMatch",
                                     "object_id": "NCIT:C48232",
                                     "mapping_justification": "semapv:ManualMappingCuration",
-                                    "object_match_field": "rdfs:comment",
                                     "subject_match_field": "rdfs:comment",
+                                    "object_match_field": "rdfs:comment",
                                     "author_id": ["orcid:0000-0002-7747-6256"],
                                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                                    "reviewer_id": [""],
-                                    "confidence": 0.8,
-                                    "mapping_date": "2025-05-01"
+                                    "mapping_date": "2025-05-01",
+                                    "confidence": 0.8
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 1,
-                            "uniqueItems": true,        
                             "items": {
-                                "title": "Inherited ontologyTerm structure of id and label",
                                 "$ref": "../common/schema.json#/$defs/ontologyTerm"
                             },
                             "examples": [
@@ -810,14 +833,13 @@
                                 "predicate_id": "skos:exactMatch",
                                 "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#tumor-grade",
                                 "mapping_justification": "semapv:ManualMappingCuration",
-                                "object_match_field": "rdfs:label",
                                 "subject_match_field": "rdfs:label",
+                                "object_match_field": "rdfs:label",
                                 "match_string": "tumorGrade",
                                 "author_id": ["orcid:0000-0002-7747-6256"],
                                 "creator_id": ["orcid:0000-0002-7747-6256"],
-                                "reviewer_id": [""],
-                                "confidence": 1,
-                                "mapping_date": "2025-05-01"
+                                "mapping_date": "2025-05-01",
+                                "confidence": 1
                             }
                             ],
                             "allOf": [
@@ -845,14 +867,13 @@
                                 "predicate_id": "skos:exactMatch",
                                 "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#tumor-progression",
                                 "mapping_justification": "semapv:ManualMappingCuration",
-                                "object_match_field": "rdfs:label",
                                 "subject_match_field": "rdfs:label",
+                                "object_match_field": "rdfs:label",
                                 "match_string": "tumorProgression",
                                 "author_id": ["orcid:0000-0002-7747-6256"],
                                 "creator_id": ["orcid:0000-0002-7747-6256"],
-                                "reviewer_id": [""],
-                                "confidence": 1,
-                                "mapping_date": "2025-05-02"
+                                "mapping_date": "2025-05-02",
+                                "confidence": 1
                             }
                             ],
                             "allOf": [
@@ -879,58 +900,71 @@
                             "meta:sssomMappings": [
                                 {
                                     "predicate_id": "skos:closeMatch",
-                                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.TNM.Tumor_size",
+                                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:TNM.Tumor_size",
                                     "mapping_justification": "semapv:ManualMappingCuration",
-                                    "object_match_field": "rdfs:label",
                                     "subject_match_field": "rdfs:label",
+                                    "object_match_field": "rdfs:label",
                                     "author_id": ["orcid:0000-0002-7747-6256"],
                                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                                    "reviewer_id": [""],
-                                    "confidence": 0.9,
                                     "mapping_date": "2025-05-02",
+                                    "confidence": 0.9,
                                     "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object."
                                 }
                             ],
-                            "minItems": 1,
                             "uniqueItems": true,
+                            "minItems": 1,
                             "items": {
                                 "$ref": "../common/schema.json#/$defs/quantity"
-                            }
+                            },
+                            "examples": [
+                                [
+                                    {
+                                        "value": 12.3,
+                                        "unit": {
+                                            "id": "UO:0000017",
+                                            "label": "micrometer"
+                                        }
+                                    }
+                                ]
+                            ]
                         },
                         "stagingSystemVersion": {
                             "type": "string",
                             "title": "Staging system version",
                             "description": "Edition and/or year of the staging system used (e.g. 'AJCC 8th ed. (2018)').",
-                            "examples": ["AJCC 8th Edition (2018)"],
                             "meta:sssomMappings": [
                                 {
                                     "predicate_id": "skos:closeMatch",
-                                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.TNM.version",
+                                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:TNM.version",
                                     "mapping_justification": "semapv:ManualMappingCuration",
-                                    "object_match_field": "rdfs:label",
                                     "subject_match_field": "rdfs:label",
+                                    "object_match_field": "rdfs:label",
                                     "author_id": ["orcid:0000-0002-7747-6256"],
                                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                                    "reviewer_id": [""],
-                                    "confidence": 0.9,
                                     "mapping_date": "2025-05-02",
+                                    "confidence": 0.9,
                                     "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object."
                                 }
-                            ]
+                            ],
+                            "minLength": 1,
+                            "examples": ["AJCC 8th Edition (2018)"]
                         }
                     }
                 }
             },
-            "anyOf": [
+            "examples": [
                 {
-                    "title": "Laterality and Primary Site dependency",
-                    "if":   { "required": ["laterality"] },
-                    "then": { "required": ["primarySite"] }
+                    "diagnosisType": "clinical",
+                    "term": {
+                        "id": "MONDO:0003982",
+                        "label": "bilateral breast carcinoma"
+                    }
                 }
             ]
         },
 
         "diseaseEfo": {
+            "title": "Disease term restricted to EFO",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
@@ -957,10 +991,17 @@
                     },
                     "examples": [ "bilateral breast carcinoma", "breast disease", "bronchogenic cyst" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "EFO:0009483",
+                    "label": "breast disease"
+                }
+            ]
         },
 
         "diseaseOrdo": {
+            "title": "Disease term restricted to ORDO",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
@@ -987,10 +1028,17 @@
                     },
                     "examples": [ "Acute basophilic leukemia", "B-cell prolymphocytic leukemia", "Lymphomatoid papulosis" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "ORDO:86849",
+                    "label": "Acute basophilic leukemia"
+                }
+            ]
         },
 
         "diseaseMondo": {
+            "title": "Disease term restricted to MONDO",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
@@ -1017,10 +1065,17 @@
                     },
                     "examples": [ "Barrett esophagus", "anti-glomerular basement membrane disease", "endocardium cancer" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "MONDO:0013662",
+                    "label": "Barrett esophagus"
+                }
+            ]
         },
 
         "diseaseHp": {
+            "title": "Phenotypic disease term restricted to HP",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
@@ -1047,10 +1102,17 @@
                     },
                     "examples": [ "Asymmetric short stature", "Cephalohematoma", "Pneumomediastinum" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "HP:0008929",
+                    "label": "Asymmetric short stature"
+                }
+            ]
         },
 
         "diseaseDoid": {
+            "title": "Disease term restricted to DOID",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
@@ -1077,18 +1139,24 @@
                     },
                     "examples": [ "Patau syndrome", "acute stress disorder", "dementia" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "DOID:11665",
+                    "label": "Patau syndrome"
+                }
+            ]
         },
 
         "diseaseSnomed": {
+            "title": "Disease term restricted to SNOMED",
             "allOf": [
                 {
                     "title": "Inherited ontologyTerm structure of term id and label",
                     "$ref": "../common/schema.json#/$defs/ontologyTerm"
                 }
             ],
-            "$comment": "#! SNOMED has been removed from OLS (see https://github.com/EBISPOT/ols4/issues/1207), so we shall remove this constraint for now (see the $ in $properties). If it was a mistake, we'll add it back; if it was removed conciously, we'll need to change this ontology constraint",
-            "$properties": {
+            "properties": {
                 "id": {
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction":  {
@@ -1108,7 +1176,13 @@
                     },
                     "examples": [ "Idiopathic stammering (disorder)", "Acne indurata (disorder)", "Alcohol-induced epilepsy (disorder)" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "SNOMED:229629003",
+                    "label": "Idiopathic stammering (disorder)"
+                }
+            ]
         },
 
         "phenotypicFeature": {
@@ -1119,39 +1193,36 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/phenotype.html",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "PhenotypicFeature",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-28"
+                    "mapping_date": "2025-04-28",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "beaconRepo:common/phenotypicFeature.json",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "PhenotypicFeature",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-28"
+                    "mapping_date": "2025-04-28",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:broadMatch",
-                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.Diagnosis",
+                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:Diagnosis",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.7,
                     "mapping_date": "2025-04-24",
+                    "confidence": 0.7,
                     "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object."
                 }
             ],
@@ -1171,14 +1242,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/vital-status.html#vitalstatus",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "vitalStatus",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-24"
+                    "mapping_date": "2025-04-24",
+                    "confidence": 1.0
                 }
             ],
             "required": ["status"],
@@ -1186,22 +1256,22 @@
                 "status": {
                     "type": "string",
                     "title": "Status",
-                    "description": "",
+                    "description": "Whether the organism is alive, dead, or has an unknown vital status.",
                     "meta:sssomMappings": [
                         {
                             "predicate_id": "skos:exactMatch",
                             "object_id": "PATO:0000169",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:comment",
                             "subject_match_field": "rdfs:comment",
+                            "object_match_field": "rdfs:comment",
                             "match_string": "vitalStatus",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2025-04-24"
+                            "mapping_date": "2025-04-24",
+                            "confidence": 1.0
                         }
                     ],
+                    "minLength": 1,
                     "anyOf": [
                         {
                             "enum": [ "alive", "dead" ],
@@ -1212,7 +1282,11 @@
                         },
                         {
                             "title": "Uncertainty terms definition",
-                            "$ref": "../common/schema.json#/$defs/HL7NullFlavor"
+                            "allOf": [
+                                {
+                                    "$ref": "../common/schema.json#/$defs/HL7NullFlavor"
+                                }
+                            ]
                         }
                     ],
                     "examples": [ "alive", "dead", "UNK" ]
@@ -1239,7 +1313,6 @@
                 "causeOfDeath": {
                     "title": "Cause of death",
                     "description": "Represents the cause of death of the organism. Not to be used if the organism is not known to be dead.",
-                    "$comment": "I don't think restricting the ontology term here is doable, since this could be quite literally anything in the semantic space.",
                     "allOf": [
                         {
                             "title": "Inherited ontologyTerm structure of id and label",
@@ -1258,7 +1331,8 @@
                         {
                             "id": "SNOMED:297186008"
                         }
-                    ]
+                    ],
+                    "$comment": "I don't think restricting the ontology term here is doable, since this could be quite literally anything in the semantic space."
                 },
                 "survivalTimeInDays": {
                     "type": "integer",
@@ -1266,7 +1340,12 @@
                     "description": "Number of days the organism was alive after their primary diagnosis.",
                     "examples": [ 1, 10, 5]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "status": "alive"
+                }
+            ]
         },
 
         "exposure": {
@@ -1278,40 +1357,37 @@
                     "predicate_id": "skos:narrowMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/exposure.html#exposure",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "exposure",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-24"
+                    "mapping_date": "2025-04-24",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "beaconRepo:common/exposure.json",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "exposure",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-24"
+                    "mapping_date": "2025-04-24",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:narrowMatch",
-                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317.'Environmental Exposure'",
+                    "object_id": "v1.0_HarmonisedMinimalDatamodel_dataset_20250317:Environmental-Exposure",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "match_string": "exposure",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
                     "mapping_date": "2025-04-24",
+                    "confidence": 1.0,
                     "$comment": "GDI Harmonised Minimal Data Model v1.0 has not been submitted publicly yet. Hence the lack of a proper URI for the object."
                 }
             ],
@@ -1366,13 +1442,11 @@
                     "type": "array",
                     "title": "Modifiers of the exposure",
                     "description": "Characteristics of the exposure.",
+                    "uniqueItems": true,
                     "minItems": 1,
-                    "uniqueItems": true,        
                     "items": {
-                        "title": "Inherited ontologyTerm structure of id and label",
                         "$ref": "../common/schema.json#/$defs/ontologyTerm"
                     },
-                    "$comment": "Again, I'm unsure if to constraint the terms and/or labels to a set of ontologies (e.g., ECTO), or leave it open like now.",
                     "examples": [
                         [
                             {
@@ -1384,7 +1458,8 @@
                                 "label": "high-dose exposure"
                             }
                         ]
-                    ]
+                    ],
+                    "$comment": "Again, I'm unsure if to constraint the terms and/or labels to a set of ontologies (e.g., ECTO), or leave it open like now."
                 },
                 "occurrence": {
                     "title": "occurrence",
@@ -1405,12 +1480,11 @@
                 },
                 "evidence": {
                     "type": "array",
-                    "title": "",
+                    "title": "Evidence for the exposure",
                     "description": "Evidences for how the exposure was determined.",
+                    "uniqueItems": true,
                     "minItems": 1,
-                    "uniqueItems": true,        
                     "items": {
-                        "title": "Inherited ontologyTerm structure of id and label",
                         "$ref": "../common/schema.json#/$defs/ontologyTerm"
                     },
                     "examples": [
@@ -1440,13 +1514,12 @@
                             "predicate_id": "skos:exactMatch",
                             "object_id": "beaconRepo:common/exposure.json#unit",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:label",
                             "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2025-04-25"
+                            "mapping_date": "2025-04-25",
+                            "confidence": 1.0
                         }
                     ],
                     "allOf": [
@@ -1465,15 +1538,15 @@
                             "predicate_id": "skos:exactMatch",
                             "object_id": "beaconRepo:common/exposure.json#value",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:label",
                             "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2025-04-25"
+                            "mapping_date": "2025-04-25",
+                            "confidence": 1.0
                         }
                     ],
+                    "examples": [1, 10.5],
                     "$comment": "I thought of adding a 'minimum' of 0, but I guess there may be a weird case of 'negated' exposure where someone may want to measure 'how much the exposure' was negated."
                 },
                 "description": {
@@ -1483,27 +1556,34 @@
                     "minLength": 1,
                     "examples": [ "Accidental arsenic ingestion from a herbal medicine product", "Patient got burnt with the Electric Kettle when making tea" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "type": {
+                        "id": "CHEBI:25540",
+                        "label": "neonicotinoid insectide"
+                    },
+                    "occurrence": "2018-03-01T00:00:00Z"
+                }
+            ]
         },
 
         "ancestryComponent": {
             "type": "object",
             "title": "Ancestry component",
             "description": "Population category of a biomaterial. Defined using ancestry informative markers (AIMs) based on genetic/genomic data.",
-            "$comment": "Similar to ethnicity, we could want to be restrictive and validate the ontology term IDs and labels, rather than a plain recommendation.",
             "meta:sssomMappings": [
                 {
                 "predicate_id": "skos:exactMatch",
                 "object_id": "HANCESTRO:0004",
                 "mapping_justification": "semapv:ManualMappingCuration",
-                "object_match_field": "rdfs:label",
                 "subject_match_field": "rdfs:label",
+                "object_match_field": "rdfs:label",
                 "match_string": "ancestry",
                 "author_id": ["orcid:0000-0002-7747-6256"],
                 "creator_id": ["orcid:0000-0002-7747-6256"],
-                "reviewer_id": [""],
-                "confidence": 1.0,
-                "mapping_date": "2025-04-25"
+                "mapping_date": "2025-04-25",
+                "confidence": 1.0
                 }
             ],
             "required": ["term"],
@@ -1572,7 +1652,8 @@
                     },
                     "portion": 0.4
                 }
-            ]
+            ],
+            "$comment": "Similar to ethnicity, we could want to be restrictive and validate the ontology term IDs and labels, rather than a plain recommendation."
         },
 
         "anatomicalEntity": {
@@ -1583,14 +1664,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "UBERON:0001062",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "anatomical entity",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-01"
+                    "mapping_date": "2025-05-01",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -1619,26 +1699,32 @@
                     },
                     "examples": [ "pancreas", "manual digit 2", "mucosa of left main bronchus" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "UBERON:0001264",
+                    "label": "pancreas"
+                }
+            ]
         },
 
         "quantity": {
             "type": "object",
-            "required": ["value", "unit"],
+            "title": "Quantity",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/quantity.html#rstquantity",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-02"
+                    "mapping_date": "2025-05-02",
+                    "confidence": 1.0
                 }
             ],
+            "required": ["value", "unit"],
             "properties": {
                 "value": {
                     "type": "number",
@@ -1687,10 +1773,18 @@
                     ]
                 },
                 "referenceRange": {
-                    "title": "Compatibility with Beacon v2 JSON Schema",
                     "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/referenceRange.json"
                 }
-            }
+            },
+            "examples": [
+                {
+                    "value": 12.3,
+                    "unit": {
+                        "id": "UO:0000017",
+                        "label": "micrometer"
+                    }
+                }
+            ]
         },
 
         "fileFormat": {
@@ -1702,25 +1796,23 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "EDAM:format_1915",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-18"
+                    "mapping_date": "2026-03-18",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:broadMatch",
                     "object_id": "schema:encodingFormat",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.5,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 0.5
                 }
             ],
             "allOf": [
@@ -1817,14 +1909,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "spdx:Checksum",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "checksum",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-06-24"
+                    "mapping_date": "2026-06-24",
+                    "confidence": 1.0
                 }
             ],
             "required": ["algorithm", "value", "appliesTo"],
@@ -1834,14 +1925,22 @@
                         "required": ["algorithm"],
                         "properties": {
                             "algorithm": {
-                                "const": "MD5"
+                                "type": "string",
+                                "title": "MD5 checksum algorithm",
+                                "minLength": 1,
+                                "const": "MD5",
+                                "examples": ["MD5"]
                             }
                         }
                     },
                     "then": {
                         "properties": {
                             "value": {
-                                "pattern": "^[A-Fa-f0-9]{32}$"
+                                "type": "string",
+                                "title": "MD5 checksum value",
+                                "minLength": 1,
+                                "pattern": "^[A-Fa-f0-9]{32}$",
+                                "examples": ["d41d8cd98f00b204e9800998ecf8427e"]
                             }
                         }
                     }
@@ -1851,14 +1950,22 @@
                         "required": ["algorithm"],
                         "properties": {
                             "algorithm": {
-                                "const": "SHA256"
+                                "type": "string",
+                                "title": "SHA256 checksum algorithm",
+                                "minLength": 1,
+                                "const": "SHA256",
+                                "examples": ["SHA256"]
                             }
                         }
                     },
                     "then": {
                         "properties": {
                             "value": {
-                                "pattern": "^[A-Fa-f0-9]{64}$"
+                                "type": "string",
+                                "title": "SHA256 checksum value",
+                                "minLength": 1,
+                                "pattern": "^[A-Fa-f0-9]{64}$",
+                                "examples": ["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"]
                             }
                         }
                     }
@@ -1874,26 +1981,28 @@
                             "predicate_id": "skos:exactMatch",
                             "object_id": "spdx:ChecksumAlgorithm",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:label",
                             "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
                             "match_string": "checksum algorithm",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2026-06-24"
+                            "mapping_date": "2026-06-24",
+                            "confidence": 1.0
                         }
                     ],
+                    "minLength": 1,
                     "enum": [ "MD5", "SHA256" ],
                     "meta:enum": {
                         "MD5": "http://spdx.org/rdf/terms#checksumAlgorithm_md5",
                         "SHA256": "http://spdx.org/rdf/terms#checksumAlgorithm_sha256"
-                    }
+                    },
+                    "examples": ["MD5"]
                 },
                 "value": {
                     "type": "string",
                     "title": "Checksum value",
                     "description": "Computed checksum value.",
+                    "minLength": 1,
                     "pattern": "^[A-Fa-f0-9]+$",
                     "examples": [
                         "d41d8cd98f00b204e9800998ecf8427e",
@@ -1901,9 +2010,10 @@
                     ]
                 },
                 "appliesTo": {
+                    "type": "string",
                     "title": "Checksum target representation",
                     "description": "The byte-level representation of the datafile to which the checksum applies.",
-                    "type": "string",
+                    "minLength": 1,
                     "enum": [
                         "unencrypted",
                         "encrypted",
@@ -1915,7 +2025,8 @@
                         "encrypted": "Checksum computed on the encrypted byte stream.",
                         "compressed": "Checksum computed on the compressed byte stream.",
                         "packaged": "Checksum computed on an archive or package byte stream, such as a tar file."
-                    }
+                    },
+                    "examples": ["unencrypted"]
                 }
             },
             "examples": [
@@ -1941,17 +2052,17 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "http://www.w3.org/2001/XMLSchema#dateTime",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "dateTime",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-19"
+                    "mapping_date": "2025-08-19",
+                    "confidence": 1.0
                 }
             ],
             "format": "date-time",
+            "minLength": 1,
             "examples": [
                 "2023-10-01T12:00:00Z",
                 "2024-01-15T08:30:00+01:00",
@@ -1967,13 +2078,12 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:modified",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [{"$ref": "../common/schema.json#/$defs/dateTime"}]
@@ -1987,58 +2097,57 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:dateSubmitted",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [{"$ref": "../common/schema.json#/$defs/dateTime"}]
         },
 
         "releaseDate": {
+            "type": "string",
             "title": "Release date",
             "description": "The date on which the resource was formally released or issued at the archive (e.g., EGA).",
-            "type": "string",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:issued",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
-            "allOf": [{"$ref": "../common/schema.json#/$defs/dateTime"}]
+            "minLength": 1,
+            "allOf": [{"$ref": "../common/schema.json#/$defs/dateTime"}],
+            "examples": ["2026-01-01T00:00:00Z"]
         },
 
         "version": {
+            "type": "string",
             "title": "Version",
             "description": "The version indicator, name, or identifier of a resource.",
-            "type": "string",
-            "minLength": 1,
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dcat:version",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
+            "minLength": 1,
             "examples": [
                 "1",
                 "1.0.3",
@@ -2056,15 +2165,15 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "adms:status",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "$ref": "../common/schema.json#/$defs/statusHealthDCAT-AP"
@@ -2076,11 +2185,14 @@
                     "$ref": "../common/schema.json#/$defs/statusSubmissionLifeCycle"
                 }                
             ],
+            "examples": ["released"],
             "$comment": "#! We'll need to agree on a set of statuses for asset lifecycle, not to have a big overlap between DCAT's and EGA's internal definitions. Furthermore, we need to converge status terms as much as possible with regards to the contexts, to avoid using an endless list of very similar statuses."
         },
 
         "statusHealthDCAT-AP": {
+            "type": "string",
             "title": "HealthDCAT-AP distribution status CV list",
+            "minLength": 1,
             "enum": ["OP_DATPRO", "WITHDRAWN", "COMPLETED", "DEPRECATED", "DEVELOP" ],
             "meta:enum": {
                 "OP_DATPRO": "http://publications.europa.eu/resource/authority/distribution-status/OP_DATPRO",
@@ -2088,11 +2200,14 @@
                 "COMPLETED": "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED",
                 "DEPRECATED": "http://publications.europa.eu/resource/authority/distribution-status/DEPRECATED",
                 "DEVELOP": "http://publications.europa.eu/resource/authority/distribution-status/DEVELOP"
-            }
+            },
+            "examples": ["COMPLETED"]
         },
 
         "statusSubmitterPortalAPI": {
+            "type": "string",
             "title": "EGA SP API status CV list",
+            "minLength": 1,
             "enum": [ "open", "waiting_approval", "waiting_deprecation_approval", "not released", "released", "deprecated" ],
             "meta:enum": {
                 "open": "New submission or existing resource that has been modified.",
@@ -2101,11 +2216,14 @@
                 "not released": "Submission is not yet released.",
                 "released": "Resource has been released.",
                 "deprecated": "Resource has been deprecated."
-            }
+            },
+            "examples": ["released"]
         },
 
         "statusSubmissionLifeCycle": {
+            "type": "string",
             "title": "EGA Submission life-cycle entity statuses",
+            "minLength": 1,
             "enum": [
                 "draft",
                 "submitted",
@@ -2119,7 +2237,8 @@
                 "frozen": "Submission content is locked and cannot be changed.",
                 "released": "Submission has been accepted and is available.",
                 "withdrawn": "Submission has been retracted and is no longer active."
-            }
+            },
+            "examples": ["submitted"]
         },
 
         "qualifiedAssociation": {
@@ -2131,14 +2250,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://www.w3.org/TR/prov-o/#qualifiedAssociation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "qualifiedAssociation",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-27"
+                    "mapping_date": "2025-08-27",
+                    "confidence": 1.0
                 }
             ],
             "required": ["agent"],
@@ -2147,17 +2265,23 @@
                     "$ref": "../common/schema.json#/$defs/@id"
                 },
                 "@type": {
+                    "title": "Association resource types",
                     "anyOf": [
                         {
                             "const": "prov:Association"
                         },
                         {
                             "type": "array",
+                            "title": "Association type collection",
+                            "uniqueItems": true,
+                            "minItems": 1,
                             "contains": {
                                 "const": "prov:Association"
-                            }
+                            },
+                            "examples": [["prov:Association"]]
                         }
-                    ]
+                    ],
+                    "examples": ["prov:Association", ["prov:Association"]]
                 },
                 "agent": {
                     "$ref": "../common/schema.json#/$defs/agent"
@@ -2168,7 +2292,15 @@
                 "hadPlan": {
                     "$ref": "../common/schema.json#/$defs/hadPlan"
                 }
-            }
+            },
+            "examples": [
+                {
+                    "agent": {
+                        "@type": "prov:Agent",
+                        "name": "Jane Doe"
+                    }
+                }
+            ]
         },
 
         "publications": {
@@ -2180,23 +2312,18 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:citation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": [ "orcid:0000-0002-7747-6256" ],
                     "creator_id": [ "orcid:0000-0002-7747-6256" ],
-                    "reviewer_id": [ "" ],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
-                "allOf": [
-                    {
-                        "$ref": "../common/schema.json#/$defs/externalIdentifier"
-                    }
-                ]
+                "$ref": "../common/schema.json#/$defs/externalIdentifier"
             },
             "examples": [
                 [
@@ -2221,23 +2348,18 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:qualifiedAttribution",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": [ "orcid:0000-0002-7747-6256" ],
                     "creator_id": [ "orcid:0000-0002-7747-6256" ],
-                    "reviewer_id": [ "" ],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-09"
+                    "mapping_date": "2026-07-09",
+                    "confidence": 1.0
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
-                "allOf": [
-                    {
-                        "$ref": "../common/schema.json#/$defs/qualifiedAttribution"
-                    }
-                ]
+                "$ref": "../common/schema.json#/$defs/qualifiedAttribution"
             },
             "examples": [
                 [
@@ -2320,6 +2442,7 @@
                     "$ref": "../common/schema.json#/$defs/@id"
                 },
                 "@type": {
+                    "title": "Attribution resource types",
                     "description": "JSON-LD type for a qualified attribution.",
                     "anyOf": [
                         {
@@ -2327,9 +2450,13 @@
                         },
                         {
                             "type": "array",
+                            "title": "Attribution type collection",
+                            "uniqueItems": true,
+                            "minItems": 1,
                             "contains": {
                                 "const": "prov:Attribution"
-                            }
+                            },
+                            "examples": [["prov:Attribution"]]
                         }
                     ],
                     "examples": [
@@ -2344,11 +2471,11 @@
                     "$ref": "../common/schema.json#/$defs/hadRole"
                 },
                 "affiliations": {
-                    "title": "Affiliations",
                     "type": "array",
+                    "title": "Affiliations",
                     "description": "Affiliation of the agent in this specific attribution context, out of the multiple affiliations of the agent.",
-                    "minItems": 1,
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": {
                         "$ref": "../common/schema.json#/$defs/organisation"
                     },
@@ -2363,8 +2490,9 @@
                 },
                 "order": {
                     "type": "integer",
-                    "minimum": 1,
+                    "title": "Attribution order",
                     "description": "Display or authorship order, if relevant.",
+                    "minimum": 1,
                     "examples": [1, 2]
                 }
             },
@@ -2424,14 +2552,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:Agent",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "agent",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-27"
+                    "mapping_date": "2025-08-27",
+                    "confidence": 1.0
                 }
             ],
             "required": ["@type"],
@@ -2441,23 +2568,30 @@
             ],
             "properties": {
                 "@type": {
+                    "title": "Agent resource types",
                     "anyOf": [
                         {
                             "const": "prov:Agent"
                         },
                         {
                             "type": "array",
+                            "title": "Agent type collection",
+                            "uniqueItems": true,
+                            "minItems": 2,
                             "items": {
                                 "type": "string",
-                                "enum": [ "prov:Agent", "prov:Person", "prov:Organization", "prov:SoftwareAgent", "healthdcatap:hdab", "healthdcatap:custodian", "healthdcatap:HealthPublisherAgent" ]
+                                "title": "Agent type value",
+                                "minLength": 1,
+                                "enum": [ "prov:Agent", "prov:Person", "prov:Organization", "prov:SoftwareAgent", "healthdcatap:hdab", "healthdcatap:custodian", "healthdcatap:HealthPublisherAgent" ],
+                                "examples": ["prov:Person"]
                             },
-                            "minItems": 2,
-                            "uniqueItems": true,
                             "contains": {
                                 "const": "prov:Agent"
-                            }
+                            },
+                            "examples": [["prov:Agent", "prov:Person"]]
                         }
-                    ]
+                    ],
+                    "examples": ["prov:Agent", ["prov:Agent", "prov:Person"]]
                 },
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/@id"
@@ -2506,14 +2640,22 @@
             "required": ["agent", "roles"],
             "properties": {
                 "@id": {
-                    "$ref": "../common/schema.json#/$defs/@id",
+                    "allOf": [
+                        {
+                            "$ref": "../common/schema.json#/$defs/@id"
+                        }
+                    ],
                     "examples": [
                         "urn:uuid:bd08aa08-47ac-412d-b978-68660c23928e",
                         "ega:EGA00000000001#component-1"
                     ]
                 },
                 "agent": {
-                    "$ref": "../common/schema.json#/$defs/agent",
+                    "allOf": [
+                        {
+                            "$ref": "../common/schema.json#/$defs/agent"
+                        }
+                    ],
                     "examples": [
                         {
                             "@id": "ega:EGAW00000000001",
@@ -2529,10 +2671,11 @@
                     "type": "array",
                     "title": "Assigned roles",
                     "description": "Roles performed by the agent in the context defined by the entity schema.",
-                    "minItems": 1,
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": {
                         "type": "string",
+                        "title": "Assigned role",
                         "minLength": 1,
                         "examples": ["owner", "administrator"]
                     },
@@ -2569,26 +2712,28 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:Person",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "person",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
                 }
             ],
+            "required": [ "@type", "givenName", "familyName" ],
             "allOf": [
                 {
                     "$ref": "../common/schema.json#/$defs/agent"
                 }
             ],
-            "required": [ "@type", "givenName", "familyName" ],
             "properties": {
                 "@type": {
                     "type": "array",
+                    "title": "Person resource types",
                     "description": "JSON-LD types for the person.",
+                    "uniqueItems": true,
+                    "minItems": 1,
                     "contains": {
                         "const": "prov:Person"
                     },
@@ -2597,10 +2742,10 @@
                     ]
                 },
                 "givenName": {
-                    "title": "Given name",
                     "type": "string",
-                    "minLength": 1,
+                    "title": "Given name",
                     "description": "The given name of the person.",
+                    "minLength": 1,
                     "examples": [
                         "Marcos",
                         "John",
@@ -2608,10 +2753,10 @@
                     ]
                 },
                 "familyName": {
-                    "title": "Family name",
                     "type": "string",
-                    "minLength": 1,
+                    "title": "Family name",
                     "description": "The family name of the person.",
+                    "minLength": 1,
                     "examples": [
                         "Casado Barbero",
                         "Doe",
@@ -2619,21 +2764,21 @@
                     ]
                 },
                 "email": {
-                    "title": "Email address",
                     "type": "string",
-                    "minLength": 1,
+                    "title": "Email address",
                     "description": "The email address of the person.",
                     "format": "email",
+                    "minLength": 1,
                     "examples": [
                         "john.doe@example.com"
                     ]
                 },
                 "affiliations": {
-                    "title": "Affiliations",
                     "type": "array",
+                    "title": "Affiliations",
                     "description": "Organisations with which the person is affiliated.",
-                    "minItems": 1,
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": {
                         "$ref": "../common/schema.json#/$defs/organisation"
                     },
@@ -2655,12 +2800,16 @@
                         }
                     ],
                     "examples": [
-                        {
-                            "@id": "orcid:0000-0002-7747-6256"
-                        },
-                        {
-                            "@id": "https://www.ebi.ac.uk/people/person/marcos-casado-barbero/"
-                        }
+                        [
+                            {
+                                "@id": "orcid:0000-0002-7747-6256"
+                            }
+                        ],
+                        [
+                            {
+                                "@id": "https://www.ebi.ac.uk/people/person/marcos-casado-barbero/"
+                            }
+                        ]
                     ]
                 }
             },
@@ -2691,12 +2840,13 @@
         },
 
         "hadRole": {
-            "title": "Had role",
             "type": "array",
+            "title": "Had role",
             "description": "Roles or contribution roles played by the agent in the context of the qualified association or attribution.",
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
+                "title": "A contribution role term",
                 "allOf": [
                     {
                         "title": "Inherited ontologyTerm structure of id and label",
@@ -2723,7 +2873,13 @@
                         },
                         "examples": [ "writing original draft role", "peer review role", "study design role", "investigation role" ]
                     }
-                }
+                },
+                "examples": [
+                    {
+                        "id": "CREDIT:00000013",
+                        "label": "writing original draft role"
+                    }
+                ]
             },
             "examples": [
                 [
@@ -2746,8 +2902,13 @@
         },
 
         "hadPlan": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
-            "description": "Array of relationships pointing to plans (object) that were intended by the agent (subject) to achieve some goals in the context of a process (i.e., the prov:activity)."
+            "title": "Had plan",
+            "description": "Array of relationships pointing to plans (object) that were intended by the agent (subject) to achieve some goals in the context of a process (i.e., the prov:activity).",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ]
         },
 
         "location": {
@@ -2759,26 +2920,24 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:location",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 0.8
                 },
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:atLocation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "atLocation",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-19"
+                    "mapping_date": "2025-08-19",
+                    "confidence": 1.0
                 }
             ],
             "anyOf": [
@@ -2809,7 +2968,6 @@
                     "$ref": "../common/schema.json#/$defs/ontologyTerm"
                 }
             ],
-            "$comment": "#! Need to find more ontology terms for geographic locations, as current selection is fairly limited.",
             "properties": {
                 "id": {
                     "title": "Ontology constraints for this specific term id",
@@ -2869,7 +3027,8 @@
                     "id": "GAZ:00008171",
                     "label": "Black Sea"
                 }
-            ]
+            ],
+            "$comment": "#! Need to find more ontology terms for geographic locations, as current selection is fairly limited."
         },
 
         "country": {
@@ -2883,6 +3042,7 @@
             ],
             "properties": {
                 "id": {
+                    "title": "Country identifier",
                     "graphRestriction": {
                         "ontologies": [ "obo:ncit" ],
                         "allChildrenOf": [ "NCIT:C25464" ],
@@ -2894,6 +3054,7 @@
                     ]
                 },
                 "label": {
+                    "title": "Country label",
                     "graphRestriction": {
                         "ontologies": [ "obo:ncit" ],
                         "allChildrenOf": [ "NCIT:C25464" ],
@@ -2927,7 +3088,6 @@
                     "$ref": "../common/schema.json#/$defs/ontologyTerm"
                 }
             ],
-            "$comment": "#!!! As of now we don't impose ontology validations for cities, as there isn't a single parental term that we could use in OLS. If Biovalidator is upgraded to understand semantic relationships beyond graphRestriction, or GAZ gets indexed appropriately, we may be able to add ontology constraints in the future.",
             "examples": [
                 {
                     "id": "GAZ:00003320",
@@ -2937,7 +3097,8 @@
                     "id": "GAZ:00004832",
                     "label": "Cambridge"
                 }
-            ]
+            ],
+            "$comment": "#!!! As of now we don't impose ontology validations for cities, as there isn't a single parental term that we could use in OLS. If Biovalidator is upgraded to understand semantic relationships beyond graphRestriction, or GAZ gets indexed appropriately, we may be able to add ontology constraints in the future."
         },
 
         "organisation": {
@@ -2996,14 +3157,13 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "DUO:0000001",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "data use permission",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-16"
+                    "mapping_date": "2026-03-16",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -3032,24 +3192,30 @@
                     },
                     "examples": [ "general research use", "no restriction", "disease specific research" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "DUO:0000042",
+                    "label": "general research use"
+                }
+            ]
         },
 
         "dataUseModifier": {
             "title": "Data Use Modifier",
+            "description": "A restriction or qualifier that modifies a data use permission.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "DUO:0000017",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "data use modifier",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-16"
+                    "mapping_date": "2026-03-16",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -3078,40 +3244,54 @@
                     },
                     "examples": [ "clinical care use", "non-commercial use only", "institution specific restriction" ]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "DUO:0000043",
+                    "label": "clinical care use"
+                }
+            ]
         },
 
         "dataUseCondition": {
+            "type": "object",
             "title": "Data Use Condition",
             "description": "Object denoting a single data use permission and the data use modifiers that apply to it.",
-            "type": "object",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "beaconRepo:common/dataUseConditions.json#$defs/DUODataUse",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "data use condition",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-16"
+                    "mapping_date": "2026-03-16",
+                    "confidence": 1.0
                 }
             ],
+            "required": [ "version" ],
             "allOf": [
                 { "$ref": "../common/schema.json#/$defs/dataUsePermission" }
             ],
-            "required": [ "version" ],
             "properties": {
                 "modifiers": {
                     "type": "array",
-                    "minItems": 1,
+                    "title": "Data use modifiers",
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": {
                         "$ref": "../common/schema.json#/$defs/dataUseModifier"
-                    }
+                    },
+                    "examples": [
+                        [
+                            {
+                                "id": "DUO:0000043",
+                                "label": "clinical care use"
+                            }
+                        ]
+                    ]
                 },
                 "version": {
                     "title": "DUO version",
@@ -3140,20 +3320,19 @@
 
         "assayByInstrument": {
             "title": "Assay by instrument",
-            "description": "",
+            "description": "An assay defined by the instrument used to perform it.",
             "meta:SSSOMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "EFO:0002773",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "assay by instrument",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-16"
+                    "mapping_date": "2026-03-16",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -3182,7 +3361,13 @@
                     },
                     "examples": [ "tandem mass spectrometry", "exome sequencing", "single-cell RNA sequencing"]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "EFO:0030056",
+                    "label": "tandem mass spectrometry"
+                }
+            ]
         },
 
         "parameterScalarValue": {
@@ -3194,15 +3379,22 @@
                 },
                 {
                     "type": "string",
-                    "minLength": 1
+                    "title": "String parameter value",
+                    "minLength": 1,
+                    "examples": ["example"]
                 },
                 {
-                    "type": "number"
+                    "type": "number",
+                    "title": "Numeric parameter value",
+                    "examples": [1]
                 },
                 {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "title": "Boolean parameter value",
+                    "examples": [true]
                 }
-            ]
+            ],
+            "examples": ["example", 1, true]
         },
 
         "parameterValue": {
@@ -3214,13 +3406,16 @@
                 },
                 {
                     "type": "array",
-                    "minItems": 1,
+                    "title": "Multiple parameter values",
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": {
                         "$ref": "../common/schema.json#/$defs/parameterScalarValue"
-                    }
+                    },
+                    "examples": [[1, 2]]
                 }
-            ]
+            ],
+            "examples": [1, [1, 2]]
         },
 
         "unitTerm": {
@@ -3233,6 +3428,7 @@
             ],
             "properties": {
                 "id": {
+                    "title": "Unit identifier",
                     "graphRestriction": {
                         "ontologies": ["obo:uo"],
                         "allChildrenOf": ["http://purl.obolibrary.org/obo/UO_0000000"],
@@ -3241,6 +3437,7 @@
                     "examples": ["UO:0000017", "UO:0000027"]
                 },
                 "label": {
+                    "title": "Unit label",
                     "graphRestriction": {
                         "ontologies": ["obo:uo"],
                         "allChildrenOf": ["http://purl.obolibrary.org/obo/UO_0000000"],
@@ -3249,7 +3446,13 @@
                     },
                     "examples": ["micrometer", "degree Celsius"]
                 }
-            }
+            },
+            "examples": [
+                {
+                    "id": "UO:0000017",
+                    "label": "micrometer"
+                }
+            ]
         },
 
         "protocolParameter": {
@@ -3261,38 +3464,35 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "isa:protocol-parameter-schema-json",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "ProtocolParameter",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-20"
+                    "mapping_date": "2026-07-20",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "bioschemastypes:FormalParameter",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2026-07-20"
+                    "mapping_date": "2026-07-20",
+                    "confidence": 0.8
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "p-plan:Variable",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2026-07-20"
+                    "mapping_date": "2026-07-20",
+                    "confidence": 0.8
                 }
             ],
             "required": ["@id", "@type", "label"],
@@ -3302,13 +3502,27 @@
                         "required": ["defaultValue"],
                         "properties": {
                             "defaultValue": {
+                                "title": "Protocol parameter default value",
                                 "anyOf": [
-                                    {"type": "number"},
+                                    {
+                                        "type": "number",
+                                        "title": "Numeric default value",
+                                        "examples": [1]
+                                    },
                                     {
                                         "type": "array",
-                                        "contains": {"type": "number"}
+                                        "title": "Multiple numeric default values",
+                                        "uniqueItems": true,
+                                        "minItems": 1,
+                                        "contains": {
+                                            "type": "number",
+                                            "title": "Numeric default value item",
+                                            "examples": [1]
+                                        },
+                                        "examples": [[1, 2]]
                                     }
-                                ]
+                                ],
+                                "examples": [1]
                             }
                         }
                     },
@@ -3319,29 +3533,31 @@
             ],
             "properties": {
                 "@id": {
+                    "title": "Parameter identifier",
+                    "description": "The unique identifier for this protocol parameter specification.",
                     "allOf": [
                         {"$ref": "../common/schema.json#/$defs/@id"}
                     ],
-                    "title": "Parameter identifier",
-                    "description": "The unique identifier for this protocol parameter specification.",
                     "examples": [
                         "ega:EGAT00000000001#section-thickness"
                     ]
                 },
                 "@type": {
+                    "type": "array",
                     "title": "Parameter types",
                     "description": "The RDF types used to identify this object as a protocol parameter specification.",
-                    "type": "array",
-                    "minItems": 2,
-                    "uniqueItems": true,
-                    "items": {
-                        "type": "string",
-                        "minLength": 1
-                    },
                     "allOf": [
                         {"contains": {"const": "bioschemastypes:FormalParameter"}},
                         {"contains": {"const": "p-plan:Variable"}}
                     ],
+                    "uniqueItems": true,
+                    "minItems": 2,
+                    "items": {
+                        "type": "string",
+                        "title": "Parameter type value",
+                        "minLength": 1,
+                        "examples": ["bioschemastypes:FormalParameter"]
+                    },
                     "examples": [
                         [
                             "bioschemastypes:FormalParameter",
@@ -3350,11 +3566,11 @@
                     ]
                 },
                 "label": {
+                    "title": "Parameter label",
+                    "description": "A short human-readable label for the parameter.",
                     "allOf": [
                         {"$ref": "../common/schema.json#/$defs/label"}
                     ],
-                    "title": "Parameter label",
-                    "description": "A short human-readable label for the parameter.",
                     "examples": [
                         "section thickness"
                     ]
@@ -3383,9 +3599,10 @@
                     ]
                 },
                 "datatype": {
+                    "type": "string",
                     "title": "Parameter datatype",
                     "description": "The expected datatype as an absolute IRI or CURIE, for example xsd:decimal.",
-                    "type": "string",
+                    "minLength": 1,
                     "anyOf": [
                         {"format": "uri"},
                         {"$ref": "../common/schema.json#/$defs/curieGeneralPattern"}
@@ -3425,15 +3642,15 @@
                     ]
                 },
                 "valueRequired": {
+                    "type": "boolean",
                     "title": "Value is required",
                     "description": "Indicates whether this parameter must be supplied by the user or execution environment.",
-                    "type": "boolean",
                     "examples": [ true ]
                 },
                 "multipleValues": {
+                    "type": "boolean",
                     "title": "Multiple values",
                     "description": "Indicates whether the parameter may accept multiple values.",
-                    "type": "boolean",
                     "examples": [ false ]
                 }
             },
@@ -3454,7 +3671,6 @@
             "type": "object",
             "title": "Process parameter value",
             "description": "An execution-time parameter value embedded in a Process. parameterReference links to the corresponding declaration in a Protocol.",
-            "$comment": "Note that with plain JSON Schema we can't verify that the declaration (the ref. through the @id) belongs to a Protocol in the Process protocol collection. In other words, that the @id referenced to identify this parameter corresponds to the actual protocol (or protocols) that were applied during this process (through their protocolCollection).",
             "required": ["parameterReference", "value"],
             "allOf": [
                 {
@@ -3462,13 +3678,27 @@
                         "required": ["value"],
                         "properties": {
                             "value": {
+                                "title": "Process parameter value",
                                 "anyOf": [
-                                    {"type": "number"},
+                                    {
+                                        "type": "number",
+                                        "title": "Numeric process parameter value",
+                                        "examples": [1]
+                                    },
                                     {
                                         "type": "array",
-                                        "contains": {"type": "number"}
+                                        "title": "Multiple numeric process parameter values",
+                                        "uniqueItems": true,
+                                        "minItems": 1,
+                                        "contains": {
+                                            "type": "number",
+                                            "title": "Numeric process parameter item",
+                                            "examples": [1]
+                                        },
+                                        "examples": [[1, 2]]
                                     }
-                                ]
+                                ],
+                                "examples": [1]
                             }
                         }
                     },
@@ -3482,42 +3712,49 @@
                     "type": "object",
                     "title": "Parameter specification reference",
                     "description": "An @id-only link to the parameter specification declared by a Protocol (i.e., its corresponding 'protocolParameter').",
+                    "meta:sssomMappings": [
+                        {
+                            "predicate_id": "skos:relatedMatch",
+                            "object_id": "schema:exampleOfWork",
+                            "mapping_justification": "semapv:ManualMappingCuration",
+                            "subject_match_field": "rdfs:comment",
+                            "object_match_field": "rdfs:comment",
+                            "author_id": ["orcid:0000-0002-7747-6256"],
+                            "creator_id": ["orcid:0000-0002-7747-6256"],
+                            "mapping_date": "2026-07-20",
+                            "confidence": 0.8,
+                            "$comment": "In a way, a processParameterValue is a 'example/instance/realization/derivation of' a protocolParameter. Not so sure about how to frame creativeWork for a parameter though."
+                        }
+                    ],
                     "required": ["@id"],
                     "properties": {
                         "@id": {
                             "$ref": "../common/schema.json#/$defs/@id"
                         }
                     },
-                    "meta:sssomMappings": [
+                    "examples": [
                         {
-                            "predicate_id": "skos:relatedMatch",
-                            "object_id": "schema:exampleOfWork",
-                            "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:comment",
-                            "subject_match_field": "rdfs:comment",
-                            "author_id": ["orcid:0000-0002-7747-6256"],
-                            "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 0.8,
-                            "mapping_date": "2026-07-20",
-                            "$comment": "In a way, a processParameterValue is a 'example/instance/realization/derivation of' a protocolParameter. Not so sure about how to frame creativeWork for a parameter though."
+                            "@id": "ega:EGAT00000000001#section-thickness"
                         }
                     ]
                 },
                 "value": {
-                    "$ref": "../common/schema.json#/$defs/parameterValue",
                     "meta:sssomMappings": [
                         {
                             "predicate_id": "skos:exactMatch",
                             "object_id": "schema:value",
                             "mapping_justification": "semapv:ManualMappingCuration",
-                            "object_match_field": "rdfs:label",
                             "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
                             "author_id": ["orcid:0000-0002-7747-6256"],
                             "creator_id": ["orcid:0000-0002-7747-6256"],
-                            "reviewer_id": [""],
-                            "confidence": 1.0,
-                            "mapping_date": "2026-07-20"
+                            "mapping_date": "2026-07-20",
+                            "confidence": 1.0
+                        }
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "../common/schema.json#/$defs/parameterValue"
                         }
                     ]
                 },
@@ -3531,53 +3768,51 @@
                     "value": 10,
                     "unit": {"id": "UO:0000017", "label": "micrometer"}
                 }
-            ]
+            ],
+            "$comment": "Note that with plain JSON Schema we can't verify that the declaration (the ref. through the @id) belongs to a Protocol in the Process protocol collection. In other words, that the @id referenced to identify this parameter corresponds to the actual protocol (or protocols) that were applied during this process (through their protocolCollection)."
         },
 
         "alternativeLabels": {
+            "type": ["array"],
             "title": "Alternative labels",
             "description": "Alternative labels or titles of an entity, including abbreviations, acronyms, or other synonyms.",
-            "type": ["array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:alternative",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "egav1ebi:SRA.common.xsd#ObjectType/@alias",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:alternateName",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": { 
                 "$ref": "../common/schema.json#/$defs/label" 
             },
@@ -3591,52 +3826,51 @@
         },
 
         "keywords": {
+            "type": "array",
             "title": "Keywords",
             "description": "Keywords or tags associated with an entity, used for categorization or search purposes.",
-            "type": "array",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "schema:keywords",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "dct:subject",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "dcat:keyword",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-03-12"
+                    "mapping_date": "2026-03-12",
+                    "confidence": 1.0
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": { 
                 "type": "string",
-                "minLength": 1
+                "title": "Keyword value",
+                "minLength": 1,
+                "examples": ["genomics"]
             },
             "examples": [
                 ["Physiological measures"],
@@ -3648,50 +3882,57 @@
         },
 
         "landingPage": {
+            "type": ["string", "array"],
             "title": "Landing page",
             "description": "A web page that provides access to the entity and/or additional information. It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.",
-            "type": ["string", "array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dcat:landingPage",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-01-28"
+                    "mapping_date": "2026-01-28",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:broadMatch",
                     "object_id": "beaconRepo:datasets/defaultSchema.json#externalUrl",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
                     "mapping_date": "2026-01-29",
+                    "confidence": 1.0,
                     "$comment": "A Beacon 'externalUrl' is broader than the specific dcat:landingPage."
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 { 
                     "type": "string",
-                    "format": "uri" 
+                    "title": "A landing page URI",
+                    "format": "uri",
+                    "minLength": 1,
+                    "examples": ["https://example.org/dataset-landing-page"]
                 },
                 {
-                    "minItems": 1,
                     "uniqueItems": true,
+                    "minItems": 1,
                     "items": { 
                         "type": "string",
-                        "format": "uri" 
+                        "title": "A landing page URI in a collection",
+                        "format": "uri",
+                        "minLength": 1,
+                        "examples": ["https://example.org/primary-landing-page"]
                     }
                 }
-            ],            
+            ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "https://example.org/dataset-landing-page",
                 [
@@ -3705,6 +3946,7 @@
             "type": "string",
             "title": "EGA entity type",
             "description": "An EGA-specific JSON-LD type CURIE.",
+            "minLength": 1,
             "pattern": "^ega:",
             "examples": [
                 "ega:dataset",
@@ -3716,17 +3958,20 @@
             "type": "object",
             "title": "Relationship item restriction: Biomaterial",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'biomaterial'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierBiomaterial"
                 },
                 "@type": {
+                    "title": "Type of the referenced biomaterial",
                     "anyOf": [
                         {
                             "const": "ega:biomaterial"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the biomaterial type and optional additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3735,40 +3980,50 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:biomaterial", "schema:BioChemEntity"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:biomaterial"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAN00000000001",
+                    "@type": "ega:biomaterial"
+                }
+            ]
         },
 
         "relationshipItemRestrictionProject": {
             "type": "object",
             "title": "Relationship item restriction: Project",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'project'.",
+            "required": [
+                "@type"
+            ],
             "properties": {
                 "@id": {
-                    "allOf": [
-                        {
-                            "$ref": "../common/schema.json#/$defs/egaStableIdentifierProject"
-                        }
-                    ]
+                    "$ref": "../common/schema.json#/$defs/egaStableIdentifierProject"
                 },
                 "@type": {
+                    "title": "Type of the referenced project",
                     "anyOf": [
                         {
                             "const": "ega:project"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the project type and optional additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3777,25 +4032,22 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
-                                        "allOf": [
-                                            {
-                                                "$ref": "../common/schema.json#/$defs/egaType"
-                                            }
-                                        ]
-                                    },
-                                    "maxContains": 1
+                                        "$ref": "../common/schema.json#/$defs/egaType"
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:project", "schema:Project"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:project"]
                 }
             },
-            "required": [
-                "@type"
-            ],
             "examples": [
                 {
                     "@id": "ega:EGAJ00000000001",
@@ -3814,17 +4066,20 @@
             "type": "object",
             "title": "Relationship item restriction: Study",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'study'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierStudy"
                 },
                 "@type": {
+                    "title": "Type of the referenced study",
                     "anyOf": [
                         {
                             "const": "ega:study"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the study type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3838,36 +4093,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:study", "schema:ResearchProject"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:study"]
                 }                
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAS00000000001",
+                    "@type": "ega:study"
+                }
+            ]
         },
         
         "relationshipItemRestrictionProcess": {
             "type": "object",
             "title": "Relationship item restriction: Process",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'process'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierProcess"
                 },
                 "@type": {
+                    "title": "Type of the referenced process",
                     "anyOf": [
                         {
                             "const": "ega:process"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the process type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3881,36 +4148,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:process", "prov:Activity"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:process"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAA00000000001",
+                    "@type": "ega:process"
+                }
+            ]
         },
 
         "relationshipItemRestrictionProtocol": {
             "type": "object",
             "title": "Relationship item restriction: Protocol",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'protocol'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierProtocol"
                 },
                 "@type": {
+                    "title": "Type of the referenced protocol",
                     "anyOf": [
                         {
                             "const": "ega:protocol"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the protocol type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3924,10 +4203,10 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
                             "anyOf": [
@@ -3942,30 +4221,42 @@
                                     }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 3,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:protocol", "prov:Plan", "bioschemastypes:LabProtocol"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:protocol"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAT00000000002",
+                    "@type": "ega:protocol"
+                }
+            ]
         },
 
         "relationshipItemRestrictionProtocolCollection": {
             "type": "object",
             "title": "Relationship item restriction: Protocol Collection",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'protocolCollection'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierProtocolCollection"
                 },
                 "@type": {
+                    "title": "Type of the referenced protocol collection",
                     "anyOf": [
                         {
                             "const": "ega:protocolCollection"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the protocol collection type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -3984,36 +4275,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 3,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:protocolCollection", "prov:Collection", "prov:Plan"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:protocolCollection"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAL00000000003",
+                    "@type": "ega:protocolCollection"
+                }
+            ]
         },
 
         "relationshipItemRestrictionCohort": {
             "type": "object",
             "title": "Relationship item restriction: Cohort",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'cohort'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierCohort"
                 },
                 "@type": {
+                    "title": "Type of the referenced cohort",
                     "anyOf": [
                         {
                             "const": "ega:cohort"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the cohort type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4027,36 +4330,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:cohort", "prov:Collection"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:cohort"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAH00000000001",
+                    "@type": "ega:cohort"
+                }
+            ]
         },
 
         "relationshipItemRestrictionDatafile": {
             "type": "object",
             "title": "Relationship item restriction: Datafile",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'datafile'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierDatafile"
                 },
                 "@type": {
+                    "title": "Type of the referenced datafile",
                     "anyOf": [
                         {
                             "const": "ega:datafile"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the datafile type and optional additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4065,36 +4380,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:datafile", "schema:DigitalDocument"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:datafile"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAF00000000001",
+                    "@type": "ega:datafile"
+                }
+            ]
         },
 
         "relationshipItemRestrictionDataset": {
             "type": "object",
             "title": "Relationship item restriction: Dataset",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be of @type 'dataset'.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierDataset"
                 },
                 "@type": {
+                    "title": "Type of the referenced dataset",
                     "anyOf": [
                         {
                             "const": "ega:dataset"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the dataset type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4108,36 +4435,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:dataset", "dcat:Dataset"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:dataset"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAD00000000001",
+                    "@type": "ega:dataset"
+                }
+            ]
         },
 
         "relationshipItemRestrictionDAC": {
             "type": "object",
             "title": "Relationship item restriction: DAC",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be an EGA Data Access Committee (DAC).",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierDAC"
                 },
                 "@type": {
+                    "title": "Type of the referenced DAC",
                     "anyOf": [
                         {
                             "const": "ega:DAC"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the DAC type and optional additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4146,36 +4485,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:DAC", "schema:Organization"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:DAC"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAC00000000001",
+                    "@type": "ega:DAC"
+                }
+            ]
         },
 
         "relationshipItemRestrictionPolicy": {
             "type": "object",
             "title": "Relationship item restriction: Policy",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be an EGA Policy.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierPolicy"
                 },
                 "@type": {
+                    "title": "Type of the referenced policy",
                     "anyOf": [
                         {
                             "const": "ega:policy"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the policy type and required additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4189,36 +4540,48 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:policy", "dct:Policy"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:policy"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGAP00000000001",
+                    "@type": "ega:policy"
+                }
+            ]
         },
 
         "relationshipItemRestrictionSubmission": {
             "type": "object",
             "title": "Relationship item restriction: Submission",
             "description": "This entity is expected to be referenced where needed, as it contains the basic restriction for a relationship item to be an EGA Submission.",
+            "required": ["@type"],
             "properties": {
                 "@id": {
                     "$ref": "../common/schema.json#/$defs/egaStableIdentifierSubmission"
                 },
                 "@type": {
+                    "title": "Type of the referenced submission",
                     "anyOf": [
                         {
                             "const": "ega:submission"
                         },
                         {
                             "type": "array",
+                            "title": "An array containing the submission type and optional additional types",
                             "allOf": [
                                 {
                                     "contains": {
@@ -4227,19 +4590,28 @@
                                 },
                                 {
                                     "title": "An EGA entity can only have one 'ega:...' type",
+                                    "maxContains": 1,
                                     "contains": {
                                         "$ref": "../common/schema.json#/$defs/egaType"
-                                    },
-                                    "maxContains": 1
+                                    }
                                 }
                             ],
+                            "uniqueItems": true,
                             "minItems": 2,
-                            "uniqueItems": true
+                            "examples": [
+                                ["ega:submission", "prov:Collection"]
+                            ]
                         }
-                    ]
+                    ],
+                    "examples": ["ega:submission"]
                 }
             },
-            "required": ["@type"]
+            "examples": [
+                {
+                    "@id": "ega:EGA00000000001",
+                    "@type": "ega:submission"
+                }
+            ]
         },
 
         "relationshipItemRestrictionNonSubmissionEntity": {
@@ -4282,247 +4654,273 @@
         },
         
         "sameAs": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",      
+            "description": "Relationship referencing other entities (object) considered equivalent to the root entity (subject).",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "schema:sameAs",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "sameAs",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
                 }
             ],
-            "description": "Relationship referencing other entities (object) considered equivalent to the root entity (subject)."
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ]
         },
 
         "wasUsedBy": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",      
-            "description": "Relationship referencing other entities (object) by which the the root entity (subject) was used."
+            "description": "Relationship referencing other entities (object) by which the the root entity (subject) was used.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ]
         },
 
         "used": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Relationship referencing other entities (object) that used the root entity (subject).",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:used",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "used",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "wasGeneratedBy": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships referencing the activity, workflow step or other entity (object) that generated (i.e. first brought into existence) the root entity (subject).",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:wasGeneratedBy",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "wasGeneratedBy",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-11"
+                    "mapping_date": "2025-04-11",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:creator",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 0.8
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "generated": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships referencing the entities (object) that were generated by the root entity (subject). This is the inverse of 'wasGeneratedBy'.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:generated",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "generated",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-19"
+                    "mapping_date": "2025-08-19",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "wasDerivedFrom": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships referencing source entities (object) from which the root entity (subject) is transformed, updated or otherwise derived.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:wasDerivedFrom",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "wasDerivedFrom",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:isBasedOn",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.8,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 0.8
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "isBasedOn": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships referencing source entities (object) on which the root entity (subject) is based, or from which it is a modification or adaptation.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "schema:isBasedOn",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "isBasedOn",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-05"
+                    "mapping_date": "2025-08-05",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "wasAttributedTo": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships linking the object agent (person, organisation or software) that is responsible for or contributed to the existence, content or state of the root (subject) entity.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:wasAttributedTo",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "wasAttributedTo",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:creator",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.75,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 0.75
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "actedOnBehalfOf": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships indicating delegation: the root agent (subject) carried out an activity on behalf of another agent (object).",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:actedOnBehalfOf",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "actedOnBehalfOf",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:sourceOrganization",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 0.6,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 0.6
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "isPartOf": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships pointing to a broader resource (object) (study, dataset, publication, collection, project, etc.) of which the root entity (subject) forms a logical or physical part.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:isPartOf",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "isPartOf",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-04-24"
+                    "mapping_date": "2025-04-24",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "schema:isPartOf",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "isPartOf",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-05-22"
+                    "mapping_date": "2025-05-22",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
@@ -4531,27 +4929,26 @@
             "type": "object",
             "title": "In Submission",
             "description": "The single authoritative EGA Submission that administratively owns the entity and governs who may view or edit it.",
+            "meta:sssomMappings": [
+                {
+                    "predicate_id": "skos:broadMatch",
+                    "object_id": "dct:isPartOf",
+                    "mapping_justification": "semapv:ManualMappingCuration",
+                    "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
+                    "match_string": "inSubmission",
+                    "author_id": ["orcid:0000-0002-7747-6256"],
+                    "creator_id": ["orcid:0000-0002-7747-6256"],
+                    "mapping_date": "2026-07-27",
+                    "confidence": 1.0
+                }
+            ],
             "allOf": [
                 {
                     "$ref": "../common/schema.json#/$defs/relationshipItem"
                 },
                 {
                     "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission"
-                }
-            ],
-            "meta:sssomMappings": [
-                {
-                    "predicate_id": "skos:broadMatch",
-                    "object_id": "dct:isPartOf",
-                    "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
-                    "subject_match_field": "rdfs:comment",
-                    "match_string": "inSubmission",
-                    "author_id": ["orcid:0000-0002-7747-6256"],
-                    "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-27"
                 }
             ],
             "examples": [
@@ -4567,84 +4964,121 @@
         },
 
         "hasPart": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "Array of relationships pointing to related resources that are included either physically or logically in the subject resource.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:hasPart",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "hasPart",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-07-17"
+                    "mapping_date": "2025-07-17",
+                    "confidence": 1.0
                 },
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "prov:hadMember",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-07-07"
+                    "mapping_date": "2026-07-07",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "hasParent": {
+            "type": "array",
+            "title": "Has parent relationship",
+            "description": "Relationship referencing a broader or parent entity.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ],
             "$comment": "#! TBD: schema:parent, also reversible with the children"
         },
         "hasChild": {
+            "type": "array",
+            "title": "Has child relationship",
+            "description": "Relationship referencing a narrower or child entity.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ],
             "$comment": "#! TBD: schema:children"
         },
         "hasSibling": {
+            "type": "array",
+            "title": "Has sibling relationship",
+            "description": "Relationship referencing an entity at the same level as the root entity.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ],
             "$comment": "#! TBD: schema:sibling"
         },
         "hasSpouse": {
+            "type": "array",
+            "title": "Has spouse relationship",
+            "description": "Relationship referencing a spouse or partner entity.",
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
+                }
+            ],
             "$comment": "#! TBD: schema:spouse"
         },
         "hadMember": {
-            "$ref": "../common/schema.json#/$defs/relationshipArray",
             "description": "A collection is an entity that provides a structure to some constituents, which are themselves entities. These constituents are said to be member of the collections. For example, a 'cohort' 'hadMember' 'biomaterial'.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:hadMember",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "hadMember",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-07-17"
+                    "mapping_date": "2025-07-17",
+                    "confidence": 1.0
+                }
+            ],
+            "allOf": [
+                {
+                    "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ]
         },
 
         "wasAssociatedWith": {
+            "title": "Was associated with",
             "description": "Array of activity associations. An activity association is an assignment of responsibility to an agent for an activity, indicating that the agent had a role in the activity. It further allows for a plan to be specified, which is the plan intended by the agent to achieve some goals in the context of this activity.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:wasAssociatedWith",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "hadMember",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-07-17"
+                    "mapping_date": "2025-07-17",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -4660,29 +5094,40 @@
                     "title": "Prohibition of hadRole as a property",
                     "description": "Constraint to force hadRole within a qualifiedAssociation property, and not directly here.",
                     "items": {
+                        "type": "object",
+                        "title": "Activity association without a direct hadRole",
                         "properties": {
                             "hadRole": false
                         }
                     }
                 }
+            ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAN00000000001",
+                        "@type": "prov:Agent",
+                        "name": "Jane Doe"
+                    }
+                ]
             ]
         },
 
         "wasInformedBy": {
+            "title": "Was informed by",
             "description": "Array of relationships pointing to processes (object) that informed the root process (subject). For example, a process 'activity2' was informed by another process 'activity1' if 'activity1' generated an entity (e.g., a data file) that was used in 'activity2'.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:wasInformedBy",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "wasInformedBy",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2025-08-19"
+                    "mapping_date": "2025-08-19",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -4693,10 +5138,19 @@
                         "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess"
                     }
                 }
+            ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAA00000000001",
+                        "@type": "ega:process"
+                    }
+                ]
             ]
         },
 
         "informs": {
+            "title": "Informs",
             "description": "Array of relationships pointing to processes (object) that were informed by the root process (subject). This is the inverse of 'wasInformedBy'.",
             "allOf": [
                 { "$ref": "../common/schema.json#/$defs/relationshipArray" },
@@ -4706,6 +5160,14 @@
                         "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess"
                     }
                 }
+            ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAA00000000001",
+                        "@type": "ega:process"
+                    }
+                ]
             ]
         },
 
@@ -4716,13 +5178,12 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "dct:isReferencedBy",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
-                    "confidence": 1.0,
-                    "mapping_date": "2026-01-28"
+                    "mapping_date": "2026-01-28",
+                    "confidence": 1.0
                 }
             ],
             "allOf": [
@@ -4731,9 +5192,10 @@
         },
 
         "egaStableIdentifierCurie": {
+            "type": "string",
             "title": "Stable identifier for an EGA entity",
             "description": "A stable identifier for an EGA entity",
-            "type": "string",
+            "minLength": 1,
             "pattern": "^ega:EGA(?:[A-Z])?[0-9]{11}$",
             "examples": [
                 "ega:EGAS00000000001",
