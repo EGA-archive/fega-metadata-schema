@@ -1,0 +1,42 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+    "@id": "ega:EGAN00000000004",
+    "@type": [
+      "ega:biomaterial",
+      "prov:Entity",
+      "EFO:0004446"
+    ],
+    "label": "RNA-001",
+    "molecularType": {
+      "id": "CHEBI:33697",
+      "label": "ribonucleic acid"
+    },
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    },
+    "description": "RNA extracted from a blood specimen.",
+    "storageConditions": [
+      {
+        "id": "OBI:0000922",
+        "label": "frozen specimen"
+      }
+    ],
+    "wasGeneratedBy": [
+      {
+        "@id": "ega:EGAA00000000001",
+        "@type": "ega:process"
+      }
+    ],
+    "wasUsedBy": [
+      {
+        "@id": "ega:EGAA00000000002",
+        "@type": "ega:process"
+      }
+    ]
+  }
+}

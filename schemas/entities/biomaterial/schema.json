@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
-  "meta:version": "1.0.0-draft.3",
+  "meta:version": "1.0.0-draft.4",
   "$async": true,
   "type": "object",
   "title": "EGA Biomaterial metadata schema",
@@ -28,6 +28,7 @@
     },
     { "$ref": "#/$defs/organismChecklist" },
     { "$ref": "#/$defs/organismPartChecklist" },
+    { "$ref": "#/$defs/biologicalMacromoleculeChecklist" },
     {
         "title": "Entity type restriction",
         "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"
@@ -1378,6 +1379,68 @@
       ]
     },
 
+    "biologicalMacromoleculeChecklist": {
+      "title": "Biological macromolecule checklist",
+      "description": "An extracted or prepared macromolecular material, such as genomic DNA, RNA or protein, used as input to molecular assays. Donor characteristics (e.g., sex) belong on the source organism, and extraction and preparation details belong on the generating process.",
+      "allOf": [
+        { "$ref": "#/$defs/commonBiomaterialDefs" },
+        {
+          "if": {
+            "required": ["@type"],
+            "properties": {
+              "@type": {
+                "type": "array",
+                "title": "Biomaterial types selecting this checklist",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": { "const": "EFO:0004446" },
+                "examples": [["ega:biomaterial", "EFO:0004446"]]
+              }
+            }
+          },
+          "then": {
+            "required": ["label", "molecularType"],
+            "properties": {
+              "molecularType": {
+                "title": "Molecular type",
+                "description": "The specific biological macromolecule represented by this material, for example genomic DNA or RNA. This refines the broad biological macromolecule category in '@type'.",
+                "allOf": [
+                  { "$ref": "../../common/schema.json#/$defs/biologicalMacromoleculeTerm" }
+                ],
+                "examples": [
+                  { "id": "EFO:0008479", "label": "genomic DNA" },
+                  { "id": "CHEBI:33697", "label": "ribonucleic acid" }
+                ]
+              },
+              "sex": false,
+              "gender": false,
+              "dateOfBirth": false,
+              "birthPlace": false,
+              "ethnicity": false,
+              "ancestry": false,
+              "interventionsOrProcedures": false,
+              "treatments": false,
+              "pedigrees": false,
+              "timeAtLastEncounter": false,
+              "vitalStatus": false,
+              "phenotypicFeatures": false
+            },
+            "$comment": "Source biomaterials should be linked through the procedural provenance step (biomaterial --> process --> biomaterial), as well as extraction or preparation. These links are recommended, not required, because upstream records may be unavailable."
+          }
+        }
+      ],
+      "examples": [
+        {
+          "@id": "ega:EGAN00000000003",
+          "@type": ["ega:biomaterial", "EFO:0004446"],
+          "label": "DNA-001",
+          "molecularType": { "id": "EFO:0008479", "label": "genomic DNA" }
+        }
+      ]
+    },
+    "poolChecklist": {
+      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
+    },
     "cellCultureChecklist": {
       "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
     },
@@ -1385,12 +1448,6 @@
       "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
     },
     "biofilmChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
-    },
-    "biologicalMacromoleculeChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
-    },
-    "poolChecklist": {
       "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
     }
   }

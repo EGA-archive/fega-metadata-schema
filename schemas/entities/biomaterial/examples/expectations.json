@@ -22,5 +22,22 @@
   ],
   "biomaterial-invalid-type-atType.json": [
     "/@type"
+  ],
+  "biomaterial-invalid-macromolecule-missing-molecularType.json": [
+    "/molecularType"
+  ],
+  "biomaterial-invalid-macromolecule-missing-label.json": [
+    "/label"
+  ],
+  "biomaterial-invalid-macromolecule-molecularType-outside-branch.json": [
+    "/molecularType/id",
+    "/molecularType/label"
+  ],
+  "biomaterial-invalid-macromolecule-molecularType-parent.json": [
+    "/molecularType/id",
+    "/molecularType/label"
+  ],
+  "biomaterial-invalid-macromolecule-donor-sex.json": [
+    "/sex"
   ]
 }
