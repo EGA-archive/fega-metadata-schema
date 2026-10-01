@@ -199,6 +199,8 @@ Rules live in [`src/fega_tools/schema_lint/`](./src/fega_tools/schema_lint/): ad
 
 Example arrays (``"examples": []``) are validated against their properties that contain them, ensuring they are valid examples.
 
+Use `python scripts/py/lint_schemas.py --check-api -v` with a running Biovalidator to validate examples involving custom keywords (e.g., OLS terms), including inherited constraints and larger structures containing them. The endpoint defaults to `http://localhost:3020/validate`, but you can override it with `--validator-url URL`. Complete applicable draft 2020-12 schemas are sent from this checkout, with local references bundled within `--resolution-root`. Without `--check-api`, no API calls are made and custom-dependent checks are reported as incomplete.
+
 ## Contributing
 
 We welcome [issues](https://github.com/EGA-archive/fega-metadata-schema/issues/new/choose) and [pull requests](https://github.com/EGA-archive/fega-metadata-schema/pulls). Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before contributing.
