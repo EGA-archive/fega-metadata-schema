@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
-    "meta:version": "1.0.0-draft.3",
+    "meta:version": "1.0.0-draft.4",
     "$async": true,
     "type": "object",
     "title": "EGA common metadata definitions",
@@ -647,7 +647,6 @@
                         }
                     ],
                     "anyOf": [
-                        { "$ref": "../common/schema.json#/$defs/diseaseEfo" },
                         { "$ref": "../common/schema.json#/$defs/diseaseOrdo" },
                         { "$ref": "../common/schema.json#/$defs/diseaseMondo" },
                         { "$ref": "../common/schema.json#/$defs/diseaseHp" },
@@ -949,7 +948,21 @@
                             "minLength": 1,
                             "examples": ["AJCC 8th Edition (2018)"]
                         }
-                    }
+                    },
+                    "examples": [
+                        {
+                            "tnmFindings": [
+                                {
+                                    "id": "NCIT:C48764",
+                                    "label": "pT2 TNM Finding"
+                                }
+                            ],
+                            "tumorGrade": {
+                                "id": "NCIT:C28078",
+                                "label": "Grade 2"
+                            }
+                        }
+                    ]
                 }
             },
             "examples": [
@@ -959,43 +972,6 @@
                         "id": "MONDO:0003982",
                         "label": "bilateral breast carcinoma"
                     }
-                }
-            ]
-        },
-
-        "diseaseEfo": {
-            "title": "Disease term restricted to EFO",
-            "allOf": [
-                {
-                    "title": "Inherited ontologyTerm structure of term id and label",
-                    "$ref": "../common/schema.json#/$defs/ontologyTerm"
-                }
-            ],
-            "properties": {
-                "id": {
-                    "title": "Ontology constraints for this specific id",
-                    "graphRestriction":  {
-                        "ontologies" : ["obo:efo"],
-                        "allChildrenOf": ["EFO:0000408"],
-                        "includeSelf": false
-                    },
-                    "examples": [ "MONDO:0003982", "EFO:0009483", "MONDO:0016523" ]
-                },
-                "label": {
-                    "title": "Ontology constraints for this specific label",
-                    "graphRestriction":  {
-                        "ontologies" : ["obo:efo"],
-                        "allChildrenOf": ["EFO:0000408"],
-                        "includeSelf": false,
-                        "queryFields": [ "label" ]
-                    },
-                    "examples": [ "bilateral breast carcinoma", "breast disease", "bronchogenic cyst" ]
-                }
-            },
-            "examples": [
-                {
-                    "id": "EFO:0009483",
-                    "label": "breast disease"
                 }
             ]
         },
@@ -1174,13 +1150,13 @@
                         "includeSelf": false,
                         "queryFields": [ "label" ]
                     },
-                    "examples": [ "Idiopathic stammering (disorder)", "Acne indurata (disorder)", "Alcohol-induced epilepsy (disorder)" ]
+                    "examples": [ "Idiopathic stammering", "Acne indurata", "Alcohol-induced epilepsy" ]
                 }
             },
             "examples": [
                 {
                     "id": "SNOMED:229629003",
-                    "label": "Idiopathic stammering (disorder)"
+                    "label": "Idiopathic stammering"
                 }
             ]
         },
@@ -2956,6 +2932,12 @@
                 {
                     "$ref": "../common/schema.json#/$defs/organisation"
                 }
+            ],
+            "examples": [
+                {
+                    "id": "GAZ:00008171",
+                    "label": "Black Sea"
+                }
             ]
         },
 
@@ -2974,7 +2956,7 @@
                     "anyOf": [
                         {
                             "graphRestriction": {
-                                "ontologies": [ "obo:ncit" ],
+                                "ontologies": [ "obo:mesh" ],
                                 "allChildrenOf": [ "mesh:D005842" ],
                                 "includeSelf": false
                             }
@@ -2997,7 +2979,7 @@
                     "anyOf": [
                         {
                             "graphRestriction": {
-                                "ontologies": [ "obo:ncit" ],
+                                "ontologies": [ "obo:mesh" ],
                                 "allChildrenOf": [ "mesh:D005842" ],
                                 "queryFields": [ "label" ],
                                 "includeSelf": false
@@ -3110,7 +3092,7 @@
                     "$ref": "../common/schema.json#/$defs/ontologyTerm"
                 }
             ],
-            "properties": {
+            "$properties": {
                 "id": {
                     "title": "Ontology constraints for this specific id",
                     "graphRestriction": {
@@ -3146,7 +3128,8 @@
                     "id": "ror:02meqm098",
                     "label": "National Center for Biotechnology Information"
                 }
-            ]
+            ],
+            "$comment": "#! As of now we don't impose ontology validations for organisations, as the relationship between 'OBI:0000245' and its children terms is not encoded as a hierarchy that graphRestriction detects -- Hence why we have the '$' in '$properties' to have the restriction skipped but noted for future reference. The solution for the future would be to create a new keyword within Biovalidator that can interact with ROR's API."
         },
 
         "dataUsePermission": {
@@ -5006,6 +4989,14 @@
                     "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAN00000000002",
+                        "@type": "ega:biomaterial"
+                    }
+                ]
+            ],
             "$comment": "#! TBD: schema:parent, also reversible with the children"
         },
         "hasChild": {
@@ -5016,6 +5007,14 @@
                 {
                     "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
+            ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAN00000000003",
+                        "@type": "ega:biomaterial"
+                    }
+                ]
             ],
             "$comment": "#! TBD: schema:children"
         },
@@ -5028,6 +5027,14 @@
                     "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
             ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAN00000000004",
+                        "@type": "ega:biomaterial"
+                    }
+                ]
+            ],
             "$comment": "#! TBD: schema:sibling"
         },
         "hasSpouse": {
@@ -5038,6 +5045,14 @@
                 {
                     "$ref": "../common/schema.json#/$defs/relationshipArray"
                 }
+            ],
+            "examples": [
+                [
+                    {
+                        "@id": "ega:EGAN00000000005",
+                        "@type": "ega:biomaterial"
+                    }
+                ]
             ],
             "$comment": "#! TBD: schema:spouse"
         },
@@ -5098,7 +5113,14 @@
                         "title": "Activity association without a direct hadRole",
                         "properties": {
                             "hadRole": false
-                        }
+                        },
+                        "examples": [
+                            {
+                                "@id": "ega:EGAN00000000001",
+                                "@type": "prov:Agent",
+                                "name": "Jane Doe"
+                            }
+                        ]
                     }
                 }
             ],
