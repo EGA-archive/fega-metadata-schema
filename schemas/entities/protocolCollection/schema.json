@@ -14,11 +14,10 @@
       "predicate_id": "skos:narrowMatch",
       "object_id": "prov:Collection",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-17"
     },
@@ -26,11 +25,10 @@
       "predicate_id": "skos:narrowMatch",
       "object_id": "prov:Plan",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-17"
     }

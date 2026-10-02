@@ -8,7 +8,6 @@
   "description": "Administrative metadata for an EGA Submission, the authoritative container that owns EGA entities and records who may view or edit them.",
   "@context": "./context.jsonld",
   "required": ["@id", "@type", "title", "status", "components"],
-  "meta:sssomMappings": [],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
@@ -78,12 +77,11 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "adms:status",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "status",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
@@ -105,12 +103,11 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "egav1crg.1:post#collaborators",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "status",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-27"
         }
@@ -203,12 +200,11 @@
           "predicate_id": "skos:narrowMatch",
           "object_id": "dct:hasPart",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "hasEntities",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-27"
         }
@@ -366,12 +362,11 @@
               "predicate_id": "skos:exactMatch",
               "object_id": "egav1crg.1:post#collaborators/access_type",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
               "match_string": "status",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-27"
             }
