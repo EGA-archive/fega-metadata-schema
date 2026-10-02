@@ -75,7 +75,7 @@
       ]
     }
   ],
-  "meta:version": "1.0.0-draft.2",
+  "meta:version": "1.0.0-draft.3",
   "$async": true,
   "@context": "./context.jsonld",
   "required": [
@@ -334,6 +334,8 @@
                 "prov:Person"
               ],
               "name": "Maya Rivera",
+              "givenName": "Maya",
+              "familyName": "Rivera",
               "email": "maya.rivera@example.org"
             },
             "hadRole": [

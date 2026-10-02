@@ -24,6 +24,8 @@
             "prov:Person"
           ],
           "name": "Jane Doe",
+          "givenName": "Jane",
+          "familyName": "Doe",
           "email": "jane.doe@example.org"
         },
         "roles": [

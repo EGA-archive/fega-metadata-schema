@@ -16,7 +16,9 @@
         "agent": {
           "@id": "ega:EGAW00000000002",
           "@type": ["prov:Agent", "prov:Person"],
-          "name": "Original Submitter"
+          "name": "Original Submitter",
+          "givenName": "Jane",
+          "familyName": "Doe"
         },
         "roles": ["creator"],
         "accessLevel": "none"

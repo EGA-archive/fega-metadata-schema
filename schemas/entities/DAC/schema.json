@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
-  "meta:version": "1.0.0-draft.2",
+  "meta:version": "1.0.0-draft.3",
   "$async": true,
   "type": "object",
   "title": "EGA Data Access Committee metadata schema",
@@ -266,7 +266,9 @@
             "@type": "org:Membership",
             "agent": {
               "@type": ["prov:Agent", "prov:Person"],
-              "name": "Jane Doe"
+              "name": "Jane Doe",
+              "givenName": "Jane",
+              "familyName": "Doe"
             },
             "roles": ["main_contact", "administrator"]
           },
@@ -621,7 +623,9 @@
           "examples": [
             {
               "@type": ["prov:Agent", "prov:Person"],
-              "name": "Jane Doe"
+              "name": "Jane Doe",
+              "givenName": "Jane",
+              "familyName": "Doe"
             },
             {
               "@type": ["prov:Agent", "prov:Organization"],
@@ -705,7 +709,9 @@
           "@type": "org:Membership",
           "agent": {
             "@type": ["prov:Agent", "prov:Person"],
-            "name": "Jane Doe"
+            "name": "Jane Doe",
+            "givenName": "Jane",
+            "familyName": "Doe"
           },
           "roles": ["main_contact", "administrator"]
         },
@@ -871,6 +877,8 @@
           "@id": "orcid:0000-0002-1584-4316",
           "@type": ["prov:Agent", "prov:Person"],
           "name": "Jane Doe",
+          "givenName": "Jane",
+          "familyName": "Doe",
           "email": "jane.doe@example.org",
           "affiliations": [
             {

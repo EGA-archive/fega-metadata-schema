@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/common/schema.json",
-    "meta:version": "1.0.0-draft.4",
+    "meta:version": "1.0.0-draft.5",
     "$async": true,
     "type": "object",
     "title": "EGA common metadata definitions",
@@ -2537,6 +2537,43 @@
                     "confidence": 1.0
                 }
             ],
+            "allOf": [
+                { "$ref": "../common/schema.json#/$defs/agentBase" }
+            ],
+            "if": {
+                "required": ["@type"],
+                "properties": {
+                    "@type": {
+                        "type": "array",
+                        "title": "Agent types selecting person validation",
+                        "uniqueItems": true,
+                        "minItems": 1,
+                        "contains": { "const": "prov:Person" },
+                        "examples": [["prov:Agent", "prov:Person"]]
+                    }
+                }
+            },
+            "then": {
+                "$ref": "../common/schema.json#/$defs/person"
+            },
+            "examples": [
+                {
+                    "@type": ["prov:Agent", "prov:Person"],
+                    "name": "Jane Doe",
+                    "givenName": "Jane",
+                    "familyName": "Doe"
+                },
+                {
+                    "@type": "prov:Agent",
+                    "@id": "ega:EGAW00000000001"
+                }
+            ]
+        },
+
+        "agentBase": {
+            "type": "object",
+            "title": "Agent base",
+            "description": "Shared identity and type constraints for agents, without subtype dispatch. Both agent and person inherit this base to avoid recursive validation of the same object.",
             "required": ["@type"],
             "anyOf": [
                 {"required": [ "name" ]},
@@ -2590,7 +2627,9 @@
                 {
                     "@type": ["prov:Agent", "prov:Person"],
                     "@id": "orcid:0000-0002-7747-6256",
-                    "name": "Marcos Casado"
+                    "name": "Marcos Casado",
+                    "givenName": "Marcos",
+                    "familyName": "Casado"
                 },
                 {
                     "@type": [ "prov:Agent", "prov:Organization" ],
@@ -2639,7 +2678,9 @@
                         },
                         {
                             "@type": ["prov:Agent", "prov:Person"],
-                            "name": "Jane Doe"
+                            "name": "Jane Doe",
+                            "givenName": "Jane",
+                            "familyName": "Doe"
                         }
                     ]
                 },
@@ -2672,7 +2713,9 @@
                 {
                     "agent": {
                         "@type": ["prov:Agent", "prov:Person"],
-                        "name": "Jane Doe"
+                        "name": "Jane Doe",
+                        "givenName": "Jane",
+                        "familyName": "Doe"
                     },
                     "roles": ["main_contact", "administrator"]
                 }
@@ -2700,7 +2743,7 @@
             "required": [ "@type", "givenName", "familyName" ],
             "allOf": [
                 {
-                    "$ref": "../common/schema.json#/$defs/agent"
+                    "$ref": "../common/schema.json#/$defs/agentBase"
                 }
             ],
             "properties": {
