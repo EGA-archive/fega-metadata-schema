@@ -3,7 +3,7 @@
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
     "type": "object",
     "title": "EGA dataset metadata schema",
-    "meta:version": "1.0.0-draft.2",
+    "meta:version": "1.0.0-draft.3",
     "$async": true,
     "description": "A collection of Datafiles, published or curated by a single agent, and available for access or download in one or more representations. Datasets are subject to a particular policy for controlled-access, commonly making them the units of access distribution.",
     "@context": "./context.jsonld",
@@ -612,7 +612,7 @@
 
         "measurementTechnique": {
             "title": "Measurement technique",
-            "description": "A technique, method or technology used in a Dataset, corresponding to the method used for measuring the corresponding variable(s) (variableMeasured). The measurementTechnique property helps when extra clarification is needed about how a measuredProperty was measured. This is oriented towards scientific and scholarly dataset publication but may have broader applicability; it is not intended as a full representation of measurement, but can often serve as a high level summary for dataset discovery. For example, if variableMeasured is 'molecule concentration', measurementTechnique could contain terms referring to 'mass spectrometry', 'nmr spectroscopy', 'colorimetry' or 'immunofluorescence' among many others.",
+            "description": "A technique, method or technology used in a Dataset, corresponding to the method used for measuring the corresponding variable(s) (variableMeasured). The measurementTechnique property helps when extra clarification is needed about how a measuredProperty was measured. This is oriented towards scientific and scholarly dataset publication but may have broader applicability. It is NOT intended as a full representation of measurement, but can often serve as a high level summary for dataset discovery. For example, if variableMeasured is 'molecule concentration', measurementTechnique could contain terms referring to 'mass spectrometry', 'nmr spectroscopy', 'colorimetry' or 'immunofluorescence' among many others.",
             "type": "array",
             "meta:sssomMappings": [
                 {
@@ -633,7 +633,7 @@
             "uniqueItems": true,
             "items": {
                 "anyOf": [
-                    { "$ref": "../../common/schema.json#/$defs/ontologyTerm" },
+                    { "$ref": "../../common/schema.json#/$defs/assayByInstrument" },
                     {
                         "type": "string",
                         "format": "uri"
