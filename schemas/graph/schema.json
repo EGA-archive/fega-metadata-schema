@@ -1,31 +1,40 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
+  "meta:version": "1.0.0-draft.6",
+  "$async": true,
   "type": "object",
   "title": "EGA Graph metadata schema",
-    "meta:version": "1.0.0-draft.4",
-  "$async": true,
   "description": "A typed named JSON-LD graph containing complete EGA entity instances. This schema validates each item against the schema selected by its EGA @type. It does not validate graph-wide relationship semantics.",
   "@context": "./context.jsonld",
+  "required": ["@context", "@id", "@type", "@graph"],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
       "$ref": "../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
     }
   ],
-  "required": ["@context", "@id", "@type", "@graph"],
   "properties": {
     "@context": {
+      "type": ["object", "string", "array"],
+      "title": "Graph JSON-LD context",
       "description": "The graph JSON-LD context.",
-      "type": ["object", "string", "array"]
+      "examples": [
+        "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld"
+      ]
     },
 
     "@id": {
-      "$ref": "../common/schema.json#/$defs/@id",
-      "description": "The name of the graph. It is not an EGA entity accession."
+      "description": "The name of the graph. It is not an EGA entity accession.",
+      "allOf": [
+        {
+          "$ref": "../common/schema.json#/$defs/@id"
+        }
+      ]
     },
 
     "@type": {
+      "title": "JSON-LD resource type",
       "description": "The graph container type.",
       "allOf": [
         {
@@ -40,19 +49,13 @@
 
     "@graph": {
       "type": "array",
-      "minItems": 1,
+      "title": "Graph entities",
       "uniqueItems": true,
+      "minItems": 1,
       "items": {
         "type": "object",
+        "title": "Graph entities item",
         "required": ["@id", "@type"],
-        "properties": {
-          "@id": {
-            "$ref": "../common/schema.json#/$defs/@id"
-          },
-          "@type": {
-            "$ref": "../common/schema.json#/$defs/@type"
-          }
-        },
         "allOf": [
           { "$ref": "#/$defs/supportedEntityType" },
           { "$ref": "#/$defs/singleEgaEntityType" },
@@ -68,13 +71,68 @@
           { "$ref": "#/$defs/entitySchemaProject" },
           { "$ref": "#/$defs/entitySchemaStudy" },
           { "$ref": "#/$defs/entitySchemaSubmission" }
+        ],
+        "properties": {
+          "@id": {
+            "$ref": "../common/schema.json#/$defs/@id"
+          },
+          "@type": {
+            "$ref": "../common/schema.json#/$defs/@type"
+          }
+        },
+        "examples": [
+          {
+            "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+            "@id": "ega:EGAN00000000001",
+            "@type": [
+              "ega:biomaterial",
+              "prov:Entity",
+              "COB:0000022"
+            ],
+            "label": "SUBJECT-0001",
+            "sex": {
+              "phenotypicSex": {
+                "id": "PATO:0000383",
+                "label": "female"
+              }
+            },
+            "inSubmission": {
+              "@id": "ega:EGA00000000001",
+              "@type": "ega:submission"
+            }
+          }
         ]
-      }
+      },
+      "examples": [
+        [
+          {
+            "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+            "@id": "ega:EGAN00000000001",
+            "@type": [
+              "ega:biomaterial",
+              "prov:Entity",
+              "COB:0000022"
+            ],
+            "label": "SUBJECT-0001",
+            "sex": {
+              "phenotypicSex": {
+                "id": "PATO:0000383",
+                "label": "female"
+              }
+            },
+            "inSubmission": {
+              "@id": "ega:EGA00000000001",
+              "@type": "ega:submission"
+            }
+          }
+        ]
+      ]
     }
   },
 
   "$defs": {
     "singleEgaEntityType": {
+      "type": "object",
       "title": "Single EGA entity type",
       "description": "A graph item may have only one EGA-specific entity type.",
       "if": {
@@ -82,7 +140,14 @@
         "properties": {
           "@type": {
             "type": "array",
-            "uniqueItems": true
+            "title": "JSON-LD resource type",
+            "uniqueItems": true,
+            "examples": [
+              [
+                "ega:biomaterial",
+                "prov:Entity"
+              ]
+            ]
           }
         }
       },
@@ -90,42 +155,86 @@
         "properties": {
           "@type": {
             "type": "array",
+            "title": "JSON-LD resource type",
+            "uniqueItems": true,
+            "minItems": 1,
+            "minContains": 1,
+            "maxContains": 1,
             "contains": {
               "$ref": "../common/schema.json#/$defs/egaType"
             },
-            "minContains": 1,
-            "maxContains": 1
+            "examples": [
+              [
+                "ega:dataset"
+              ]
+            ]
           }
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": [
+            "ega:biomaterial",
+            "prov:Entity"
+          ]
+        }
+      ]
     },
 
     "supportedEntityType": {
+      "type": "object",
       "title": "Supported EGA graph entity",
       "description": "The graph item declares at least one supported EGA entity type. Full entity validation is applied separately.",
-      "type": "object",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "title": "JSON-LD resource type",
+          "minLength": 1,
+          "minItems": 1,
           "if": {
             "anyOf": [
               { "$ref": "#/$defs/supportedEgaTypeValue" },
               {
                 "type": "array",
+                "title": "JSON-LD resource type (array)",
+                "minItems": 1,
+                "minContains": 1,
                 "contains": { "$ref": "#/$defs/supportedEgaTypeValue" },
-                "minContains": 1
+                "examples": [
+                  [
+                    "ega:biomaterial"
+                  ]
+                ]
               }
             ]
           },
           "then": {},
-          "else": false
+          "else": false,
+          "examples": [
+            "ega:biomaterial",
+            [
+              "ega:biomaterial",
+              "prov:Entity"
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:biomaterial"
+        }
+      ]
     },
 
     "supportedEgaTypeValue": {
+      "type": "string",
       "title": "Supported EGA entity type value",
       "description": "The supported EGA type values inherited from the common relationship-item definitions.",
+      "minLength": 1,
       "anyOf": [
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" },
@@ -139,395 +248,1049 @@
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
         { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }
+      ],
+      "examples": [
+        "ega:biomaterial"
       ]
     },
 
     "routableEntityType": {
+      "type": "object",
       "title": "Routable EGA entity type",
       "description": "A graph item can be dispatched to one entity schema only when its type declaration is unique and contains exactly one EGA entity type.",
-      "$comment": "#! We are adding this bit so that the error logs when there are validation errors are not incredibly convoluted. If we route all graph items as EGA entities without checking these, AJV/Biovalidator doesn't know if the errors come because of the type or the inside of the entity, and the error logs ends up being huge and cryptic.",
-      "type": "object",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             {
               "$ref": "../common/schema.json#/$defs/egaType"
             },
             {
               "type": "array",
+              "title": "JSON-LD resource type (array)",
               "uniqueItems": true,
+              "minItems": 1,
+              "minContains": 1,
+              "maxContains": 1,
               "contains": {
                 "$ref": "../common/schema.json#/$defs/egaType"
               },
-              "minContains": 1,
-              "maxContains": 1
+              "examples": [
+                [
+                  "ega:dataset"
+                ]
+              ]
             }
+          ],
+          "examples": [
+            "ega:dataset"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:dataset"
+        }
+      ],
+      "$comment": "#! We are adding this bit so that the error logs when there are validation errors are not incredibly convoluted. If we route all graph items as EGA entities without checking these, AJV/Biovalidator doesn't know if the errors come because of the type or the inside of the entity, and the error logs ends up being huge and cryptic."
     },
 
     "declaresBiomaterial": {
-      "title": "Declares a Biomaterial",
       "type": "object",
+      "title": "Declares a Biomaterial",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:biomaterial"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:biomaterial"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:biomaterial"
+        }
+      ]
     },
 
     "declaresCohort": {
-      "title": "Declares a Cohort",
       "type": "object",
+      "title": "Declares a Cohort",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:cohort"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:cohort"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:cohort"
+        }
+      ]
     },
 
     "declaresDAC": {
-      "title": "Declares a DAC",
       "type": "object",
+      "title": "Declares a DAC",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:DAC"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:DAC"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:DAC"
+        }
+      ]
     },
 
     "declaresDatafile": {
-      "title": "Declares a Datafile",
       "type": "object",
+      "title": "Declares a Datafile",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:datafile"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:datafile"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:datafile"
+        }
+      ]
     },
 
     "declaresDataset": {
-      "title": "Declares a Dataset",
       "type": "object",
+      "title": "Declares a Dataset",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:dataset"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:dataset"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:dataset"
+        }
+      ]
     },
 
     "declaresPolicy": {
-      "title": "Declares a Policy",
       "type": "object",
+      "title": "Declares a Policy",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:policy"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:policy"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:policy"
+        }
+      ]
     },
 
     "declaresProcess": {
-      "title": "Declares a Process",
       "type": "object",
+      "title": "Declares a Process",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:process"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:process"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:process"
+        }
+      ]
     },
 
     "declaresProtocol": {
-      "title": "Declares a Protocol",
       "type": "object",
+      "title": "Declares a Protocol",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:protocol"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:protocol"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:protocol"
+        }
+      ]
     },
 
     "declaresProtocolCollection": {
-      "title": "Declares a Protocol Collection",
       "type": "object",
+      "title": "Declares a Protocol Collection",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:protocolCollection"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:protocolCollection"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:protocolCollection"
+        }
+      ]
     },
 
     "declaresProject": {
-      "title": "Declares a Project",
       "type": "object",
+      "title": "Declares a Project",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:project"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:project"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:project"
+        }
+      ]
     },
 
     "declaresStudy": {
-      "title": "Declares a Study",
       "type": "object",
+      "title": "Declares a Study",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:study"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:study"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:study"
+        }
+      ]
     },
 
     "declaresSubmission": {
-      "title": "Declares a Submission",
       "type": "object",
+      "title": "Declares a Submission",
       "required": ["@type"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" },
-            { "type": "array", "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }, "minContains": 1 }
+            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }, "examples": [
+                [
+                  "ega:submission"
+                ]
+              ] }
+          ],
+          "examples": [
+            "ega:submission"
           ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@type": "ega:submission"
+        }
+      ]
     },
 
     "entitySchemaBiomaterial": {
+      "type": "object",
+      "title": "Biomaterial entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresBiomaterial" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/biomaterial/schema.json" }
+      "then": { "$ref": "../entities/biomaterial/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+          "@id": "ega:EGAN00000000001",
+          "@type": [
+            "ega:biomaterial",
+            "prov:Entity",
+            "COB:0000022"
+          ],
+          "label": "SUBJECT-0001",
+          "sex": {
+            "phenotypicSex": {
+              "id": "PATO:0000383",
+              "label": "female"
+            }
+          },
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaCohort": {
+      "type": "object",
+      "title": "Cohort entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresCohort" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/cohort/schema.json" }
+      "then": { "$ref": "../entities/cohort/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+          "@id": "ega:EGAH00000000001",
+          "@type": "ega:cohort",
+          "id": "ega:EGAH00000000001",
+          "name": "Barcelona adult genomics cohort",
+          "cohortType": "study-defined",
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaDAC": {
+      "type": "object",
+      "title": "Dac entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresDAC" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/DAC/schema.json" }
+      "then": { "$ref": "../entities/DAC/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/DAC/schema.json",
+          "@id": "ega:EGAC00000000001",
+          "@type": "ega:DAC",
+          "title": "Example Genomics Data Access Committee",
+          "description": "Committee responsible for reviewing controlled-access requests for the Example Genomics programme.",
+          "status": "released",
+          "contactPoint": [
+            {
+              "@type": "cv:ContactPoint",
+              "email": "dac@example.org"
+            }
+          ],
+          "components": [
+            {
+              "@type": "org:Membership",
+              "agent": {
+                "@type": [
+                  "prov:Agent",
+                  "prov:Person"
+                ],
+                "name": "Jane Doe",
+                "givenName": "Jane",
+                "familyName": "Doe",
+                "email": "jane.doe@example.org"
+              },
+              "roles": [
+                "main_contact",
+                "administrator"
+              ]
+            }
+          ]
+        }
+      ]
     },
 
     "entitySchemaDatafile": {
+      "type": "object",
+      "title": "Datafile entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresDatafile" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/datafile/schema.json" }
+      "then": { "$ref": "../entities/datafile/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/datafile/schema.json",
+          "@id": "ega:EGAF00000000001",
+          "@type": "ega:datafile",
+          "fileName": "case2_case2_father_Case2_F.R1.fastq.gz",
+          "fileFormat": {
+            "id": "EDAM:format_1930",
+            "label": "FASTQ"
+          },
+          "dataContent": {
+            "id": "EDAM:data_2977",
+            "label": "Nucleic acid sequence"
+          },
+          "checksums": [
+            {
+              "algorithm": "MD5",
+              "value": "d41d8cd98f00b204e9800998ecf8427e",
+              "appliesTo": "unencrypted"
+            }
+          ],
+          "isPartOf": [
+            {
+              "@id": "ega:EGAD00000000002",
+              "@type": [
+                "ega:dataset",
+                "dcat:Dataset"
+              ]
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaDataset": {
+      "type": "object",
+      "title": "Dataset entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresDataset" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/dataset/schema.json" }
+      "then": { "$ref": "../entities/dataset/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
+          "@id": "ega:EGAD00000000002",
+          "@type": [
+            "ega:dataset",
+            "dcat:Dataset"
+          ],
+          "id": "ega:EGAD00000000002",
+          "title": "Minimal controlled-access genome dataset",
+          "description": "Small controlled-access dataset containing one aligned genome data file.",
+          "datasetType": [
+            "whole genome sequencing"
+          ],
+          "dct:type": [
+            {
+              "@id": "http://publications.europa.eu/resource/authority/dataset-type/SYNTHETIC_DATA"
+            }
+          ],
+          "hasPart": [
+            {
+              "@id": "ega:EGAF00000000001",
+              "@type": "ega:datafile"
+            }
+          ],
+          "hasPolicy": "ega:EGAP00000000001",
+          "dct:accessRights": {
+            "@id": "http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC"
+          },
+          "dcatap:applicableLegislation": [
+            {
+              "@id": "http://data.europa.eu/eli/reg/2016/679/2016-05-04"
+            }
+          ],
+          "dcat:distribution": [
+            {
+              "@id": "https://ega-archive.org/datasets/EGAD00000000002/request",
+              "@type": "dcat:Distribution",
+              "dcatap:applicableLegislation": [
+                {
+                  "@id": "http://data.europa.eu/eli/reg/2016/679/2016-05-04"
+                }
+              ],
+              "dcat:accessURL": {
+                "@id": "https://ega-archive.org/datasets/EGAD00000000002/request"
+              }
+            }
+          ],
+          "dcat:theme": [
+            {
+              "@id": "http://publications.europa.eu/resource/authority/data-theme/HEAL"
+            }
+          ],
+          "healthdcatap:healthCategory": [
+            {
+              "@id": "http://publications.europa.eu/resource/authority/health-category/GEN"
+            }
+          ],
+          "healthdcatap:hdab": {
+            "@id": "https://example.org/agents/hdab-minimal-001",
+            "@type": "foaf:Organization",
+            "cv:contactPoint": {
+              "@id": "https://example.org/contact-points/hdab-minimal-001"
+            }
+          },
+          "dcat:contactPoint": [
+            {
+              "@id": "https://example.org/contact-points/hdab-minimal-001",
+              "@type": [
+                "vcard:Kind",
+                "cv:ContactPoint"
+              ],
+              "vcard:hasURL": {
+                "@id": "https://www.test-dataset-helpdesk.example.org"
+              },
+              "cv:contactPage": {
+                "@id": "https://example.org/contact/hdab-helpdesk"
+              }
+            }
+          ],
+          "dcat:keyword": [
+            {
+              "@value": "genomics",
+              "@language": "en"
+            }
+          ],
+          "dct:provenance": [
+            {
+              "@type": "dct:ProvenanceStatement",
+              "rdfs:label": {
+                "@value": "Minimal controlled-access genome dataset example for FEGA validation.",
+                "@language": "en"
+              }
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaPolicy": {
+      "type": "object",
+      "title": "Policy entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresPolicy" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/policy/schema.json" }
+      "then": { "$ref": "../entities/policy/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/policy/schema.json",
+          "@id": "ega:EGAP00000000001",
+          "@type": [
+            "ega:policy",
+            "dct:Policy"
+          ],
+          "title": "Example Genomics Data Access Policy",
+          "description": "Terms governing controlled access to the Example Genomics dataset.",
+          "status": "released",
+          "governedBy": [
+            {
+              "@id": "ega:EGAC00000000001",
+              "@type": "ega:DAC"
+            }
+          ],
+          "policyText": "Use of the dataset is limited to the approved research purpose ... . Users must protect confidentiality, must not attempt re-identification, and must report suspected misuse to the governing DAC."
+        }
+      ]
     },
 
     "entitySchemaProcess": {
+      "type": "object",
+      "title": "Process entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresProcess" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/process/schema.json" }
+      "then": { "$ref": "../entities/process/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
+          "@id": "ega:EGAA00000000002",
+          "@type": [
+            "ega:process",
+            "prov:Activity"
+          ],
+          "title": "DNA extraction run",
+          "hadProtocolCollection": {
+            "@id": "ega:EGAL00000000001",
+            "@type": "ega:protocolCollection"
+          },
+          "used": [
+            {
+              "@id": "ega:EGAN00000000001",
+              "@type": "ega:biomaterial"
+            }
+          ],
+          "generated": [
+            {
+              "@id": "ega:EGAN00000000002",
+              "@type": "ega:biomaterial"
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaProtocol": {
+      "type": "object",
+      "title": "Protocol entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresProtocol" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/protocol/schema.json" }
+      "then": { "$ref": "../entities/protocol/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
+          "@id": "ega:EGAT00000000003",
+          "@type": [
+            "ega:protocol",
+            "prov:Plan",
+            "bioschemastypes:ComputationalWorkflow"
+          ],
+          "name": "Minimal Computational Workflow",
+          "url": "https://example.org/workflows/minimal",
+          "version": "1.0.0",
+          "programmingLanguage": [
+            "Python"
+          ],
+          "creator": [
+            {
+              "name": "Jane Doe"
+            }
+          ],
+          "dateCreated": "2026-01-01",
+          "license": "https://spdx.org/licenses/Apache-2.0",
+          "sdPublisher": {
+            "name": "European Genome-phenome Archive"
+          },
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaProtocolCollection": {
+      "type": "object",
+      "title": "Protocol collection entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresProtocolCollection" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/protocolCollection/schema.json" }
+      "then": { "$ref": "../entities/protocolCollection/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
+          "@id": "ega:EGAL00000000001",
+          "@type": [
+            "ega:protocolCollection",
+            "prov:Collection",
+            "prov:Plan"
+          ],
+          "title": "DNA extraction plan",
+          "version": "1.0.0",
+          "hadMember": [
+            {
+              "@id": "ega:EGAT00000000001",
+              "@type": "ega:protocol",
+              "label": "Blood DNA extraction"
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaProject": {
+      "type": "object",
+      "title": "Project entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresProject" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/project/schema.json" }
+      "then": { "$ref": "../entities/project/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+          "@id": "ega:EGAJ00000000001",
+          "@type": "ega:project",
+          "title": "Inherited cardiac disease research programme",
+          "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+          "hasStudy": [
+            {
+              "@id": "ega:EGAS00001000002",
+              "@type": "ega:study"
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
 
     "entitySchemaStudy": {
+      "type": "object",
+      "title": "Study entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresStudy" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/study/schema.json" }
+      "then": { "$ref": "../entities/study/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
+          "@id": "ega:EGAS00001000002",
+          "@type": "ega:study",
+          "title": "Minimal case-control genomics study",
+          "description": "Minimal study metadata record for a case-control genomics investigation.",
+          "studyDesign": [
+            {
+              "id": "EFO:0001427",
+              "label": "case control design"
+            }
+          ],
+          "inSubmission": {
+            "@id": "ega:EGA00000000001",
+            "@type": "ega:submission"
+          }
+        }
+      ]
     },
     
     "entitySchemaSubmission": {
+      "type": "object",
+      "title": "Submission entity validation",
       "if": {
         "allOf": [
           { "$ref": "#/$defs/declaresSubmission" },
           { "$ref": "#/$defs/routableEntityType" }
         ]
       },
-      "then": { "$ref": "../entities/submission/schema.json" }
+      "then": { "$ref": "../entities/submission/schema.json" },
+      "examples": [
+        {
+          "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+          "@id": "ega:EGA00000000001",
+          "@type": "ega:submission",
+          "title": "Example Genomics submission",
+          "status": "draft",
+          "components": [
+            {
+              "@type": "entityDoc:/$defs/component",
+              "agent": {
+                "@id": "ega:EGAW00000000001",
+                "@type": "prov:Agent"
+              },
+              "roles": [
+                "creator",
+                "owner"
+              ],
+              "accessLevel": "write"
+            }
+          ]
+        }
+      ]
     },
 
     "hasBiomaterial": {
+      "type": "object",
       "title": "At least one Biomaterial",
       "description": "The graph contains at least one EGA Biomaterial.",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "$ref": "#/$defs/declaresBiomaterial"
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": "ega:biomaterial"
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": "ega:biomaterial"
+            }
+          ]
+        }
+      ]
     },
 
     "hasProcess": {
+      "type": "object",
       "title": "At least one Process",
       "description": "The graph contains at least one EGA Process.",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "$ref": "#/$defs/declaresProcess"
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": "ega:process"
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": "ega:process"
+            }
+          ]
+        }
+      ]
     },
 
     "hasDataset": {
+      "type": "object",
       "title": "At least one Dataset",
       "description": "The graph contains at least one EGA Dataset.",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "$ref": "#/$defs/declaresDataset"
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": "ega:dataset"
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": "ega:dataset"
+            }
+          ]
+        }
+      ]
     },
 
     "hasDatafile": {
+      "type": "object",
       "title": "At least one Datafile",
       "description": "The graph contains at least one EGA Datafile.",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "$ref": "#/$defs/declaresDatafile"
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": "ega:datafile"
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": "ega:datafile"
+            }
+          ]
+        }
+      ]
     },
 
     "hasOrganismBiomaterial": {
+      "type": "object",
       "title": "At least one organism Biomaterial",
       "description": "The graph contains at least one Biomaterial whose ontology category is organism (COB:0000022).",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "allOf": [
               {
@@ -538,26 +1301,60 @@
                 "properties": {
                   "@type": {
                     "type": "array",
+                    "title": "JSON-LD resource type",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "minContains": 1,
                     "contains": { "const": "COB:0000022" },
-                    "minContains": 1
+                    "examples": [
+                      [
+                        "ega:biomaterial",
+                        "COB:0000022"
+                      ]
+                    ]
                   }
                 }
               }
             ]
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": [
+                  "ega:biomaterial",
+                  "COB:0000022"
+                ]
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": [
+                "ega:biomaterial",
+                "COB:0000022"
+              ]
+            }
+          ]
+        }
+      ]
     },
 
     "hasLabProtocol": {
+      "type": "object",
       "title": "At least one Lab Protocol",
       "description": "The graph contains at least one EGA Protocol typed as a BioSchemas LabProtocol.",
-      "type": "object",
       "required": ["@graph"],
       "properties": {
         "@graph": {
           "type": "array",
+          "title": "Graph entities",
+          "uniqueItems": true,
+          "minItems": 1,
+          "minContains": 1,
           "contains": {
             "allOf": [
               {
@@ -568,16 +1365,46 @@
                 "properties": {
                   "@type": {
                     "type": "array",
+                    "title": "JSON-LD resource type",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "minContains": 1,
                     "contains": { "const": "bioschemastypes:LabProtocol" },
-                    "minContains": 1
+                    "examples": [
+                      [
+                        "ega:protocol",
+                        "bioschemastypes:LabProtocol"
+                      ]
+                    ]
                   }
                 }
               }
             ]
           },
-          "minContains": 1
+          "examples": [
+            [
+              {
+                "@type": [
+                  "ega:protocol",
+                  "bioschemastypes:LabProtocol"
+                ]
+              }
+            ]
+          ]
         }
-      }
+      },
+      "examples": [
+        {
+          "@graph": [
+            {
+              "@type": [
+                "ega:protocol",
+                "bioschemastypes:LabProtocol"
+              ]
+            }
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,9 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json",
+  "meta:version": "1.0.0-draft.4",
+  "$async": true,
   "type": "object",
   "title": "EGA project metadata schema",
   "description": "A research initiative providing the scientific context for EGA Studies, either directly or through child Projects, and the datasets discoverable through those Studies.",
+  "@context": "./context.jsonld",
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:closeMatch",
@@ -51,6 +54,14 @@
       "comment": "#! In DCAT, a project can be represented as an activity that provides context for research activities"
     }
   ],
+  "required": [
+    "@id",
+    "@type",
+    "title",
+    "description",
+    "inSubmission",
+    "hasStudy"
+  ],
   "allOf": [
     {
       "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
@@ -70,17 +81,6 @@
         "hasSubproject"
       ]
     }
-  ],
-  "meta:version": "1.0.0-draft.3",
-  "$async": true,
-  "@context": "./context.jsonld",
-  "required": [
-    "@id",
-    "@type",
-    "title",
-    "description",
-    "inSubmission",
-    "hasStudy"
   ],
   "properties": {
     "@id": {
@@ -265,16 +265,11 @@
           "comment": "An EGA funding reference pairs a funder with optional award metadata: it is not itself a Grant."
         }
       ],
-      "$comment": "Main source of inspiration was the way Zenodo deals with funding metadata.",
-      "items": {
-        "allOf": [
-          {
-            "$ref": "#/$defs/fundingReference"
-          }
-        ]
-      },
-      "minItems": 1,
       "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/fundingReference"
+      },
       "examples": [
         [
           {
@@ -305,7 +300,8 @@
             }
           }
         ]
-      ]
+      ],
+      "$comment": "Main source of inspiration was the way Zenodo deals with funding metadata."
     },
 
     "qualifiedAttributions": {
@@ -390,11 +386,7 @@
         },
         {
           "items": {
-            "allOf": [
-              {
-                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
-              }
-            ]
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
           }
         }
       ],
@@ -457,11 +449,7 @@
         },
         {
           "items": {
-            "allOf": [
-              {
-                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
-              }
-            ]
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
           }
         }
       ],
@@ -682,6 +670,7 @@
             }
           ],
           "format": "uri",
+          "minLength": 1,
           "examples": [
             "https://cordis.europa.eu/project/id/101137074"
           ]

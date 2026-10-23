@@ -1,10 +1,10 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
+    "meta:version": "1.0.0-draft.5",
+    "$async": true,
     "type": "object",
     "title": "EGA study metadata schema",
-    "meta:version": "1.0.0-draft.4",
-    "$async": true,
     "description": "Compilation of Protocol Collections (e.g., examinations, analyses or critical inspections) applied to investigate a particular topic within the context of a given Project.",
     "@context": "./context.jsonld",
     "required": [
@@ -27,9 +27,6 @@
     ],
     "properties": {
         "@id": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/@id" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
@@ -55,6 +52,9 @@
                     "$comment": "The only difference is that this @id is a CURIE or a URI, while the common Study's accession is just the string identifier."
                 }
             ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/@id" }
+            ],
             "examples": [
                 "ega:EGAS00000000001",
                 "ega:EGAS00001000002"
@@ -72,9 +72,6 @@
             ]
         },
         "title": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/label" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -100,6 +97,9 @@
                     "$comment": "The only difference is that this @id is a CURIE or a URI, while the common Study's accession is just the string identifier."
                 }
             ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/label" }
+            ],
             "examples": [
                 "Synthetic viral response genomics study",
                 "Longitudinal cancer genomics study"
@@ -109,9 +109,6 @@
             "$ref": "../../common/schema.json#/$defs/alternativeLabels"
         },
         "description": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/description" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -148,21 +145,28 @@
                     "mapping_date": "2026-07-07"
                 }
             ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/description" }
+            ],
             "examples": [
                 "Study investigating host genomic factors associated with response to viral respiratory infection.",
                 "Study describing longitudinal genomic and clinical observations across a synthetic cancer cohort."
             ]
         },
         "keyword": {
-            "$ref": "../../common/schema.json#/$defs/keywords",
+            "allOf": [
+                {
+                    "$ref": "../../common/schema.json#/$defs/keywords"
+                }
+            ],
             "$comment": "#! This may be similar to 'factors' in the ISA model. We should avoid duplication."
         },
         "studyDesign": {
+            "type": "array",
             "title": "Study Design",
             "description": "Study design components of the study, which describe the method of investigating particular types of research questions or solving particular types of problems.",
-            "type": "array",
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "#/$defs/studyDesign"
             },
@@ -180,10 +184,9 @@
             ]
         },
         "studyObjective": {
+            "type": "string",
             "title": "Study Objective",
             "description": "Brief statement of the study's scientific aim, hypothesis, or analysis question",
-            "type": "string",
-            "minLength": 1,
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:broadMatch",
@@ -208,6 +211,7 @@
                     "mapping_date": "2026-07-07"
                 }
             ],
+            "minLength": 1,
             "examples": [
                 "Investigate the effects of climate change on human food consumption.",
                 "Evaluate the efficacy of a drug X in treating disease Y.",
@@ -259,9 +263,9 @@
             ]
         },
         "relatedResource": {
+            "type": ["string", "array"],
             "title": "Related resource",
             "description": "This property allows you to indicate a general link between this study and another resource (e.g., scientific article, document, or service). Use it when there is a connection, but none of the more specific relation properties below apply. When the relationship is known and semantically clear, use one of the more specific properties (e.g., publication, documentation, landingPage) instead.",
-            "type": ["string", "array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
@@ -320,19 +324,29 @@
                     "mapping_date": "2026-07-07"
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/externalIdentifier"
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Related resource (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-                    }
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/resources/1",
+                            "https://example.org/resources/2"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "google.patent:US4145692",
                 [
@@ -342,9 +356,9 @@
             ]
         },
         "documentation": {
+            "type": ["string", "array"],
             "title": "Documentation",
             "description": "Any resources that contain additional information about the study.",
-            "type": ["string", "array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -358,21 +372,41 @@
                     "mapping_date": "2026-01-28"
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "type": "string",
-                    "format": "uri"
+                    "title": "Documentation (string)",
+                    "format": "uri",
+                    "minLength": 1,
+                    "examples": [
+                        "https://example.org/documentation"
+                    ]
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Documentation (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "type": "string",
-                        "format": "uri"
-                    }
+                        "title": "Documentation (string)",
+                        "format": "uri",
+                        "minLength": 1,
+                        "examples": [
+                            "https://example.org/documentation"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/study/protocol",
+                            "https://example.org/study/report"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "https://example.org/study-documentation.pdf",
                 [
@@ -568,9 +602,9 @@
             ]
         },
         "factors": {
+            "type": "array",
             "title": "Factors",
             "description": "Independent variables that are manipulated or observed in the study to determine their effect on dependent variables. In other words, factors are the experimental conditions or variables that are systematically varied or controlled by the investigators to assess their impact on the outcome of interest.",
-            "type": "array",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -585,8 +619,8 @@
                     "$comment": "Semantically an exactMatch, but the structure in which the factors' ontology terms are given is slightly different."
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "../../common/schema.json#/$defs/ontologyTerm"
             },
@@ -610,22 +644,32 @@
             ]
         },
         "ethicsApproval": {
+            "type": ["string", "array"],
             "title": "Ethics approval",
             "description": "Reference to an ethics approval record, committee approval page, or approval document associated with the study.",
-            "type": ["string", "array"],
+            "minLength": 1,
             "anyOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/externalIdentifier"
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Ethics approval (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-                    }
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/ethics/approval-1",
+                            "https://example.org/ethics/approval-2"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "https://example.org/ethics/approval/REC-2026-001",
                 [

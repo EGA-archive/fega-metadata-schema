@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/profiles/organism-lab-data.schema.json",
+  "meta:version": "1.0.0-draft.6",
+  "type": "object",
   "title": "Organism Lab Data",
   "description": "Requires a graph to contain an organism Biomaterial, a Lab Protocol, a Dataset, and a Datafile.",
-    "meta:version": "1.0.0-draft.4",
   "@context": "../context.jsonld",
-  "type": "object",
   "allOf": [
     { "$ref": "../schema.json" },
     { "$ref": "../schema.json#/$defs/hasOrganismBiomaterial" },

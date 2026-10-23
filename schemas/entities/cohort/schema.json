@@ -1,12 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/cohort/schema.json",
+  "meta:version": "1.0.0-draft.3",
+  "$async": true,
   "type": "object",
   "title": "EGA Cohort metadata schema",
-    "meta:version": "1.0.0-draft.2",
-  "$async": true,
   "description": "A group of Biomaterials (e.g., individuals, biopsies) sharing specific characteristics, facilitating comparative studies and discovery.",
-  "$comment": "We need to review that Cohorts can contain high-level (non granular) coverage of the biomaterials: populationCoverage, spatialCoverage and temporalCoverage. @Context for Beacon's entities is unfinished. Just a draft of the root properties for now. Ideally they'll have the context of their schemas embedded in them, so we can reference. Not quite there yet though.",
   "@context": "./context.jsonld",
   "required": ["@id", "inSubmission"],
   "allOf": [
@@ -46,6 +45,7 @@
     },
     
     "sameAs": {
+      "title": "Same as",
       "allOf": [
         {"$ref": "../../common/schema.json#/$defs/sameAs"},
         {
@@ -54,10 +54,19 @@
             "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionCohort"
           }
         }
+      ],
+      "examples": [
+        [
+          {
+          "@id": "ega:EGAH00000000001",
+            "@type": "ega:cohort"
+          }
+        ]
       ]
     },
 
     "hadMember": {
+      "title": "Had member",
       "allOf": [
         {"$ref": "../../common/schema.json#/$defs/hadMember"},
         {
@@ -66,10 +75,19 @@
             "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial"
           }
         }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAN00000000001",
+            "@type": "ega:biomaterial"
+          }
+        ]
       ]
     },
     
     "isPartOf": {
+      "title": "Is part of",
       "allOf": [
         { "$ref": "../../common/schema.json#/$defs/isPartOf" },
         {
@@ -78,11 +96,20 @@
             "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
           }
         }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAS00000000001",
+            "@type": "ega:study"
+          }
+        ]
       ]
     },
 
         "inSubmission": {
       "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
-  }
+  },
+  "$comment": "We need to review that Cohorts can contain high-level (non granular) coverage of the biomaterials: populationCoverage, spatialCoverage and temporalCoverage. @Context for Beacon's entities is unfinished. Just a draft of the root properties for now. Ideally they'll have the context of their schemas embedded in them, so we can reference. Not quite there yet though."
 }

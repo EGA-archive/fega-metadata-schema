@@ -367,7 +367,7 @@
                     "label": "Homo sapiens"
                 }
             ],
-            "$comment": "#! Not in use currently, to be amended if not needed"
+            "$comment": "Used to constrain the taxonomy of biomaterials with interventionsOrProcedures to Homo sapiens."
         },
         
         "relationshipItem": {
