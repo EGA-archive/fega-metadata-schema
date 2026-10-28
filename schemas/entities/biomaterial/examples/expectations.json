@@ -1,4 +1,7 @@
 {
+  "biomaterial-invalid-nonhuman-interventions.json": [
+    "/taxonomy/id"
+  ],
   "biomaterial-invalid-missing-inSubmission.json": [
     "/inSubmission"
   ],

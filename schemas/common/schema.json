@@ -1632,6 +1632,243 @@
             "$comment": "Similar to ethnicity, we could want to be restrictive and validate the ontology term IDs and labels, rather than a plain recommendation."
         },
 
+        "procedure": {
+            "type": "object",
+            "title": "Procedure",
+            "description": "A summary of a procedure performed on a subject. (1) This summary does not replace provenance relationships. For example, a subject's (Biomaterial human organism) clinical history may record a biopsy even when its specimen does not have a record at EGA, but if the resulting Biomaterial of the biopsy (e.g., skin punch tissue) is indeed in EGA, its generation/collection must be modeled as a Process that generates that Biomaterial (e.g., EGAN...1 > wasUsedBy > EGAA...1 > generates > EGAN...2). (2) Planned or cancelled procedures, medication dose regimens, and laboratory processing workflows are outside this summary's scope.",
+            "meta:sssomMappings": [
+                {
+                    "predicate_id": "skos:closeMatch",
+                    "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/procedure.html",
+                    "mapping_justification": "semapv:AgentBasedMatching",
+                    "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
+                    "author_id": ["https://github.com/openai/codex"],
+                    "creator_id": ["orcid:0000-0002-7747-6256"],
+                    "reviewer_id": ["orcid:0000-0002-7747-6256"],
+                    "mapping_date": "2026-10-02",
+                    "mapping_tool": "OpenAI Codex",
+                    "$comment": "Beacon procedureCode corresponds to Phenopackets 'code'; ageAtProcedure and dateOfProcedure represent aspects of 'performed', with different JSON encodings."
+                },
+                {
+                    "predicate_id": "skos:closeMatch",
+                    "object_id": "beaconRepo:common/procedure.json",
+                    "mapping_justification": "semapv:ManualMappingCuration",
+                    "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
+                    "author_id": ["orcid:0000-0002-7747-6256"],
+                    "creator_id": ["orcid:0000-0002-7747-6256"],
+                    "mapping_date": "2026-10-28",
+                    "confidence": 1.0
+                }
+            ],
+            "required": ["procedureCode"],
+            "properties": {
+                "procedureCode": {
+                    "title": "Procedure code",
+                    "description": "The intervention performed. Identified by terms from MAXO (medical actions), NCIT (interventions and procedures) or SNOMED CT. Use a code incorporating the anatomical site when available; otherwise also provide bodySite.",
+                    "meta:sssomMappings": [
+                        {
+                            "predicate_id": "skos:exactMatch",
+                            "object_id": "beaconRepo:common/procedure.json#procedureCode",
+                            "mapping_justification": "semapv:ManualMappingCuration",
+                            "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
+                            "author_id": ["orcid:0000-0002-7747-6256"],
+                            "creator_id": ["orcid:0000-0002-7747-6256"],
+                            "mapping_date": "2026-10-28",
+                            "confidence": 1.0
+                        }
+                    ],
+                    "allOf": [
+                        { "$ref": "#/$defs/ontologyTerm" }
+                    ],
+                    "anyOf": [
+                        { "$ref": "#/$defs/procedureCodeNcit" },
+                        { "$ref": "#/$defs/procedureCodeSnomed" },
+                        { "$ref": "#/$defs/procedureCodeMaxo" }
+                    ],
+                    "examples": [
+                        { "id": "NCIT:C15221", "label": "Dialysis" },
+                        { "id": "SNOMED:265764009", "label": "Renal dialysis" },
+                        { "id": "MAXO:0001017", "label": "vaccination" }
+                    ]
+                },
+                "bodySite": {
+                    "title": "Procedure body site",
+                    "description": "Anatomical site on the subject where the procedure was performed.",
+                    "meta:sssomMappings": [
+                        {
+                            "predicate_id": "skos:exactMatch",
+                            "object_id": "beaconRepo:common/procedure.json#bodySite",
+                            "mapping_justification": "semapv:ManualMappingCuration",
+                            "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
+                            "author_id": ["orcid:0000-0002-7747-6256"],
+                            "creator_id": ["orcid:0000-0002-7747-6256"],
+                            "mapping_date": "2026-10-28",
+                            "confidence": 1.0
+                        }
+                    ],
+                    "allOf": [
+                        { "$ref": "#/$defs/anatomicalEntity" }
+                    ],
+                    "examples": [
+                        { "id": "UBERON:0003403", "label": "skin of forearm" }
+                    ]
+                },
+                "ageAtProcedure": {
+                    "title": "Age or time at procedure",
+                    "description": "Age or time when the procedure occurred. An age or age range can be provided without disclosing a calendar date. If dateOfProcedure is also supplied, both values describe the same event.",
+                    "meta:sssomMappings": [
+                        {
+                            "predicate_id": "skos:exactMatch",
+                            "object_id": "beaconRepo:common/procedure.json#ageAtProcedure",
+                            "mapping_justification": "semapv:ManualMappingCuration",
+                            "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
+                            "author_id": ["orcid:0000-0002-7747-6256"],
+                            "creator_id": ["orcid:0000-0002-7747-6256"],
+                            "mapping_date": "2026-10-28",
+                            "confidence": 1.0
+                        }
+                    ],
+                    "allOf": [
+                        { "$ref": "../../standards/json-schema/beacon-v2/models/json/beacon-v2-default-model/common/timeElement.json" }
+                    ],
+                    "examples": [
+                        { "iso8601duration": "P25Y" },
+                        {
+                            "start": { "iso8601duration": "P20Y" },
+                            "end": { "iso8601duration": "P29Y" }
+                        }
+                    ]
+                },
+                "dateOfProcedure": {
+                    "type": "string",
+                    "title": "Procedure date",
+                    "description": "Calendar date on which the procedure was performed, when known and appropriate to disclose.",
+                    "meta:sssomMappings": [
+                        {
+                            "predicate_id": "skos:exactMatch",
+                            "object_id": "beaconRepo:common/procedure.json#dateOfProcedure",
+                            "mapping_justification": "semapv:ManualMappingCuration",
+                            "subject_match_field": "rdfs:label",
+                            "object_match_field": "rdfs:label",
+                            "author_id": ["orcid:0000-0002-7747-6256"],
+                            "creator_id": ["orcid:0000-0002-7747-6256"],
+                            "mapping_date": "2026-10-28",
+                            "confidence": 1.0
+                        }
+                    ],
+                    "format": "date",
+                    "minLength": 1,
+                    "examples": ["2025-08-01"]
+                }
+            },
+            "examples": [
+                {
+                    "procedureCode": { "id": "NCIT:C15221", "label": "Dialysis" },
+                    "ageAtProcedure": { "iso8601duration": "P25Y" },
+                    "dateOfProcedure": "2025-08-01"
+                }
+            ],
+            "$comment": "Uses the Beacon procedure structure with EGA ontology term constraints."
+        },
+
+        "procedureCodeNcit": {
+            "title": "Procedure term restricted to NCIT",
+            "allOf": [ 
+                { "$ref": "#/$defs/ontologyTerm" }
+            ],
+            "properties": {
+                "id": {
+                    "title": "Ontology constraints for this specific id",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:ncit"],
+                        "allChildrenOf": ["NCIT:C25218"],
+                        "includeSelf": false
+                    },
+                    "examples": [ "NCIT:C20698", "NCIT:C15221" ]
+                },
+                "label": {
+                    "title": "Ontology constraints for this specific label",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:ncit"],
+                        "allChildrenOf": ["NCIT:C25218"],
+                        "includeSelf": false,
+                        "queryFields": [ "label" ]
+                    },
+                    "examples": [ "Breast Cancer Early Detection", "Dialysis" ]
+                }
+            },
+            "examples": [
+                { "id": "NCIT:C15221", "label": "Dialysis" }
+            ]
+        },
+
+        "procedureCodeSnomed": {
+            "title": "Procedure term restricted to SNOMED CT",
+            "allOf": [ 
+                { "$ref": "#/$defs/ontologyTerm" }
+            ],
+            "properties": {
+                "id": {
+                    "title": "Ontology constraints for this specific id",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:snomed"],
+                        "allChildrenOf": ["SNOMED:71388002"],
+                        "includeSelf": false
+                    },
+                    "examples": [ "SNOMED:266767009", "SNOMED:265764009" ]
+                },
+                "label": {
+                    "title": "Ontology constraints for this specific label",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:snomed"],
+                        "allChildrenOf": ["SNOMED:71388002"],
+                        "includeSelf": false,
+                        "queryFields": [ "label" ]
+                    },
+                    "examples": [ "Catheter suction calculus removal", "Renal dialysis" ]
+                }
+            },
+            "examples": [
+                { "id": "SNOMED:265764009", "label": "Renal dialysis" }
+            ]
+        },
+
+        "procedureCodeMaxo": {
+            "title": "Procedure term restricted to MAXO",
+            "allOf": [ 
+                { "$ref": "#/$defs/ontologyTerm" }
+            ],
+            "properties": {
+                "id": {
+                    "title": "Ontology constraints for this specific id",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:maxo"],
+                        "allChildrenOf": ["MAXO:0000001"],
+                        "includeSelf": false
+                    },
+                    "examples": [ "MAXO:0001017", "MAXO:0001392" ]
+                },
+                "label": {
+                    "title": "Ontology constraints for this specific label",
+                    "graphRestriction":  {
+                        "ontologies" : ["obo:maxo"],
+                        "allChildrenOf": ["MAXO:0000001"],
+                        "includeSelf": false,
+                        "queryFields": [ "label" ]
+                    },
+                    "examples": [ "vaccination", "urinary catheterization" ]
+                }
+            },
+            "examples": [
+                { "id": "MAXO:0001017", "label": "vaccination" }
+            ]
+        },
+
         "anatomicalEntity": {
             "title": "Anatomical entity",
             "description": "Biological entity that is either an individual member of a biological species or constitutes the structural organisation of an individual member of a biological species.",

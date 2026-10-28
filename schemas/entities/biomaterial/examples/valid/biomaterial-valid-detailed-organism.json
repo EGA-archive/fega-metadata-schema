@@ -59,6 +59,13 @@
         }
       }
     ],
+    "interventionsOrProcedures": [
+      {
+        "procedureCode": { "id": "NCIT:C15221", "label": "Dialysis" },
+        "ageAtProcedure": { "iso8601duration": "P55Y" },
+        "dateOfProcedure": "2025-08-01"
+      }
+    ],
     "timeAtLastEncounter": {
       "iso8601duration": "P55Y"
     },

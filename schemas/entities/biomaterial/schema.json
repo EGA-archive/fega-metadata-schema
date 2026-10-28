@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
-  "meta:version": "1.0.0-draft.4",
+  "meta:version": "1.0.0-draft.5",
   "$async": true,
   "type": "object",
   "title": "EGA Biomaterial metadata schema",
@@ -130,6 +130,10 @@
       "type": "object",
       "title": "Common Biomaterial definitions",
       "description": "Common biomaterial definitions that every Biomaterial **can** (but not necessarily *must*) inherit. These are later constrained for each type of biomaterial at their respective checklists (e.g., 'dateOfBirth' is not expected to be given for a tissue culture)",
+      "allOf": [
+        { "$ref": "./schema.json#/$defs/interventionsOrProceduresDependencies" },
+        { "$ref": "./schema.json#/$defs/samplingProcedureDependencies" }
+      ],
       "properties": {
         "@type": {
           "title": "Biomaterial resource types",
@@ -615,7 +619,37 @@
         },
 
         "interventionsOrProcedures": {
-          "$comment": "#! Taken from Beacon v2. It's similar to Phenopacket's 'procedure', but represented in a sort of flat way. Procedures is later reused in the 'Biosamples' of Beacon, in a more generic way. Rather than referencing it, and given our FEGA way of representing processes, I would suggest to, once we have the FEGA.process.json, reference here in an array. Rather than a 'biomaterial (organism) --> Procedure (clinical procedure) --> biomaterial (organism)' which can easily become unnecessarily convoluted, we could just serve those procedures for organisms (individuals) flat here. That raises the question of whether we'll do the same for other biomaterials -- In theory no, as we would want for more Biosamples to appear through the process tree."
+          "type": "array",
+          "title": "Interventions or procedures",
+          "description": "Clinical interventions or procedures performed on this human individual, such as surgery, diagnostic endoscopy or biopsy. Only allowed for organism biomaterials (@type containing COB:0000022) with taxonomy.id NCBITaxon:9606. A biopsy may be recorded as part of the subject's clinical history even when its specimen is not represented. If the resulting specimen is represented as a biomaterial, its collection must also be modeled as a Process that generates that biomaterial, linked through the specimen's wasGeneratedBy relationship. An entry here does not replace that Process or represent the specimen. Omit when no procedures are recorded; absence does not assert that none occurred. Medication regimens belong in treatments. Laboratory processing and sample derivation belong in Process records.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "beaconRepo:individuals/defaultSchema.json#/properties/interventionsOrProcedures",
+              "mapping_justification": "semapv:UnspecifiedMatching",
+              "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
+              "author_id": ["https://github.com/openai/codex"],
+              "creator_id": ["https://github.com/openai/codex"],
+              "mapping_date": "2026-10-02",
+              "mapping_tool": "OpenAI Codex",
+              "$comment": "Machine-assisted mapping proposal based on the Beacon definition; not human-reviewed. FEGA additionally requires an explicitly human organism and non-empty, distinct entries."
+            }
+          ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "../../common/schema.json#/$defs/procedure"
+          },
+          "examples": [
+            [
+              {
+                "procedureCode": { "id": "NCIT:C15221", "label": "Dialysis" },
+                "ageAtProcedure": { "iso8601duration": "P52Y" },
+                "dateOfProcedure": "2025-08-01"
+              }
+            ]
+          ]
         },
 
         "measurements": {
@@ -1181,7 +1215,48 @@
           "examples": ["2025-05-02"]
         },
 
-        "samplingProcedure": {"$comment": "#! Decide whether to add the procedure here as a readOnly, or stick with it being part of the 'process' that generated this biomaterial."},
+        "samplingProcedure": {
+          "title": "Sampling procedure",
+          "description": "Read-only summary of the collection procedure that produced this biomaterial, using the same procedure structure as interventionsOrProcedures. The collection must be modeled as a Process that generates this biomaterial, linked through wasGeneratedBy; this summary does not replace that Process. The owning service derives the summary from that Process and its protocol information. Populate only when a single collection procedure can be identified; omit if unknown or ambiguous. Subsequent laboratory processing remains in the Process graph. This property is not allowed on whole organisms.",
+          "meta:sssomMappings": [
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "beaconRepo:biosamples/defaultSchema.json#/properties/obtentionProcedure",
+              "mapping_justification": "semapv:UnspecifiedMatching",
+              "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
+              "author_id": ["https://github.com/openai/codex"],
+              "creator_id": ["https://github.com/openai/codex"],
+              "mapping_date": "2026-10-02",
+              "mapping_tool": "OpenAI Codex",
+              "$comment": "Machine-assisted mapping proposal; not human-reviewed. The collection-procedure meaning is shared, but FEGA exposes a derived read-only summary with Process provenance."
+            },
+            {
+              "predicate_id": "skos:closeMatch",
+              "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#procedure",
+              "mapping_justification": "semapv:UnspecifiedMatching",
+              "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
+              "author_id": ["https://github.com/openai/codex"],
+              "creator_id": ["https://github.com/openai/codex"],
+              "mapping_date": "2026-10-02",
+              "mapping_tool": "OpenAI Codex",
+              "$comment": "Machine-assisted mapping proposal; not human-reviewed. Both describe obtaining a sample, but FEGA uses Beacon field names and read-only Process-derived metadata."
+            }
+          ],
+          "allOf": [
+            { "$ref": "../../common/schema.json#/$defs/procedure" }
+          ],
+          "readOnly": true,
+          "examples": [
+            {
+              "procedureCode": { "id": "NCIT:C28743", "label": "Punch Biopsy" },
+              "bodySite": { "id": "UBERON:0003403", "label": "skin of forearm" },
+              "dateOfProcedure": "2025-08-01"
+            }
+          ],
+          "$comment": "JSON Schema readOnly is an annotation: services must reject or ignore client writes and derive this value themselves. This schema neither populates the summary nor checks its consistency with the referenced Process. wasGeneratedBy is required when the summary is present."
+        },
         
         "sameAs": {
           "$ref": "../../common/schema.json#/$defs/sameAs"
@@ -1279,19 +1354,7 @@
           "if": {
             "required": ["@type"],
             "properties": {
-              "@type": {
-                "type": "array",
-                "title": "Biomaterial types selecting this checklist",
-                "uniqueItems": true,
-                "minItems": 1,
-                "contains": { "const": "COB:0000022" },
-                "examples": [
-                  [
-                    "ega:biomaterial",
-                    "COB:0000022"
-                  ]
-                ]
-              }
+              "@type": { "$ref": "./schema.json#/$defs/organismBiomaterialTypes" }
             }
           },
           "then": {
@@ -1301,6 +1364,7 @@
               "storageConditions": false,
               "samplingAge": false,
               "samplingDate": false,
+              "samplingProcedure": false,
               "wasGeneratedBy": false
             },
             "$comment": "Biomaterial properties required or disallowed for this type of biomaterial. The way we encode 'properties' as 'false', instead of using 'not' is for the validation error report to be more informative. With 'not', the validator can't inform the user which property is infringing the validation."
@@ -1438,17 +1502,59 @@
         }
       ]
     },
-    "poolChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
+
+    "samplingProcedureDependencies": {
+      "type": "object",
+      "title": "Dependencies for samplingProcedure",
+      "dependentRequired": {
+        "samplingProcedure": ["wasGeneratedBy"]
+      },
+      "examples": [
+        {
+          "samplingProcedure": {
+            "procedureCode": { "id": "NCIT:C28743", "label": "Punch Biopsy" }
+          },
+          "wasGeneratedBy": [
+            { "@id": "ega:EGAA00000000001", "@type": "ega:process" }
+          ]
+        }
+      ]
     },
-    "cellCultureChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
+
+    "interventionsOrProceduresDependencies": {
+      "type": "object",
+      "title": "Dependencies for interventionsOrProcedures",
+      "dependentSchemas": {
+        "interventionsOrProcedures": {
+          "title": "Human organism required for clinical procedures",
+          "description": "Clinical interventions or procedures may only be recorded directly on a 'human' 'organism' biomaterial.",
+          "required": ["@type", "taxonomy"],
+          "properties": {
+            "@type": { "$ref": "./schema.json#/$defs/organismBiomaterialTypes" },
+            "taxonomy": { "$ref": "../../common/schema.json#/$defs/homoSapiensTerm" }
+          }
+        }
+      },
+      "examples": [
+        {
+          "@type": ["ega:biomaterial", "COB:0000022"],
+          "taxonomy": { "id": "NCBITaxon:9606", "label": "Homo sapiens" },
+          "interventionsOrProcedures": [
+            { "procedureCode": { "id": "NCIT:C15221", "label": "Dialysis" } }
+          ]
+        }
+      ]
     },
-    "tissueCultureChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
-    },
-    "biofilmChecklist": {
-      "$comment": "#! TBD once first internal reviews of the Biomaterial are done."
+
+    "organismBiomaterialTypes": {
+      "type": "array",
+      "title": "Organism biomaterial types",
+      "uniqueItems": true,
+      "minItems": 1,
+      "contains": { "const": "COB:0000022" },
+      "examples": [["ega:biomaterial", "COB:0000022"]]
     }
-  }
+
+  },
+  "$comment": "#! To add poolCheklist, cellCultureChecklist, tissueCultureChecklist and biofilmChecklist in the future, along with any other major biomaterial type."
 }

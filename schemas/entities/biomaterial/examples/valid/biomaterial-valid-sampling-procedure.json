@@ -1,0 +1,26 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+    "@id": "ega:EGAN00000000002",
+    "@type": ["ega:biomaterial", "prov:Entity", "EFO:0000635"],
+    "label": "Forearm skin biopsy",
+    "samplingProcedure": {
+      "procedureCode": { "id": "NCIT:C28743", "label": "Punch Biopsy" },
+      "bodySite": { "id": "UBERON:0003403", "label": "skin of forearm" },
+      "dateOfProcedure": "2025-08-01"
+    },
+    "wasGeneratedBy": [
+      { "@id": "ega:EGAA00000000001", "@type": "ega:process" }
+    ],
+    "wasDerivedFrom": [
+      { "@id": "ega:EGAN00000000001", "@type": "ega:biomaterial" }
+    ],
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    }
+  }
+}
