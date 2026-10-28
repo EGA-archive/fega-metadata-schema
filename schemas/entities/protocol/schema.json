@@ -1,29 +1,27 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocol/schema.json",
+  "meta:version": "1.0.0-draft.4",
+  "$async": true,
   "type": "object",
   "title": "EGA protocol metadata schema",
-    "meta:version": "1.0.0-draft.2",
-  "$async": true,
   "description": "Detailed plan of instructions on how a procedure is done. For example, sample preparation, sequencing or feature extraction techniques.",
   "@context": "./context.jsonld",
-  "required": ["@id", "inSubmission"],
-  "$comment": "Protocol parameter specifications are addressable embedded objects, not top-level EGA entities. JSON Schema cannot verify cross-document membership between Process parameter references and Protocols in a referenced Protocol Collection; FEGA currently assumes that integrity and may add downstream graph validation in the future.",
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:broadMatch",
       "object_id": "dct:provenance",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-03-12",
       "$comment": "A HealthDCAT-AP (release 6) 'dct:provenance' property of a Dataset captures in an rather vague way the information that the EGA protocol metadata schema is intended to contain. Thus, the former can be produced by aggregating the protocols used to obtain datafiles included in a dataset."
     }
   ],
+  "required": ["@id", "inSubmission"],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
@@ -40,9 +38,19 @@
       "properties": {
         "@type": {
           "type": "array",
+          "title": "JSON-LD resource type",
           "anyOf": [
             { "contains": { "const": "bioschemastypes:ComputationalWorkflow" } },
             { "contains": { "const": "bioschemastypes:LabProtocol" } }
+          ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "examples": [
+            [
+              "ega:protocol",
+              "bioschemastypes:LabProtocol",
+              "prov:Plan"
+            ]
           ]
         }
       }
@@ -53,17 +61,33 @@
         "required": ["@type"],
         "properties": {
           "@type": {
+              "title": "JSON-LD resource type",
               "anyOf": [
                 { "const": "bioschemastypes:ComputationalWorkflow" },
                 { "type": "array",
-                  "contains": { "const": "bioschemastypes:ComputationalWorkflow" } }
+                  "title": "JSON-LD resource type (array)",
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "contains": { "const": "bioschemastypes:ComputationalWorkflow" },
+                  "examples": [
+                    [
+                      "bioschemastypes:ComputationalWorkflow"
+                    ]
+                  ] }
+              ],
+              "examples": [
+                "bioschemastypes:ComputationalWorkflow"
               ]
             }
         }
       },
       "then": {
-        "$comment": "These BioSchemas files were fetched from BioSchemas API. See https://github.com/EGA-archive/fega-metadata-schema/issues/6 for more details.",
-        "$ref": "../../../standards/json-schema/bioschemas/ComputationalWorkflow_v1.1-DRAFT.json"
+        "allOf": [
+          {
+            "$ref": "../../../standards/json-schema/bioschemas/ComputationalWorkflow_v1.1-DRAFT.json"
+          }
+        ],
+        "$comment": "These BioSchemas files were fetched from BioSchemas API. See https://github.com/EGA-archive/fega-metadata-schema/issues/6 for more details."
       }
     },
     {
@@ -72,78 +96,36 @@
         "required": ["@type"],
         "properties": {
           "@type": {
+            "title": "JSON-LD resource type",
             "anyOf": [
               { "const": "bioschemastypes:LabProtocol" },
               { "type": "array",
-                "contains": { "const": "bioschemastypes:LabProtocol" } }
+                "title": "JSON-LD resource type (array)",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": { "const": "bioschemastypes:LabProtocol" },
+                "examples": [
+                  [
+                    "bioschemastypes:LabProtocol"
+                  ]
+                ] }
+            ],
+            "examples": [
+              "bioschemastypes:LabProtocol"
             ]
           }
         }
       },
       "then": {
-        "$comment": "These BioSchemas files were fetched from BioSchemas API. See https://github.com/EGA-archive/fega-metadata-schema/issues/6 for more details.",
-        "$ref": "../../../standards/json-schema/bioschemas/LabProtocol_v0.8-DRAFT.json"
+        "allOf": [
+          {
+            "$ref": "../../../standards/json-schema/bioschemas/LabProtocol_v0.8-DRAFT.json"
+          }
+        ],
+        "$comment": "These BioSchemas files were fetched from BioSchemas API. See https://github.com/EGA-archive/fega-metadata-schema/issues/6 for more details."
       }
     }
   ],
-  "$defs": {
-    "computingRequirements": {
-      "type": "object",
-      "properties": {
-        "memory": {
-          "type": "string",
-          "description": "Minimum memory (RAM) requirements (e.g., '8GB', '16GB')",
-          "meta:sssomMappings": [
-              {
-                  "predicate_id": "skos:exactMatch",
-                  "object_id": "schema:memoryRequirements",
-                  "mapping_justification": "semapv:ManualMappingCuration",
-                  "object_match_field": "rdfs:comment",
-                  "subject_match_field": "rdfs:comment",
-                  "author_id": ["orcid:0000-0002-7747-6256"],
-                  "creator_id": ["orcid:0000-0002-7747-6256"],
-                  "reviewer_id": [""],
-                  "confidence": 1.0,
-                  "mapping_date": "2025-08-08"
-              }
-          ],
-          "pattern": "^[0-9]+(GB|MB|TB)$",
-          "examples": ["4GB", "16GB", "128GB"]
-        },
-        "cpuCores": {
-          "type": "number",
-          "description": "Number of CPU cores needed to run the workflow",
-          "minimum": 1,
-          "examples": [2, 4, 8]
-        },
-        "gpuAcceleration": {
-          "type": "boolean",
-          "description": "Whether GPU acceleration is required",
-          "examples": [true, false]
-        },
-        "storage": {
-          "type": "string", 
-          "description": "Amount of disk space required (e.g., '100GB', '1TB')",
-          "meta:sssomMappings": [
-              {
-                  "predicate_id": "skos:exactMatch",
-                  "object_id": "schema:storageRequirements",
-                  "mapping_justification": "semapv:ManualMappingCuration",
-                  "object_match_field": "rdfs:comment",
-                  "subject_match_field": "rdfs:comment",
-                  "author_id": ["orcid:0000-0002-7747-6256"],
-                  "creator_id": ["orcid:0000-0002-7747-6256"],
-                  "reviewer_id": [""],
-                  "confidence": 1.0,
-                  "mapping_date": "2025-08-08"
-              }
-          ],
-          "pattern": "^[0-9]+(GB|MB|TB)$",
-          "examples": ["50GB", "500GB", "2TB"]
-        }
-      }
-    }
-  },
   "properties": {
     "@id": {
       "$ref": "../../common/schema.json#/$defs/@id"
@@ -154,8 +136,18 @@
         "description": "The JSON-LD type for an EGA protocol.",
         "allOf": [
             {
-              "$comment": "We force this @type to be an array, which triggers the inherited 'relationshipItemRestrictionProtocol' validation of array. We don't let it be a string alone, because that would be ambiguous. The 'ega:protocol' type alone is just allowed for relationships pointing to an ega:protocol that may not need to be so explicit. That is not the case of the core @type of a protocol.",
-              "type": "array"
+              "type": "array",
+              "title": "JSON-LD resource type",
+              "uniqueItems": true,
+              "minItems": 1,
+              "examples": [
+                [
+                  "ega:protocol",
+                  "bioschemastypes:LabProtocol",
+                  "prov:Plan"
+                ]
+              ],
+              "$comment": "We force this @type to be an array, which triggers the inherited 'relationshipItemRestrictionProtocol' validation of array. We don't let it be a string alone, because that would be ambiguous. The 'ega:protocol' type alone is just allowed for relationships pointing to an ega:protocol that may not need to be so explicit. That is not the case of the core @type of a protocol."
             },
             { "$ref": "../../common/schema.json#/$defs/@type" }
         ],
@@ -166,6 +158,7 @@
     },
 
     "sameAs": {
+      "title": "Same as",
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/sameAs"
@@ -173,40 +166,74 @@
         {
           "items": {
             "title": "Entity type restriction",
-            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProtocol"
+            "allOf": [
+              {
+                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProtocol"
+              }
+            ]
           }
         }
+      ],
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAT00000000001",
+            "@type": "ega:protocol"
+          }
+        ]
       ]
     },
 
     "isBasedOn": {
-      "$ref": "../../common/schema.json#/$defs/isBasedOn",
-      "$comment": "This is used when the protocol that it's referenced is not exactly the same: this protocol was a modification of the original one, or it was used as a base to create this protocol. E.g., changed parameters, or added new steps.",
       "meta:sssomMappings": [
         {
           "predicate_id": "skos:narrowMatch",
           "object_id": "https://datacite-metadata-schema.readthedocs.io/en/4.5/appendices/appendix-1/relationType/#isnewversionof",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2025-08-08"
         }
-      ]
+      ],
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/isBasedOn"
+        }
+      ],
+      "$comment": "This is used when the protocol that it's referenced is not exactly the same: this protocol was a modification of the original one, or it was used as a base to create this protocol. E.g., changed parameters, or added new steps."
     },
 
     "parameterSpecifications": {
       "type": "array",
       "title": "Parameter specifications",
       "description": "Referenceable parameter declarations for values that may be supplied when this Protocol is executed.",
-      "minItems": 1,
       "uniqueItems": true,
+      "minItems": 1,
       "items": {
         "$ref": "../../common/schema.json#/$defs/protocolParameter"
-      }
+      },
+      "examples": [
+        [
+          {
+            "@id": "ega:EGAT00000000001#section-thickness",
+            "@type": [
+              "bioschemastypes:FormalParameter",
+              "p-plan:Variable"
+            ],
+            "label": "section thickness",
+            "datatype": "xsd:decimal",
+            "unit": {
+              "id": "UO:0000017",
+              "label": "micrometer"
+            },
+            "valueRequired": true,
+            "multipleValues": false
+          }
+        ]
+      ]
     },
 
     "version": {
@@ -216,5 +243,77 @@
     "inSubmission": {
       "$ref": "../../common/schema.json#/$defs/inSubmission"
     }
-  }
+  },
+  "$defs": {
+    "computingRequirements": {
+      "type": "object",
+      "title": "Computing requirements",
+      "properties": {
+        "memory": {
+          "type": "string",
+          "title": "Memory",
+          "description": "Minimum memory (RAM) requirements (e.g., '8GB', '16GB')",
+          "meta:sssomMappings": [
+              {
+                  "predicate_id": "skos:exactMatch",
+                  "object_id": "schema:memoryRequirements",
+                  "mapping_justification": "semapv:ManualMappingCuration",
+                  "subject_match_field": "rdfs:comment",
+                  "object_match_field": "rdfs:comment",
+                  "author_id": ["orcid:0000-0002-7747-6256"],
+                  "creator_id": ["orcid:0000-0002-7747-6256"],
+                  "confidence": 1.0,
+                  "mapping_date": "2025-08-08"
+              }
+          ],
+          "minLength": 1,
+          "pattern": "^[0-9]+(GB|MB|TB)$",
+          "examples": ["4GB", "16GB", "128GB"]
+        },
+        "cpuCores": {
+          "type": "number",
+          "title": "Cpu cores",
+          "description": "Number of CPU cores needed to run the workflow",
+          "minimum": 1,
+          "examples": [2, 4, 8]
+        },
+        "gpuAcceleration": {
+          "type": "boolean",
+          "title": "Gpu acceleration",
+          "description": "Whether GPU acceleration is required",
+          "examples": [true, false]
+        },
+        "storage": {
+          "type": "string",
+          "title": "Storage",
+          "description": "Amount of disk space required (e.g., '100GB', '1TB')",
+          "meta:sssomMappings": [
+              {
+                  "predicate_id": "skos:exactMatch",
+                  "object_id": "schema:storageRequirements",
+                  "mapping_justification": "semapv:ManualMappingCuration",
+                  "subject_match_field": "rdfs:comment",
+                  "object_match_field": "rdfs:comment",
+                  "author_id": ["orcid:0000-0002-7747-6256"],
+                  "creator_id": ["orcid:0000-0002-7747-6256"],
+                  "confidence": 1.0,
+                  "mapping_date": "2025-08-08"
+              }
+          ],
+          "minLength": 1,
+          "pattern": "^[0-9]+(GB|MB|TB)$",
+          "examples": ["50GB", "500GB", "2TB"]
+        }
+      },
+      "examples": [
+        {
+          "memory": "8GB",
+          "cpuCores": 4,
+          "gpuAcceleration": false,
+          "storage": "100GB"
+        }
+      ]
+    }
+  },
+  "$comment": "Protocol parameter specifications are addressable embedded objects, not top-level EGA entities. JSON Schema cannot verify cross-document membership between Process parameter references and Protocols in a referenced Protocol Collection; FEGA currently assumes that integrity and may add downstream graph validation in the future."
 }

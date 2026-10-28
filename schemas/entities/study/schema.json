@@ -1,10 +1,10 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/study/schema.json",
+    "meta:version": "1.0.0-draft.5",
+    "$async": true,
     "type": "object",
     "title": "EGA study metadata schema",
-    "meta:version": "1.0.0-draft.3",
-    "$async": true,
     "description": "Compilation of Protocol Collections (e.g., examinations, analyses or critical inspections) applied to investigate a particular topic within the context of a given Project.",
     "@context": "./context.jsonld",
     "required": [
@@ -27,19 +27,15 @@
     ],
     "properties": {
         "@id": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/@id" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "isa:study-schema-json.identifier",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -47,15 +43,17 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "egav1crg.1:-accession_id--studies/post#accession_id",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07",
                     "$comment": "The only difference is that this @id is a CURIE or a URI, while the common Study's accession is just the string identifier."
                 }
+            ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/@id" }
             ],
             "examples": [
                 "ega:EGAS00000000001",
@@ -74,19 +72,15 @@
             ]
         },
         "title": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/label" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "isa:study-schema-json.title",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -94,15 +88,17 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "egav1crg.1:-accession_id--studies/post#title",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07",
                     "$comment": "The only difference is that this @id is a CURIE or a URI, while the common Study's accession is just the string identifier."
                 }
+            ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/label" }
             ],
             "examples": [
                 "Synthetic viral response genomics study",
@@ -113,19 +109,15 @@
             "$ref": "../../common/schema.json#/$defs/alternativeLabels"
         },
         "description": {
-            "allOf": [
-                { "$ref": "../../common/schema.json#/$defs/description" }
-            ],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "isa:study-schema-json.description",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -133,11 +125,10 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "egav1crg.1:-accession_id--studies/post#description",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07",
                     "$comment": "The only difference is that this @id is a CURIE or a URI, while the common Study's accession is just the string identifier."
@@ -146,14 +137,16 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "egav1ebi:SRA.study.xsd#StudyType/STUDY_ABSTRACT",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }
+            ],
+            "allOf": [
+                { "$ref": "../../common/schema.json#/$defs/description" }
             ],
             "examples": [
                 "Study investigating host genomic factors associated with response to viral respiratory infection.",
@@ -161,15 +154,19 @@
             ]
         },
         "keyword": {
-            "$ref": "../../common/schema.json#/$defs/keywords",
+            "allOf": [
+                {
+                    "$ref": "../../common/schema.json#/$defs/keywords"
+                }
+            ],
             "$comment": "#! This may be similar to 'factors' in the ISA model. We should avoid duplication."
         },
         "studyDesign": {
+            "type": "array",
             "title": "Study Design",
             "description": "Study design components of the study, which describe the method of investigating particular types of research questions or solving particular types of problems.",
-            "type": "array",
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "#/$defs/studyDesign"
             },
@@ -187,20 +184,18 @@
             ]
         },
         "studyObjective": {
+            "type": "string",
             "title": "Study Objective",
             "description": "Brief statement of the study's scientific aim, hypothesis, or analysis question",
-            "type": "string",
-            "minLength": 1,
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:broadMatch",
                     "object_id": "schema:description",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -208,15 +203,15 @@
                     "predicate_id": "skos:broadMatch",
                     "object_id": "schema:about",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }
             ],
+            "minLength": 1,
             "examples": [
                 "Investigate the effects of climate change on human food consumption.",
                 "Evaluate the efficacy of a drug X in treating disease Y.",
@@ -231,11 +226,10 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "schema:citation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }
@@ -269,19 +263,18 @@
             ]
         },
         "relatedResource": {
+            "type": ["string", "array"],
             "title": "Related resource",
             "description": "This property allows you to indicate a general link between this study and another resource (e.g., scientific article, document, or service). Use it when there is a connection, but none of the more specific relation properties below apply. When the relationship is known and semantically clear, use one of the more specific properties (e.g., publication, documentation, landingPage) instead.",
-            "type": ["string", "array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:closeMatch",
                     "object_id": "dct:relation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -289,11 +282,10 @@
                     "predicate_id": "skos:relatedMatch",
                     "object_id": "healthdcatap:relatedResource",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -301,11 +293,10 @@
                     "predicate_id": "skos:relatedMatch",
                     "object_id": "beaconRepo:datasets/defaultSchema.json#externalUrl",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07",
                     "$comment": "A Beacon 'externalUrl' can be represented through the generic EGA/healthdcatap 'relatedResource'."
@@ -314,11 +305,10 @@
                     "predicate_id": "skos:narrowMatch",
                     "object_id": "schema:citation",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -326,28 +316,37 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "egav1ebi:SRA.study.xsd#StudyType/STUDY_LINKS",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/externalIdentifier"
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Related resource (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-                    }
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/resources/1",
+                            "https://example.org/resources/2"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "google.patent:US4145692",
                 [
@@ -357,38 +356,57 @@
             ]
         },
         "documentation": {
+            "type": ["string", "array"],
             "title": "Documentation",
             "description": "Any resources that contain additional information about the study.",
-            "type": ["string", "array"],
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "foaf:page",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-01-28"
                 }
             ],
+            "minLength": 1,
             "anyOf": [
                 {
                     "type": "string",
-                    "format": "uri"
+                    "title": "Documentation (string)",
+                    "format": "uri",
+                    "minLength": 1,
+                    "examples": [
+                        "https://example.org/documentation"
+                    ]
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Documentation (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "type": "string",
-                        "format": "uri"
-                    }
+                        "title": "Documentation (string)",
+                        "format": "uri",
+                        "minLength": 1,
+                        "examples": [
+                            "https://example.org/documentation"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/study/protocol",
+                            "https://example.org/study/report"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "https://example.org/study-documentation.pdf",
                 [
@@ -420,11 +438,10 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:qualifiedAttribution",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-09"
                 },
@@ -432,11 +449,10 @@
                     "predicate_id": "skos:narrowMatch",
                     "object_id": "isa:study-schema-json.people",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }
@@ -586,26 +602,25 @@
             ]
         },
         "factors": {
+            "type": "array",
             "title": "Factors",
             "description": "Independent variables that are manipulated or observed in the study to determine their effect on dependent variables. In other words, factors are the experimental conditions or variables that are systematically varied or controlled by the investigators to assess their impact on the outcome of interest.",
-            "type": "array",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
                     "object_id": "isa:study-schema-json.factors",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 0.8,
                     "mapping_date": "2026-07-07",
                     "$comment": "Semantically an exactMatch, but the structure in which the factors' ontology terms are given is slightly different."
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "../../common/schema.json#/$defs/ontologyTerm"
             },
@@ -629,22 +644,32 @@
             ]
         },
         "ethicsApproval": {
+            "type": ["string", "array"],
             "title": "Ethics approval",
             "description": "Reference to an ethics approval record, committee approval page, or approval document associated with the study.",
-            "type": ["string", "array"],
+            "minLength": 1,
             "anyOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/externalIdentifier"
                 },
                 {
                     "type": "array",
-                    "minItems": 2,
+                    "title": "Ethics approval (array)",
                     "uniqueItems": true,
+                    "minItems": 2,
                     "items": {
                         "$ref": "../../common/schema.json#/$defs/externalIdentifier"
-                    }
+                    },
+                    "examples": [
+                        [
+                            "https://example.org/ethics/approval-1",
+                            "https://example.org/ethics/approval-2"
+                        ]
+                    ]
                 }
             ],
+            "uniqueItems": true,
+            "minItems": 1,
             "examples": [
                 "https://example.org/ethics/approval/REC-2026-001",
                 [
@@ -664,11 +689,10 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "EFO:0001426",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 },
@@ -676,11 +700,10 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "isa:studyDesignDescriptors",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:comment",
                     "subject_match_field": "rdfs:comment",
+                    "object_match_field": "rdfs:comment",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2026-07-07"
                 }

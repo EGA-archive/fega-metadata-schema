@@ -39,8 +39,8 @@
       {
         "diagnosisType": "clinical",
         "term": {
-          "id": "EFO:0000186",
-          "label": "invasive breast ductal carcinoma"
+          "id": "MONDO:0004953",
+          "label": "invasive ductal breast carcinoma"
         },
         "diseaseStage": {
           "id": "OGMS:0000106",
@@ -57,6 +57,13 @@
         "diagnosisTime": {
           "iso8601duration": "P52Y"
         }
+      }
+    ],
+    "interventionsOrProcedures": [
+      {
+        "procedureCode": { "id": "NCIT:C15221", "label": "Dialysis" },
+        "ageAtProcedure": { "iso8601duration": "P55Y" },
+        "dateOfProcedure": "2025-08-01"
       }
     ],
     "timeAtLastEncounter": {

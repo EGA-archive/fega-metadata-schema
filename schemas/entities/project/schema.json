@@ -1,19 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json",
+  "meta:version": "1.0.0-draft.4",
+  "$async": true,
   "type": "object",
   "title": "EGA project metadata schema",
   "description": "A research initiative providing the scientific context for EGA Studies, either directly or through child Projects, and the datasets discoverable through those Studies.",
+  "@context": "./context.jsonld",
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:closeMatch",
       "object_id": "isa:investigation-schema-json",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 0.8,
       "mapping_date": "2026-09-23"
     },
@@ -21,11 +23,10 @@
       "predicate_id": "skos:closeMatch",
       "object_id": "schema:ResearchProject",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 0.8,
       "mapping_date": "2026-09-23"
     },
@@ -33,11 +34,10 @@
       "predicate_id": "skos:broadMatch",
       "object_id": "schema:Project",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:title",
       "subject_match_field": "rdfs:title",
+      "object_match_field": "rdfs:title",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 0.8,
       "mapping_date": "2026-09-23"
     },
@@ -45,15 +45,22 @@
       "predicate_id": "skos:relatedMatch",
       "object_id": "prov:Activity",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 0.8,
       "mapping_date": "2026-09-23",
       "comment": "#! In DCAT, a project can be represented as an activity that provides context for research activities"
     }
+  ],
+  "required": [
+    "@id",
+    "@type",
+    "title",
+    "description",
+    "inSubmission",
+    "hasStudy"
   ],
   "allOf": [
     {
@@ -74,17 +81,6 @@
         "hasSubproject"
       ]
     }
-  ],
-  "meta:version": "1.0.0-draft.2",
-  "$async": true,
-  "@context": "./context.jsonld",
-  "required": [
-    "@id",
-    "@type",
-    "title",
-    "description",
-    "inSubmission",
-    "hasStudy"
   ],
   "properties": {
     "@id": {
@@ -127,11 +123,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "isa:investigation-schema-json.title",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 0.8,
           "mapping_date": "2026-09-23"
         },
@@ -139,11 +134,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "dct:title",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 0.8,
           "mapping_date": "2026-09-23"
         }
@@ -182,11 +176,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "isa:investigation-schema-json.description",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23"
         },
@@ -194,11 +187,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "dct:description",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23"
         }
@@ -264,26 +256,20 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "schema:funding",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23",
           "comment": "An EGA funding reference pairs a funder with optional award metadata: it is not itself a Grant."
         }
       ],
-      "$comment": "Main source of inspiration was the way Zenodo deals with funding metadata.",
-      "items": {
-        "allOf": [
-          {
-            "$ref": "#/$defs/fundingReference"
-          }
-        ]
-      },
-      "minItems": 1,
       "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/fundingReference"
+      },
       "examples": [
         [
           {
@@ -314,7 +300,8 @@
             }
           }
         ]
-      ]
+      ],
+      "$comment": "Main source of inspiration was the way Zenodo deals with funding metadata."
     },
 
     "qualifiedAttributions": {
@@ -334,6 +321,8 @@
                 "prov:Person"
               ],
               "name": "Maya Rivera",
+              "givenName": "Maya",
+              "familyName": "Rivera",
               "email": "maya.rivera@example.org"
             },
             "hadRole": [
@@ -372,11 +361,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "isa:investigation-schema-json.studies",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23"
         },
@@ -384,11 +372,10 @@
           "predicate_id": "skos:broadMatch",
           "object_id": "dct:hasPart",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 0.9,
           "mapping_date": "2026-09-23"
         }
@@ -399,11 +386,7 @@
         },
         {
           "items": {
-            "allOf": [
-              {
-                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
-              }
-            ]
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionStudy"
           }
         }
       ],
@@ -452,11 +435,10 @@
           "predicate_id": "skos:broadMatch",
           "object_id": "dct:hasPart",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23"
         }
@@ -467,11 +449,7 @@
         },
         {
           "items": {
-            "allOf": [
-              {
-                "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
-              }
-            ]
+            "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionProject"
           }
         }
       ],
@@ -516,11 +494,10 @@
               "predicate_id": "skos:closeMatch",
               "object_id": "schema:funder",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-09-23"
             }
@@ -609,11 +586,10 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "schema:Grant",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-09-23"
         }
@@ -646,11 +622,10 @@
               "predicate_id": "skos:closeMatch",
               "object_id": "schema:identifier",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 0.9,
               "mapping_date": "2026-09-23"
             }
@@ -686,16 +661,16 @@
               "predicate_id": "skos:closeMatch",
               "object_id": "schema:url",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:label",
               "subject_match_field": "rdfs:label",
+              "object_match_field": "rdfs:label",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-09-23"
             }
           ],
           "format": "uri",
+          "minLength": 1,
           "examples": [
             "https://cordis.europa.eu/project/id/101137074"
           ]

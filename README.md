@@ -56,7 +56,7 @@ Some validation commands also expect an already-running [Biovalidator fork](http
 # Optionally, uninstall any previous global Biovalidator installation
 # npm uninstall -g biovalidator
 npm install -g "github:EbiEga/biovalidator#main"
-node "$(npm root -g)/biovalidator/src/biovalidator.js" \
+BIOVALIDATOR_RATE_LIMIT_ENABLED=false node "$(npm root -g)/biovalidator/src/biovalidator.js" \
   --port 3020 \
   --ref "./schemas/**/schema.json" \
   --ref "./schemas/**/*.schema.json" \
@@ -190,6 +190,18 @@ Then validate that wrapper document with a running Biovalidator instance:
 ```bash
 python scripts/py/validate_metadata.py <path/to/document.json>
 ```
+
+### Schema authoring linter
+
+Run `python scripts/py/lint_schemas.py -v` to lint all schemas. The linter is read-only and checks for violations of custom schema rules of this repository (e.g., 'a ``title`` property should not be empty'). Its goal is to help schema authors maintain a consistent style and avoid common mistakes that would hinder machine-readability of the schemas.
+
+Rules live in [`src/fega_tools/schema_lint/`](./src/fega_tools/schema_lint/): add/remove a rule within [``rules.py``](./src/fega_tools/schema_lint/rules.py), and then adjust the [``__init__.py``](./src/fega_tools/schema_lint/__init__.py) `RULES`.
+
+Unused `$defs` entries produce advisory warnings. The summary (``-v``) includes their count, and `-vv` shows their locations. References are scanned across `schemas/` within `--resolution-root`, even when linting selected files; only definitions in selected files are reported. Self-references alone do not count as use, while references between different definitions (even within the same ``$defs`` array) do.
+
+Example arrays (``"examples": []``) are validated against their properties that contain them, ensuring they are valid examples.
+
+Use `python scripts/py/lint_schemas.py --check-api -v` with a running Biovalidator to validate examples involving custom keywords (e.g., OLS terms), including inherited constraints and larger structures containing them. The endpoint defaults to `http://localhost:3020/validate`, but you can override it with `--validator-url URL`. Complete applicable draft 2020-12 schemas are sent from this checkout, with local references bundled within `--resolution-root`. Without `--check-api`, no API calls are made and custom-dependent checks are reported as incomplete.
 
 ## Contributing
 

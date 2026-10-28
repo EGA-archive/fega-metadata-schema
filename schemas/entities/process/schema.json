@@ -1,10 +1,10 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/process/schema.json",
+    "meta:version": "1.0.0-draft.4",
+    "$async": true,
     "type": "object",
     "title": "EGA process metadata schema",
-    "meta:version": "1.0.0-draft.2",
-    "$async": true,
     "description": "A specific execution of a protocol or procedure, applied to specific inputs (Biomaterial or Datafile) and producing specific outputs (Biomaterial or Datafile).",
     "@context": "./context.jsonld",
     "meta:sssomMappings": [
@@ -12,11 +12,10 @@
             "predicate_id": "skos:closeMatch",
             "object_id": "prov:Activity",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 1.0,
             "mapping_date": "2025-08-29"
         },
@@ -24,11 +23,10 @@
             "predicate_id": "skos:narrowMatch",
             "object_id": "beaconRepo:biosamples/defaultSchema.json#obtentionProcedure",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 0.9,
             "mapping_date": "2025-08-27",
             "$comment": "A Beacon 'obtentionProcedure' can be represented through the generic EGA process."
@@ -37,11 +35,10 @@
             "predicate_id": "skos:narrowMatch",
             "object_id": "beaconRepo:biosamples/defaultSchema.json#sampleProcessing",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 0.9,
             "mapping_date": "2025-08-27",
             "$comment": "A Beacon 'sampleProcessing' can be represented through the generic EGA process."
@@ -50,11 +47,10 @@
             "predicate_id": "skos:narrowMatch",
             "object_id": "https://phenopacket-schema.readthedocs.io/en/latest/biosample.html#sample-processing",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 0.7,
             "mapping_date": "2025-08-27",
             "$comment": "The sample processing in a Phenopacket is in part a process, but the Phenopacket's definition of it has no details the actual process, just the ontology of how the sample was processed. Sort of like the protocol collection in the EGA metadata model, combined with the process."
@@ -63,11 +59,10 @@
             "predicate_id": "skos:narrowMatch",
             "object_id": "beaconRepo:analyses/defaultSchema.json",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 0.8,
             "mapping_date": "2025-08-27",
             "$comment": "A Beacon 'analysis' represented in the EGA metadata model is split both into a process and a protocol"
@@ -76,16 +71,16 @@
             "predicate_id": "skos:narrowMatch",
             "object_id": "beaconRepo:runs/defaultSchema.json",
             "mapping_justification": "semapv:ManualMappingCuration",
-            "object_match_field": "rdfs:comment",
             "subject_match_field": "rdfs:comment",
+            "object_match_field": "rdfs:comment",
             "author_id": ["orcid:0000-0002-7747-6256"],
             "creator_id": ["orcid:0000-0002-7747-6256"],
-            "reviewer_id": [""],
             "confidence": 0.8,
             "mapping_date": "2025-08-27",
             "$comment": "A Beacon 'run' represented in the EGA metadata model is split both into a process and a protocol"
         }
     ],
+    "required": [ "@id", "title", "hadProtocolCollection", "inSubmission" ],
     "allOf": [
         {
             "title": "Base constraints for JSON-LD",
@@ -111,10 +106,13 @@
         { "required": ["used", "informs"] },
         { "required": ["wasInformedBy", "generated"] }
     ],
-    "required": [ "@id", "title", "hadProtocolCollection", "inSubmission" ],
     "properties": {
         "@id": {
-          "$ref": "../../common/schema.json#/$defs/@id",
+          "allOf": [
+              {
+                  "$ref": "../../common/schema.json#/$defs/@id"
+              }
+          ],
           "examples": ["ega:EGAA00001000620"],
           "$comment": "Example to be updated if EGA identifiers are amended for new entity types."
         },
@@ -137,6 +135,7 @@
         },
         "hadProtocolCollection": {
             "type": "object",
+            "title": "Had protocol collection",
             "description": "Pointer to the protocol collection that contains the protocol(s) used in this process.",
             "allOf": [
                 {
@@ -158,48 +157,59 @@
         },
         "qualifiedAssociation": {
             "type": "array",
+            "title": "Qualified association",
             "description": "An array of qualified associations between this process, an agent (e.g., a person, organization, or software), and the individual protocol that the agent performed. This can include roles such as 'performer', 'modifier', etc. Note that, although individual protocols can be listed here, the main protocol collection is expected at the top-level 'hadProtocolCollection' property. The main use for this qualifiedAssociation is to specify 'who' (the agents (prov:agent) that performed or modified the process) did 'what' (the protocols (prov:hadPlan)), and their roles (prov:hadRole).",
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
-                "allOf": [
-                    { "$ref": "../../common/schema.json#/$defs/qualifiedAssociation" }
-                ]
+                "$ref": "../../common/schema.json#/$defs/qualifiedAssociation"
             },
             "examples": [
-                {
-                    "agent": {
-                        "@id": "urn:uuid:person-jane-doe",
-                        "@type": [ "prov:Agent", "prov:Person" ],
-                        "name": "Jane Doe"
-                    },
-                    "hadRole": [
-                        {
-                            "id": "CREDIT:00000010",
-                            "label": "supervision role"
-                        }
-                    ]
-                },
-                {
-                    "agent": {
-                        "@type": [ "prov:Agent", "prov:Organization" ],
-                        "@id": "https://ror.org/055vbxf86",
-                        "name": "Addenbrooke's Hospital"
-                    },
-                    "hadRole": [
-                        {
-                            "id": "CREDIT:00000008",
-                            "label": "resources role"
-                        }
-                    ],
-                    "hadPlan": [
-                        {
-                            "@id": "ega:EGAT00001000621",
-                            "@type": "ega:protocol",
-                            "label": "Provision of patient samples"
-                        }
-                    ]
-                }
+                [
+                    {
+                        "agent": {
+                            "@id": "urn:uuid:person-jane-doe",
+                            "@type": [
+                                "prov:Agent",
+                                "prov:Person"
+                            ],
+                            "name": "Jane Doe",
+                            "givenName": "Jane",
+                            "familyName": "Doe"
+                        },
+                        "hadRole": [
+                            {
+                                "id": "CREDIT:00000010",
+                                "label": "supervision role"
+                            }
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "agent": {
+                            "@type": [
+                                "prov:Agent",
+                                "prov:Organization"
+                            ],
+                            "@id": "https://ror.org/055vbxf86",
+                            "name": "Addenbrooke's Hospital"
+                        },
+                        "hadRole": [
+                            {
+                                "id": "CREDIT:00000008",
+                                "label": "resources role"
+                            }
+                        ],
+                        "hadPlan": [
+                            {
+                                "@id": "ega:EGAT00001000621",
+                                "@type": "ega:protocol",
+                                "label": "Provision of patient samples"
+                            }
+                        ]
+                    }
+                ]
             ],
             "$comment": "Downstream validation shall check that the @ids of these agents correspond to the @ids of the agents in wasAssociatedWith."
         },
@@ -210,12 +220,11 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:startedAtTime",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "startedAtTime",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2025-08-19"
                 },
@@ -223,11 +232,10 @@
                     "predicate_id": "skos:broadMatch",
                     "object_id": "beaconRepo:runs/defaultSchema.json#collectionDate",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 0.8,
                     "mapping_date": "2025-08-27"
                 }
@@ -242,12 +250,11 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "prov:endedAtTime",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "endedAtTime",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2025-08-19"
                 }                
@@ -259,6 +266,7 @@
             "$ref": "../../common/schema.json#/$defs/location"
         },
         "used": {
+            "title": "Used",
             "allOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/used"
@@ -266,22 +274,35 @@
                 {
                     "title": "Entity type restriction",
                     "items": {
+                        "title": "Used item",
                         "anyOf": [
                             { "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial" },
                             { "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionDatafile" }
+                        ],
+                        "examples": [
+                            {
+                                "@id": "ega:EGAN00000000001",
+                                "@type": "ega:biomaterial"
+                            }
                         ]
                     }
                 }
             ],
             "examples": [
-                {
-                    "@id": "ega:EGAN00090000001",
-                    "@type": [ "ega:biomaterial", "prov:Person" ],
-                    "label": "Participant PT-0001 (organism)"
-                }
+                [
+                    {
+                        "@id": "ega:EGAN00090000001",
+                        "@type": [
+                            "ega:biomaterial",
+                            "prov:Person"
+                        ],
+                        "label": "Participant PT-0001 (organism)"
+                    }
+                ]
             ]
         },
         "generated": {
+            "title": "Generated",
             "allOf": [
                 {
                     "$ref": "../../common/schema.json#/$defs/generated"
@@ -289,28 +310,37 @@
                 {
                     "title": "Entity type restriction",
                     "items": {
+                        "title": "Generated item",
                         "anyOf": [
                             { "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial" },
                             { "$ref": "../../common/schema.json#/$defs/relationshipItemRestrictionDatafile" }
+                        ],
+                        "examples": [
+                            {
+                                "@id": "ega:EGAN00000000001",
+                                "@type": "ega:biomaterial"
+                            }
                         ]
                     }
                 }             
             ],
             "examples": [
-                {
-                    "@id": "biosample:SAMEA12345678",
-                    "@type": "ega:biomaterial",
-                    "label": "Whole blood (EDTA), PT-0001"
-                }
+                [
+                    {
+                        "@id": "ega:EGAN00000000002",
+                        "@type": "ega:biomaterial",
+                        "label": "Whole blood (EDTA), PT-0001"
+                    }
+                ]
             ]
         },
         "wasAssociatedWith": {
             "title": "Association to agents",
             "description": "Array of relationships pointing to agents (object) associated with this process (subject). The association is to be interpreted broadly: the agent can be associated in multiple ways (e.g., modification, execution...) with the process. It is relevant to note that this array contains associations to agents, and not directly the details (e.g., each agents' role) of the association. Those details are expected to be found in the 'qualifiedAssociation' property. Therefore, for each 'agent' item in wasAssociatedWith, there should be a corresponding 'qualifiedAssociation' item with the same agent and the relevant details of the association.",
-            "$comment": "Downstream validation shall check that the @ids of these agents correspond to the @ids of the agents in qualifiedAssociation. In the end we may choose to get rid of wasAssociatedWith and entirely depend on qualifiedAssociation",
             "allOf": [
                 { "$ref": "../../common/schema.json#/$defs/wasAssociatedWith" }
-            ]
+            ],
+            "$comment": "Downstream validation shall check that the @ids of these agents correspond to the @ids of the agents in qualifiedAssociation. In the end we may choose to get rid of wasAssociatedWith and entirely depend on qualifiedAssociation"
         },
         "wasInformedBy": {
             "description": "Array of relationships pointing to processes (object) that informed this process (subject). This is used to track the flow of information between processes. It is the inverse of 'informs'.",
@@ -337,12 +367,11 @@
                     "predicate_id": "skos:exactMatch",
                     "object_id": "https://isa-specs.readthedocs.io/en/latest/isajson.html#process-parameter-value-schema-json",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "match_string": "parameters",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 1.0,
                     "mapping_date": "2025-08-19"
                 },
@@ -350,21 +379,34 @@
                     "predicate_id": "skos:closeMatch",
                     "object_id": "prov:wasInfluencedBy",
                     "mapping_justification": "semapv:ManualMappingCuration",
-                    "object_match_field": "rdfs:label",
                     "subject_match_field": "rdfs:label",
+                    "object_match_field": "rdfs:label",
                     "author_id": ["orcid:0000-0002-7747-6256"],
                     "creator_id": ["orcid:0000-0002-7747-6256"],
-                    "reviewer_id": [""],
                     "confidence": 0.8,
                     "mapping_date": "2026-01-28",
                     "$comment": "Process parameters can represent conditions that influence the process execution. For example, an activity (process) being influenced by a higher than normal room temperature during sample processing."
                 }
             ],
-            "minItems": 1,
             "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "$ref": "../../common/schema.json#/$defs/processParameterValue"
-            }
+            },
+            "examples": [
+                [
+                    {
+                        "parameterReference": {
+                            "@id": "ega:EGAT00000000001#section-thickness"
+                        },
+                        "value": 10,
+                        "unit": {
+                            "id": "UO:0000017",
+                            "label": "micrometer"
+                        }
+                    }
+                ]
+            ]
         },
         "inSubmission": {
           "$ref": "../../common/schema.json#/$defs/inSubmission"

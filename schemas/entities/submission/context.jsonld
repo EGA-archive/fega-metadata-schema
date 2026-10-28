@@ -7,6 +7,10 @@
         "@prefix": true
       },
       "properties": "@nest",
+      "affiliations": {
+        "@id": "schema:affiliation",
+        "@container": "@set"
+      },
       "title": {
         "@id": "dct:title"
       },

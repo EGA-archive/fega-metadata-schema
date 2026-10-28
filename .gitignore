@@ -37,3 +37,4 @@ build/lib/
 build/bdist*/
 
 validation-summaries/
+AGENTS.md

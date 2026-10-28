@@ -58,6 +58,8 @@
             "prov:Person"
           ],
           "name": "Maya Rivera",
+          "givenName": "Maya",
+          "familyName": "Rivera",
           "email": "maya.rivera@example.org"
         },
         "hadRole": [
