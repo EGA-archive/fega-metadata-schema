@@ -39,8 +39,8 @@
       {
         "diagnosisType": "clinical",
         "term": {
-          "id": "EFO:0000186",
-          "label": "invasive breast ductal carcinoma"
+          "id": "MONDO:0004953",
+          "label": "invasive ductal breast carcinoma"
         },
         "diseaseStage": {
           "id": "OGMS:0000106",
