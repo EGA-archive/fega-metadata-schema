@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/schema.json",
-  "meta:version": "1.0.0-draft.6",
+  "meta:version": "1.0.0-draft.7",
   "$async": true,
   "type": "object",
   "title": "EGA Graph metadata schema",
@@ -19,6 +19,9 @@
       "type": ["object", "string", "array"],
       "title": "Graph JSON-LD context",
       "description": "The graph JSON-LD context.",
+      "minLength": 1,
+      "uniqueItems": true,
+      "minItems": 1,
       "examples": [
         "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/graph/context.jsonld"
       ]
@@ -142,6 +145,7 @@
             "type": "array",
             "title": "JSON-LD resource type",
             "uniqueItems": true,
+            "minItems": 1,
             "examples": [
               [
                 "ega:biomaterial",
@@ -194,6 +198,7 @@
           ],
           "title": "JSON-LD resource type",
           "minLength": 1,
+          "uniqueItems": true,
           "minItems": 1,
           "if": {
             "anyOf": [
@@ -201,6 +206,7 @@
               {
                 "type": "array",
                 "title": "JSON-LD resource type (array)",
+                "uniqueItems": true,
                 "minItems": 1,
                 "minContains": 1,
                 "contains": { "$ref": "#/$defs/supportedEgaTypeValue" },
@@ -305,7 +311,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionBiomaterial/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:biomaterial"
                 ]
@@ -332,7 +338,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionCohort/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:cohort"
                 ]
@@ -359,7 +365,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDAC/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:DAC"
                 ]
@@ -386,7 +392,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDatafile/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:datafile"
                 ]
@@ -413,7 +419,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionDataset/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:dataset"
                 ]
@@ -440,7 +446,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionPolicy/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:policy"
                 ]
@@ -467,7 +473,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProcess/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:process"
                 ]
@@ -494,7 +500,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocol/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:protocol"
                 ]
@@ -521,7 +527,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProtocolCollection/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:protocolCollection"
                 ]
@@ -548,7 +554,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionProject/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:project"
                 ]
@@ -575,7 +581,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionStudy/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:study"
                 ]
@@ -602,7 +608,7 @@
           "title": "JSON-LD resource type",
           "anyOf": [
             { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" },
-            { "type": "array", "title": "JSON-LD resource type (array)", "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }, "examples": [
+            { "type": "array", "title": "JSON-LD resource type (array)", "uniqueItems": true, "minItems": 1, "minContains": 1, "contains": { "$ref": "../common/schema.json#/$defs/relationshipItemRestrictionSubmission/properties/@type/anyOf/0" }, "examples": [
                 [
                   "ega:submission"
                 ]

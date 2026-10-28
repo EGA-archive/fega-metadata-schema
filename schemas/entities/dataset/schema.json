@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/dataset/schema.json",
-    "meta:version": "1.0.0-draft.4",
+    "meta:version": "1.0.0-draft.5",
     "$async": true,
     "type": "object",
     "title": "EGA dataset metadata schema",
@@ -380,7 +380,9 @@
         },
 
         "populationCoverage": {
+            "type": "string",
             "title": "A definition of the population within the dataset",
+            "description": "A textual description of the population represented in the dataset.",
             "meta:sssomMappings": [
                 {
                     "predicate_id": "skos:exactMatch",
@@ -406,10 +408,11 @@
                     "$comment": "A dataset 'populationCoverage' is broader than the individual's geographic origin. The former can be produced by aggregating the latter."
                 }
             ],
+            "minLength": 1,
             "examples": [
                 "Children under 12 years old with asthma treated in public hospitals in France between 2018 and 2023."
             ],
-            "$comment": "Since this property is entirely derived from HealthDCAT-AP (v7.0.0), we do not impose any validation constraints."
+            "$comment": "Derived from HealthDCAT-AP (v7.0.0); represented as non-empty text in FEGA."
         },
              
         "relatedResource": {
