@@ -56,7 +56,7 @@ Some validation commands also expect an already-running [Biovalidator fork](http
 # Optionally, uninstall any previous global Biovalidator installation
 # npm uninstall -g biovalidator
 npm install -g "github:EbiEga/biovalidator#main"
-node "$(npm root -g)/biovalidator/src/biovalidator.js" \
+BIOVALIDATOR_RATE_LIMIT_ENABLED=false node "$(npm root -g)/biovalidator/src/biovalidator.js" \
   --port 3020 \
   --ref "./schemas/**/schema.json" \
   --ref "./schemas/**/*.schema.json" \
