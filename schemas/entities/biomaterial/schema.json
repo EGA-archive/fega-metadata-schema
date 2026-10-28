@@ -26,6 +26,7 @@
       "title": "Base constraints for JSON-LD",
       "$ref": "../../../standards/json-schema/json-ld.org/FEGA.jsonld-schema.json"
     },
+    { "$ref": "#/$defs/commonBiomaterialDefs" },
     { "$ref": "#/$defs/organismChecklist" },
     { "$ref": "#/$defs/organismPartChecklist" },
     { "$ref": "#/$defs/biologicalMacromoleculeChecklist" },
@@ -1346,10 +1347,10 @@
     },
     
     "organismChecklist": {
+      "type": "object",
       "title": "Organism checklist",
       "description": "Checklist of required and allowed biomaterial properties for this type of biomaterial.",
       "allOf": [
-        { "$ref": "#/$defs/commonBiomaterialDefs" },
         {
           "if": {
             "required": ["@type"],
@@ -1391,10 +1392,10 @@
     },
 
     "organismPartChecklist": {
+      "type": "object",
       "title": "Organism Part checklist",
       "description": "Checklist of required and allowed biomaterial properties for this type of biomaterial.",
       "allOf": [
-        { "$ref": "#/$defs/commonBiomaterialDefs" },
         {
           "if": {
             "required": ["@type"],
@@ -1444,10 +1445,10 @@
     },
 
     "biologicalMacromoleculeChecklist": {
+      "type": "object",
       "title": "Biological macromolecule checklist",
       "description": "An extracted or prepared macromolecular material, such as genomic DNA, RNA or protein, used as input to molecular assays. Donor characteristics (e.g., sex) belong on the source organism, and extraction and preparation details belong on the generating process.",
       "allOf": [
-        { "$ref": "#/$defs/commonBiomaterialDefs" },
         {
           "if": {
             "required": ["@type"],
