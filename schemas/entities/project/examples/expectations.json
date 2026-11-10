@@ -121,5 +121,9 @@
   ],
   "project-invalid-funding-award-url.json": [
     "/funding/0/award/url"
+  ],
+  "project-invalid-person-missing-names.json": [
+    "/qualifiedAttributions/0/agent/givenName",
+    "/qualifiedAttributions/0/agent/familyName"
   ]
 }

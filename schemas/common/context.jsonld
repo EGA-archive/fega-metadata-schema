@@ -27,6 +27,13 @@
         "occurrence": "commonDefinitionsDoc:occurrence",
         "onset": "commonDefinitionsDoc:onset",
         "proportion": "commonDefinitionsDoc:proportion",
+        "procedureCode": "commonDefinitionsDoc:procedureCode",
+        "bodySite": "commonDefinitionsDoc:bodySite",
+        "ageAtProcedure": "commonDefinitionsDoc:ageAtProcedure",
+        "dateOfProcedure": {
+            "@id": "commonDefinitionsDoc:dateOfProcedure",
+            "@type": "xsd:date"
+        },
         "referenceRange": "commonDefinitionsDoc:referenceRange",
         "route": "commonDefinitionsDoc:route",
         "severity": "commonDefinitionsDoc:severity",

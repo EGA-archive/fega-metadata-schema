@@ -1,14 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/submission/schema.json",
+  "meta:version": "1.0.0-draft.5",
+  "$async": true,
   "type": "object",
   "title": "EGA Submission metadata schema",
-    "meta:version": "1.0.0-draft.3",
-  "$async": true,
   "description": "Administrative metadata for an EGA Submission, the authoritative container that owns EGA entities and records who may view or edit them.",
   "@context": "./context.jsonld",
   "required": ["@id", "@type", "title", "status", "components"],
-  "meta:sssomMappings": [],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
@@ -21,7 +20,11 @@
   ],
   "properties": {
     "@id": {
-      "$ref": "../../common/schema.json#/$defs/@id",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/@id"
+        }
+      ],
       "examples": [
         "ega:EGA00000000001",
         "ega:EGA00001000002"
@@ -78,12 +81,11 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "adms:status",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:label",
           "subject_match_field": "rdfs:label",
+          "object_match_field": "rdfs:label",
           "match_string": "status",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-21"
         }
@@ -105,53 +107,84 @@
           "predicate_id": "skos:closeMatch",
           "object_id": "egav1crg.1:post#collaborators",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "status",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-27"
         }
       ],
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "#/$defs/component"
-      },
       "allOf": [
         {
           "title": "A submission needs to have one creator",
+          "minContains": 1,
+          "maxContains": 1,
           "contains": {
             "type": "object",
+            "title": "Components",
             "required": ["roles"],
             "properties": {
               "roles": {
                 "type": "array",
-                "contains": {"const": "creator"}
+                "title": "Roles",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": {"const": "creator"},
+                "examples": [
+                  [
+                    "creator"
+                  ]
+                ]
               }
-            }
-          },
-          "minContains": 1,
-          "maxContains": 1
+            },
+            "examples": [
+              {
+                "roles": [
+                  "creator"
+                ]
+              }
+            ]
+          }
         },
         {
           "title": "A submission needs to have one owner",
+          "minContains": 1,
+          "maxContains": 1,
           "contains": {
             "type": "object",
+            "title": "Components",
             "required": ["roles"],
             "properties": {
               "roles": {
                 "type": "array",
-                "contains": {"const": "owner"}
+                "title": "Roles",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": {"const": "owner"},
+                "examples": [
+                  [
+                    "owner"
+                  ]
+                ]
               }
-            }
-          },
-          "minContains": 1,
-          "maxContains": 1
+            },
+            "examples": [
+              {
+                "roles": [
+                  "owner"
+                ]
+              }
+            ]
+          }
         }
       ],
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      },
       "examples": [
         [
           {
@@ -171,7 +204,8 @@
               "@id": "ega:EGAW00000000002",
               "@type": "prov:Agent"
             },
-            "roles": ["creator"]
+            "roles": ["creator"],
+            "accessLevel": "read"
           },
           {
             "@type": "entityDoc:/$defs/component",
@@ -203,12 +237,11 @@
           "predicate_id": "skos:narrowMatch",
           "object_id": "dct:hasPart",
           "mapping_justification": "semapv:ManualMappingCuration",
-          "object_match_field": "rdfs:comment",
           "subject_match_field": "rdfs:comment",
+          "object_match_field": "rdfs:comment",
           "match_string": "hasEntities",
           "author_id": ["orcid:0000-0002-7747-6256"],
           "creator_id": ["orcid:0000-0002-7747-6256"],
-          "reviewer_id": [""],
           "confidence": 1.0,
           "mapping_date": "2026-07-27"
         }
@@ -271,6 +304,7 @@
       "type": "object",
       "title": "Submission participant assignment",
       "description": "An assignment connecting an identified EGA user account to Submission responsibilities and, where applicable, an administrative access level.",
+      "required": ["roles", "accessLevel"],
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/agentRoleAssignment"
@@ -280,32 +314,49 @@
             "required": ["roles"],
             "properties": {
               "roles": {
-                "contains": {"const": "owner"}
+                "type": "array",
+                "title": "Roles",
+                "uniqueItems": true,
+                "minItems": 1,
+                "contains": {"const": "owner"},
+                "examples": [
+                  [
+                    "owner"
+                  ]
+                ]
               }
             }
           },
           "then": {
             "required": ["accessLevel"],
             "properties": {
-              "accessLevel": {"const": "write"}
+              "accessLevel": { "type": "string", "title": "Access level", "minLength": 1,"const": "write", "examples": [
+                  "write"
+                ]}
             }
           }
         }
       ],
-      "required": ["roles", "accessLevel"],
       "properties": {
         "@type": {
+          "title": "JSON-LD resource type",
           "anyOf": [
             {
               "const": "entityDoc:/$defs/component"
             },
             {
               "type": "array",
-              "minItems": 1,
+              "title": "JSON-LD resource type (array)",
               "uniqueItems": true,
+              "minItems": 1,
               "contains": {
                 "const": "entityDoc:/$defs/component"
-              }
+              },
+              "examples": [
+                [
+                  "entityDoc:/$defs/component"
+                ]
+              ]
             }
           ],
           "examples": [
@@ -316,12 +367,12 @@
         "agent": {
           "title": "Submission participant account",
           "description": "The authenticated EGA user account receiving the role assignment.",
+          "required": ["@id"],
           "allOf": [
             {
               "$ref": "../../common/schema.json#/$defs/agent"
             }
           ],
-          "required": ["@id"],
           "properties": {
             "@id": {
               "$ref": "../../common/schema.json#/$defs/egaStableIdentifierUserAccount"
@@ -335,7 +386,9 @@
             {
               "@id": "ega:EGAW00001000002",
               "@type": ["prov:Agent", "prov:Person"],
-              "name": "Jane Doe"
+              "name": "Jane Doe",
+              "givenName": "Jane",
+              "familyName": "Doe"
             }
           ]
         },
@@ -343,10 +396,12 @@
           "type": "array",
           "title": "Submission roles",
           "description": "Responsibilities held by the EGA user account. Creator records provenance, owner identifies the current authoritative owner, and collaborator identifies delegated access.",
-          "minItems": 1,
           "uniqueItems": true,
+          "minItems": 1,
           "items": {
             "type": "string",
+            "title": "Roles item",
+            "minLength": 1,
             "enum": ["creator", "owner", "collaborator"],
             "examples": ["owner", "collaborator"]
           },
@@ -364,16 +419,16 @@
               "predicate_id": "skos:exactMatch",
               "object_id": "egav1crg.1:post#collaborators/access_type",
               "mapping_justification": "semapv:ManualMappingCuration",
-              "object_match_field": "rdfs:comment",
               "subject_match_field": "rdfs:comment",
+              "object_match_field": "rdfs:comment",
               "match_string": "status",
               "author_id": ["orcid:0000-0002-7747-6256"],
               "creator_id": ["orcid:0000-0002-7747-6256"],
-              "reviewer_id": [""],
               "confidence": 1.0,
               "mapping_date": "2026-07-27"
             }
           ],
+          "minLength": 1,
           "enum": ["read", "write", "none"],
           "examples": ["read", "write"]
         }

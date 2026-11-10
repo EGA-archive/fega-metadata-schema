@@ -4,6 +4,10 @@
     {
       "entityDoc": "entities:process/schema.json#",
       "properties": "@nest",
+      "affiliations": {
+        "@id": "schema:affiliation",
+        "@container": "@set"
+      },
       "title": "dct:title",
       "hadProtocolCollection": "entityDoc:hadProtocolCollection",
       "startedAtTime": {

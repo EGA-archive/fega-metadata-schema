@@ -35,11 +35,15 @@
       },
       "timeAtLastEncounter": "entityDoc:timeAtLastEncounter",
       "taxonomy": "entityDoc:taxonomy",
+      "molecularType": "entityDoc:molecularType",
       "vitalStatus": "entityDoc:vitalStatus",
       "status": "entityDoc:status",
       "samplingSource": "entityDoc:samplingSource",
       "collectionSite": "entityDoc:collectionSite",
-      "storageConditions": "entityDoc:storageConditions",
+      "storageConditions": {
+        "@id": "entityDoc:storageConditions",
+        "@container": "@set"
+      },
       "samplingAge": "entityDoc:samplingAge",
       "samplingDate": {
         "@id": "entityDoc:samplingDate",

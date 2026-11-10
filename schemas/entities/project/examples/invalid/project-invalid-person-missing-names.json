@@ -1,0 +1,136 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/project/context.jsonld",
+    "@id": "ega:EGAJ00000000001",
+    "@type": [
+      "ega:project",
+      "schema:Project",
+      "schema:ResearchProject"
+    ],
+    "title": "Inherited cardiac disease research programme",
+    "description": "A collaborative research programme investigating inherited cardiac disease through family-based sequencing and longitudinal follow-up studies.",
+    "hasStudy": [
+      {
+        "@id": "ega:EGAS00001000002",
+        "@type": "ega:study"
+      },
+      {
+        "@id": "ega:EGAS00001000003",
+        "@type": [
+          "ega:study",
+          "schema:ResearchProject"
+        ]
+      }
+    ],
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    },
+    "alternativeTitle": [
+      "HeartGen programme"
+    ],
+    "keyword": [
+      "cardiomyopathy",
+      "rare disease",
+      "genomics"
+    ],
+    "sameAs": [
+      {
+        "@id": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1234567"
+      },
+      {
+        "@id": "https://www.ebi.ac.uk/ena/browser/view/PRJEB765432"
+      }
+    ],
+    "publications": [
+      "https://doi.org/10.5555/heartgen.2026.001"
+    ],
+    "landingPage": "https://example.org/projects/heartgen",
+    "qualifiedAttributions": [
+      {
+        "@type": "prov:Attribution",
+        "agent": {
+          "@type": [
+            "prov:Agent",
+            "prov:Person"
+          ],
+          "name": "Maya Rivera",
+          "email": "maya.rivera@example.org"
+        },
+        "hadRole": [
+          {
+            "id": "CREDIT:00000005",
+            "label": "investigation role"
+          }
+        ]
+      },
+      {
+        "@type": "prov:Attribution",
+        "agent": {
+          "@id": "https://example.org/organisations/northbridge-genomics",
+          "@type": [
+            "prov:Agent",
+            "prov:Organization"
+          ],
+          "name": "Northbridge Genomics Institute"
+        },
+        "hadRole": [
+          {
+            "id": "CREDIT:00000010",
+            "label": "supervision role"
+          }
+        ]
+      }
+    ],
+    "hasSubproject": [
+      {
+        "@id": "ega:EGAJ00001000002",
+        "@type": "ega:project"
+      }
+    ],
+    "funding": [
+      {
+        "funder": {
+          "@type": [
+            "prov:Agent",
+            "prov:Organization"
+          ],
+          "@id": "https://example.org/funders/northbridge-research-council",
+          "name": "Northbridge Research Council"
+        },
+        "award": {
+          "@id": "https://doi.org/10.5555/heartgen.grant.2026",
+          "number": "NRC-HG-2026-0042",
+          "title": "Genomic discovery in inherited cardiac disease",
+          "url": "https://example.org/awards/NRC-HG-2026-0042"
+        }
+      },
+      {
+        "funder": {
+          "@type": [
+            "prov:Agent",
+            "prov:Organization"
+          ],
+          "@id": "https://example.org/funders/northbridge-research-council",
+          "name": "Northbridge Research Council"
+        },
+        "award": {
+          "number": "NRC-SEED-2026-0017",
+          "title": "HeartGen pilot sequencing"
+        }
+      },
+      {
+        "funder": {
+          "@type": [
+            "prov:Agent",
+            "prov:Organization"
+          ],
+          "name": "Eastmere Medical Research Foundation"
+        }
+      }
+    ]
+  }
+}

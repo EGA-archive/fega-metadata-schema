@@ -1,0 +1,23 @@
+{
+  "schema": {
+    "$ref": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json"
+  },
+  "data": {
+    "@context": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/biomaterial/schema.json",
+    "@id": "ega:EGAN00000000003",
+    "@type": [
+      "ega:biomaterial",
+      "prov:Entity",
+      "EFO:0004446"
+    ],
+    "label": "DNA-001",
+    "molecularType": {
+      "id": "NCBITaxon:9606",
+      "label": "Homo sapiens"
+    },
+    "inSubmission": {
+      "@id": "ega:EGA00000000001",
+      "@type": "ega:submission"
+    }
+  }
+}

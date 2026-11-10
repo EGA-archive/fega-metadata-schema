@@ -1,24 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/EGA-archive/fega-metadata-schema/main/schemas/entities/protocolCollection/schema.json",
+  "meta:version": "1.0.0-draft.3",
+  "$async": true,
   "type": "object",
   "title": "EGA protocol collection metadata schema",
-    "meta:version": "1.0.0-draft.2",
-  "$async": true,
   "description": "A versioned composite plan containing one or more reusable Protocol records. It represents the plan applied by a Process at the submitter-selected granularity.",
-  "$comment": "Membership expresses inclusion only. We are not modelling the order of the steps, which could be done in the future if deemed worth it following the P-plan model. A collection may contain one protocol for a detailed Process or several protocols for a coarse Process.",
   "@context": "./context.jsonld",
-  "required": ["@id", "@type", "title", "version", "hadMember", "inSubmission"],
   "meta:sssomMappings": [
     {
       "predicate_id": "skos:narrowMatch",
       "object_id": "prov:Collection",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-17"
     },
@@ -26,15 +23,15 @@
       "predicate_id": "skos:narrowMatch",
       "object_id": "prov:Plan",
       "mapping_justification": "semapv:ManualMappingCuration",
-      "object_match_field": "rdfs:comment",
       "subject_match_field": "rdfs:comment",
+      "object_match_field": "rdfs:comment",
       "author_id": ["orcid:0000-0002-7747-6256"],
       "creator_id": ["orcid:0000-0002-7747-6256"],
-      "reviewer_id": [""],
       "confidence": 1.0,
       "mapping_date": "2026-07-17"
     }
   ],
+  "required": ["@id", "@type", "title", "version", "hadMember", "inSubmission"],
   "allOf": [
     {
       "title": "Base constraints for JSON-LD",
@@ -47,7 +44,11 @@
   ],
   "properties": {
     "@id": {
-      "$ref": "../../common/schema.json#/$defs/egaStableIdentifierProtocolCollection",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/egaStableIdentifierProtocolCollection"
+        }
+      ],
       "examples": [
         "ega:EGAL00000000001",
         "ega:EGAL00001000002"
@@ -87,14 +88,18 @@
       ]
     },
     "version": {
-      "$ref": "../../common/schema.json#/$defs/version",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/version"
+        }
+      ],
       "examples": [
         "1.0.0",
         "2.1.0"
       ]
     },
     "hadMember": {
-      "$comment": "Membership is unordered and does not imply protocol execution order.",
+      "title": "Had member",
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/hadMember"
@@ -119,9 +124,11 @@
             "label": "Whole-genome sequencing library preparation"
           }
         ]
-      ]
+      ],
+      "$comment": "Membership is unordered and does not imply protocol execution order."
     },
     "isPartOf": {
+      "title": "Is part of",
       "allOf": [
         {
           "$ref": "../../common/schema.json#/$defs/isPartOf"
@@ -147,7 +154,11 @@
       "$ref": "../../common/schema.json#/$defs/inSubmission"
     },
     "sameAs": {
-      "$ref": "../../common/schema.json#/$defs/sameAs",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/sameAs"
+        }
+      ],
       "examples": [
         [
           {
@@ -157,7 +168,11 @@
       ]
     },
     "isBasedOn": {
-      "$ref": "../../common/schema.json#/$defs/isBasedOn",
+      "allOf": [
+        {
+          "$ref": "../../common/schema.json#/$defs/isBasedOn"
+        }
+      ],
       "examples": [
         [
           {
@@ -166,5 +181,6 @@
         ]
       ]
     }
-  }
+  },
+  "$comment": "Membership expresses inclusion only. We are not modelling the order of the steps, which could be done in the future if deemed worth it following the P-plan model. A collection may contain one protocol for a detailed Process or several protocols for a coarse Process."
 }

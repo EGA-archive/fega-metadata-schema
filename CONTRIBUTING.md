@@ -45,7 +45,7 @@ The complete preparation, review, publication and recovery runbook is in the [re
 | Area                | Tool / Convention   |
 | ------------------- | ------------------- |
 | **Python**          | Type hints encouraged; keep reusable logic in `src/fega_tools/`.          |
-| **JSON Schemas**    | `$id`, `title`, `description` and `meta:version` are mandatory; use `$ref` over copy-paste. More details at [``schemas/entities``](./schemas/entities/README.md). |
+| **JSON Schemas**    | `$id`, `title` and `meta:version` are mandatory; use `$ref` over copy-paste. More details at [``schemas/entities``](./schemas/entities/README.md). |
 | **Commit messages** | Conventional Commits style (`fix:`, `feat:`, `docs:` …).                                       |
 | **Docs**            | Markdown (`.md`), Mermaid for process diagrams, and SVG/PNG in `docs/images/` for static graphics. |
 

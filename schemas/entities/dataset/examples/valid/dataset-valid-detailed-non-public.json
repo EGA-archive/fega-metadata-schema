@@ -59,9 +59,10 @@
     "status": "COMPLETED",
     "measurementTechnique": [
       {
-        "id": "EFO:0004507",
-        "label": "whole genome sequencing"
-      }
+        "id": "EFO:0003740",
+        "label": "assay by sequencer"
+      },
+      "https://example.org/protocols/whole-genome-sequencing"
     ],
     "variableMeasured": [
       {
